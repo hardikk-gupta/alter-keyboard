@@ -1,7 +1,7 @@
 plugins {
-    id 'com.android.library' version '8.10.1'
-    id 'org.jetbrains.kotlin.android' version '2.4.0'
-    id 'org.jetbrains.kotlin.plugin.compose' version '2.4.0'
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 final def translationsWithoutEngValues = { final String path ->
@@ -90,7 +90,7 @@ android {
 
     sourceSets {
         main {
-            res.srcDirs = ['../voiceinput-shared/src/main/res', translationsWithoutEngValues('../translations/voiceinput')]
+            res.srcDirs = ['../voiceinput-shared/src/main/res', translationsWithoutEngValues('../app/translations/voiceinput')]
         }
     }
 

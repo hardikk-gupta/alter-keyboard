@@ -1,0 +1,73 @@
+// FUTO Keyboard's translation filter, kept in Groovy so its regex behaviour is unchanged. It copies the translated
+// values-* folders without their English duplicates and fixes quoting; build.gradle.kts calls it for each folder.
+ext.translationsWithoutEngValues = { final String path ->
+    final def sourceDir = file(path)
+    final def taskNameSuffix = sourceDir.name.capitalize()
+
+    final def destDir = file("$buildDir/generated/res-translations-filtered/${taskNameSuffix}")
+
+    tasks.register("prepareResFilter${taskNameSuffix}", Copy) {
+        from(sourceDir) {
+            include 'values-*/**'
+
+            filter { String line ->
+                def matcher = line =~ /<string name="([^"]+)"[^>]*>(.+)<\/string>/
+
+                if (matcher.find()) {
+                    var stringName = matcher.group(1)
+                    var content = matcher.group(2)
+
+                    content = content
+                    // Fix duplicate string tags
+                            .replaceAll(/<!\[CDATA\[<string [^>]+>(.+)<\\/string>\]\]>/, '$1')
+                            .replaceAll(/<string [^>]+>(.+)<\\/string>/, '$1')
+                            .replaceAll(/&lt;string [^&]+&gt;(.+)&lt;\\/string&gt;/, '$1')
+                    // Remove xliff:g tags entirely, keep only the content
+                            .replaceAll(/<xliff:g [^>]+>(.+?)<\/xliff:g>/, '$1')
+                            .replaceAll(/&lt;xliff:g [^&]+&gt;(.+?)&lt;\/xliff:g&gt;/, '$1')
+                    // Fix escaped quotes
+                            .replaceAll(/&amp;quot;/, '"')
+                            .replaceAll(/&quot;/, '"')
+                            .replaceAll(/\\+/, "\\\\")
+                            .replaceAll(/\\"/, '"')
+                            .replaceAll(/\\'/, "'")
+
+                    if (content.startsWith("&quot;")) {
+                        content = content.substring(6)
+                    } else if (content.startsWith('\\"')) {
+                        content = content.substring(2)
+                    } else if (content.startsWith('"')) {
+                        content = content.substring(1)
+                    }
+                    if (content.endsWith("&quot;")) {
+                        content = content.substring(0, content.length() - 6)
+                    } else if (content.endsWith('\\"')) {
+                        content = content.substring(0, content.length() - 2)
+                    } else if (content.endsWith('"')) {
+                        content = content.substring(0, content.length() - 1)
+                    }
+
+                    content = content.replaceAll('"', '\\\\"')
+
+                    "    <string name=\"" + stringName + "\">\"" + content + "\"</string>\n"
+                } else {
+                    line
+                }
+            }
+        }
+        into(destDir)
+        includeEmptyDirs = false
+
+        doFirst {
+            if (destDir.exists()) {
+                println "Cleaning old contents of $destDir"
+                destDir.deleteDir()
+            }
+        }
+    }
+
+    // Ensure it runs before build
+    preBuild.dependsOn("prepareResFilter${taskNameSuffix}")
+
+    destDir
+}

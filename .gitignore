@@ -8,9 +8,9 @@ local.properties
 crashreporting.properties
 keystore.properties
 key.jks
-java/res/raw/mozc.data
+app/java/res/raw/mozc.data
 .cxx
-java/src/org/futo/inputmethod/keyboard/internal/KeyboardTextsTable.java
+app/java/src/org/futo/inputmethod/keyboard/internal/KeyboardTextsTable.java
 # ALTER Keyboard
 debug.keystore
 .env
