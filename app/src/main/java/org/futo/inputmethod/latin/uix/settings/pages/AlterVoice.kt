@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.clip
+import org.futo.inputmethod.latin.uix.settings.AlterSettingsGroup
 import org.futo.inputmethod.latin.uix.settings.CollapsibleSection
 import org.futo.inputmethod.latin.uix.settings.DropDownPickerSettingItem
 import androidx.compose.foundation.layout.Arrangement
@@ -59,17 +60,6 @@ import org.futo.inputmethod.latin.uix.settings.SettingToggleDataStore
 import org.futo.inputmethod.latin.uix.settings.Tip
 import org.futo.inputmethod.latin.uix.settings.useDataStore
 
-/** A compact settings group: a small title over a rounded card (20dp, ALTER's settings-card radius). */
-@Composable
-private fun AlterGroup(title: String?, content: @Composable ColumnScope.() -> Unit) {
-    Column(Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
-        if (title != null) Text(title, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 12.dp, bottom = 6.dp))
-        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest),
-            content = content)
-    }
-}
-
 /** One model row: download with progress, cancel, use, delete. */
 @Composable
 private fun ModelRow(
@@ -101,7 +91,7 @@ private fun ModelRow(
                 download is DownloadState.Running -> OutlinedButton(onClick = { ModelDownloads.cancel(key) }) {
                     Text(stringResource(R.string.alter_model_cancel))
                 }
-                !installed -> Button(onClick = { ModelDownloads.start(context, key, files) }) {
+                !installed -> OutlinedButton(onClick = { ModelDownloads.start(context, key, files) }) {
                     Text(stringResource(R.string.alter_model_download))
                 }
                 else -> OutlinedButton(onClick = onDelete) { Text(stringResource(R.string.alter_model_delete)) }
@@ -141,14 +131,14 @@ fun AlterVoiceScreen(navController: NavHostController) {
         ScreenTitle(stringResource(R.string.alter_voice_settings_title), showBack = true, navController)
 
         if (!micGranted) {
-            AlterGroup(null) {
+            AlterSettingsGroup(null) {
                 SettingItem(title = stringResource(R.string.alter_mic_permission_title),
                     subtitle = stringResource(R.string.alter_mic_permission_subtitle),
                     onClick = { permission.launch(Manifest.permission.RECORD_AUDIO) }) {}
             }
         }
 
-        AlterGroup(stringResource(R.string.alter_group_keyboard)) {
+        AlterSettingsGroup(stringResource(R.string.alter_group_keyboard)) {
             val startMode = useDataStore(ALTER_START_MODE)
             val modes = listOf(ALTER_START_MODE_FULL, ALTER_START_MODE_PILL)
             val modeNames = listOf(stringResource(R.string.alter_start_mode_full), stringResource(R.string.alter_start_mode_pill))
@@ -170,7 +160,7 @@ fun AlterVoiceScreen(navController: NavHostController) {
                 { languageNames[VoiceSettings.LANGUAGES.indexOf(it).coerceAtLeast(0)] })
         }
 
-        AlterGroup(stringResource(R.string.alter_speech_models_title)) {
+        AlterSettingsGroup(stringResource(R.string.alter_speech_models_title)) {
             val current = choices.find { it.id == selected }?.name
                 ?: if (selected == VoiceSettings.DEVICE_SPEECH_ID) stringResource(R.string.alter_device_speech_name) else null
             SettingItem(title = current ?: stringResource(R.string.alter_speech_model_none),
@@ -199,7 +189,7 @@ fun AlterVoiceScreen(navController: NavHostController) {
             }
         }
 
-        AlterGroup(stringResource(R.string.alter_cleanup_title)) {
+        AlterSettingsGroup(stringResource(R.string.alter_cleanup_title)) {
             val cleanupInstalled = remember(refresh) { models.store.installed(cleanup) }
             var cleanupOn by remember(refresh) { mutableStateOf(VoicePack.cleanupEnabled(context)) }
             SettingItem(title = stringResource(R.string.alter_cleanup_toggle), subtitle = stringResource(R.string.alter_cleanup_subtitle),

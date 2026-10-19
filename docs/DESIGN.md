@@ -8,6 +8,28 @@ redo, clipboard, emoji, text editing) and layouts stay. Since Oct 19, 2026 the d
 LightText labels, MutedText hints and AlterYellow as the one accent (enter key, highlights). FUTO's other themes stay
 selectable. ALTER's voice surfaces use ALTER's design below.
 
+## Launcher icon
+
+`res/mipmap-anydpi-v26/ic_launcher*.xml` (adaptive; minSdk 26, so no bitmap icons are used): a light `#ECECEC`
+keyboard outline with 11 keys and an AlterYellow `#FFBD00` spacebar (`drawable/ic_alter_launcher_foreground.xml`) on
+ALTER's `#121212` launcher background, plus a white monochrome layer for Android 13 themed icons. The setup screen shows
+the same mark in its own colours; the training notification uses the monochrome layer. FUTO's icon is not used.
+
+## App screens (settings, setup, payment)
+
+The app's own screens follow the ALTER app's settings design (DESIGN_SYSTEM.md in ALTER-AI-code-base, "App
+redesign, pass 1"), whatever keyboard theme is picked: `UixThemeAuto` always applies the ALTER colours, and
+`uix/settings/AlterStyle.kt` holds the shared pieces.
+
+- Page heading 26/34sp semibold, one Lucide arrow-left back icon immediately left of it.
+- Each menu's settings sit in one grouped section: an optional 12sp label above one borderless 20dp SlateGrayCard
+  surface with 16dp page gutters.
+- Rows: 16/24sp title, concise 12/18sp secondary line; navigation rows lead with a 36dp tile (6% foreground fill,
+  10dp corners, 20dp icon) and end with a Lucide chevron-right.
+- Tips: a neutral RaisedSurface note with 16dp corners and 14sp muted text; warnings keep the error colours.
+- Yellow means selection, activity and the brand; download/use controls are neutral outlined buttons.
+- FUTO's payment page keeps all its content and actions; only the shared styling applies to it.
+
 ## ALTER voice surfaces
 
 Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice`):

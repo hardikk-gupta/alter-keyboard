@@ -78,3 +78,16 @@ From phone feedback on the first APK:
 
 Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest` passed. Not run:
 rendered previews or any phone check of the new strip, theme and settings layout.
+
+## PR 6: ALTER app icon, ALTER app screens, full documentation (Oct 19, 2026)
+
+- New launcher icon: a light keyboard with a yellow spacebar on `#121212` (adaptive, with a monochrome layer). Also on
+  the setup screen and the training notification.
+- The app's screens follow the ALTER app's settings design whatever keyboard theme is picked: ALTER colours, 26sp
+  page headings with a Lucide back arrow, grouped 20dp SlateGrayCard sections, 16sp/12sp rows, 36dp icon tiles with a
+  chevron, neutral tips and download buttons.
+- `README.md` rewritten for ALTER Keyboard (install, features, settings, build, layout); FUTO's README kept as
+  `docs/FUTO_README.md`. `docs/DESIGN.md`, `MODIFICATIONS.md` and `AGENTS.md` updated.
+
+Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest` passed; the launcher
+foreground was rendered to an image and checked. Not run: screenshots of the settings screens or any phone check.

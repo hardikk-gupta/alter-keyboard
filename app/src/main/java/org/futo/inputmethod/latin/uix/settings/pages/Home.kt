@@ -167,7 +167,7 @@ fun HomeScreen(navController: NavHostController = rememberNavController()) {
         ) {
             Spacer(modifier = Modifier.height(24.dp))
             Row(Modifier.padding(16.dp)) {
-                Text(stringResource(R.string.english_ime_settings), style = Typography.Heading.Medium, modifier = Modifier
+                Text(stringResource(R.string.english_ime_settings), style = org.futo.inputmethod.latin.uix.settings.AlterType.PageHeading, modifier = Modifier
                     .align(CenterVertically)
                     .weight(1.0f))
 
