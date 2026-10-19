@@ -76,6 +76,10 @@ object LucidePill {
     val Keyboard = icon("Keyboard", "M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z",
         "M6 8h.01", "M10 8h.01", "M14 8h.01", "M18 8h.01", "M8 12h.01", "M12 12h.01", "M16 12h.01", "M7 16h10")
     val ChevronDown = icon("ChevronDown", "M6 9l6 6 6-6")
+    val ChevronRight = icon("ChevronRight", "M9 18l6-6-6-6")
+    val ArrowLeft = icon("ArrowLeft", "M12 19l-7-7 7-7", "M19 12H5")
+    val Search = icon("Search", "M11 3a8 8 0 1 0 0 16a8 8 0 1 0 0-16Z", "M21 21l-4.3-4.3")
+    val Info = icon("Info", "M12 2a10 10 0 1 0 0 20a10 10 0 1 0 0-20Z", "M12 16v-4", "M12 8h.01")
     val TriangleAlert = icon("TriangleAlert", "M21.73 18l-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z", "M12 9v4", "M12 17h.01")
 }
 

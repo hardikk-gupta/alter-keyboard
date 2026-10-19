@@ -122,9 +122,12 @@ fun UserSettingsMenu.render(showBack: Boolean = true, showTitle: Boolean = true)
     if(showTitle) {
         ScreenTitle(stringResource(title), showBack = showBack, navController)
     }
-    settings.forEach {
-        if(it.visibilityCheck?.invoke() != false) {
-            it.component()
+    // ALTER Keyboard: a menu's settings sit in one ALTER settings group (20dp SlateGrayCard surface).
+    AlterSettingsGroup {
+        settings.forEach {
+            if(it.visibilityCheck?.invoke() != false) {
+                it.component()
+            }
         }
     }
 }

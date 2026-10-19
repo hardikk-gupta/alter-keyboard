@@ -41,6 +41,9 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 ## Design
 
 - The keyboard works exactly like FUTO Keyboard (settings, toolbar actions, themes). Its default skin is ALTER's.
+- The app's own screens always use ALTER's settings design (`uix/settings/AlterStyle.kt`); style shared components
+  there or in `settings/Components.kt`, not screen by screen. The launcher icon is ALTER's keyboard mark.
+- Keep `README.md`, `MODIFICATIONS.md`, `docs/DESIGN.md` and `CHANGES.md` current with every user-visible change.
 - Every animation has a still frame when Android's "remove animations" setting is on.
 - The ALTER theme is the default skin; FUTO's themes stay selectable. Voice surfaces sit inside the thin AlterYellow
   boundary, and the mic replaces the suggestion row instead of adding a layer (`docs/DESIGN.md`).
