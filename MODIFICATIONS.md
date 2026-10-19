@@ -55,7 +55,9 @@ non-commercial use, shared only for free. The original AOSP code remains under A
 - **Branding:** user-visible text says ALTER Keyboard instead of FUTO Keyboard (setup, crash, version-warning and
   dev-build messages, the "VI" theme name, the activation announcement) in English and all translations. FUTO's
   support links (website, docs, Discord, chat, GitHub issues, email) were removed from Help; the attribution line is
-  the last item of Help. The payment page and reminders, the Credits list and internal identifiers keep FUTO's name.
+  the last item of Help. Localized app names say ALTER. FUTO's manual-update notice (F-Droid, keyboard.futo.tech) is
+  not shown, and crash reports are off unless `crashreporting.properties` configures them, since FUTO's crash dialog
+  mails reports to FUTO. The payment page and reminders, the Credits list and internal identifiers keep FUTO's name.
 
 ## What was not changed
 

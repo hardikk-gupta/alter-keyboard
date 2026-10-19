@@ -182,7 +182,8 @@ fun HomeScreen(navController: NavHostController = rememberNavController()) {
                 }
             }
 
-            ConditionalMigrateUpdateNotice()
+            // ALTER Keyboard: FUTO's manual-update notice (F-Droid, keyboard.futo.tech) is not shown; ALTER builds come
+            // from this repo's Releases page.
             ConditionalUnpaidNoticeWithNav(navController)
 
             HomeScreenLite.render(showTitle = false)

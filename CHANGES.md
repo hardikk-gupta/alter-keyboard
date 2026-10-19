@@ -103,3 +103,7 @@ foreground was rendered to an image and checked. Not run: screenshots of the set
   notices, the release-notes attribution line.
 
 Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest` passed (9 tests). Not run: phone check.
+- Review fixes: localized app names (shown in Android's input-method picker) say ALTER in every language, including
+  setup text without a space before the keyboard word; FUTO's update notice with its keyboard.futo.tech button is gone
+  from the settings home; crash reporting (which mails FUTO) stays off unless configured. Re-ran the checks above plus
+  `compileStableReleaseKotlin`: passed.

@@ -519,7 +519,7 @@
   <string name="setup_step_1">セットアップ - ステップ 1</string>
   <string name="setup_step_2">セットアップ - ステップ 2</string>
   <string name="setup_step_3">セットアップ - ステップ 3</string>
-  <string name="setup_welcome_text">ALTER キーボード（アルファ版）へようこそ！この製品はまだ開発中で未完成です。皆様のご理解とご協力に感謝いたします。\n\n使い始めるには、FUTOキーボードを入力方法で有効にしてください。</string>
+  <string name="setup_welcome_text">ALTER キーボード（アルファ版）へようこそ！この製品はまだ開発中で未完成です。皆様のご理解とご協力に感謝いたします。\n\n使い始めるには、ALTERキーボードを入力方法で有効にしてください。</string>
   <string name="setup_open_input_settings">入力方法の設定を開く</string>
   <string name="setup_warning_multiple_versions">警告： Play ストア版とスタンドアロン版の両方がインストールされているようです。どちらか一方のインストールのみを推奨します。</string>
   <string name="setup_active_input_method">入力方法に ALTER キーボードを選択してください。</string>

@@ -346,7 +346,7 @@
   <string name="resource_importer_select_language">Wybierz język do zaimportowania:</string>
   <string name="resource_importer_warning_language_missing">Ten plik wydaje się być przeznaczony dla języka (%1$s), który nie jest włączony w ustawieniach</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Czy na pewno chcesz zaimportować tę kopię konfiguracji? Zastąpi ona wszystkie aktualne ustawienia, osobisty słownik (systemowy), słowa dodane do słownika, wszystkie zaimportowane zasoby, itp. Jeśli nie jesteś pewny, najpierw zrób dodatkową kopię zapasową.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Ta kopia konfiguracji została utworzona przez nową wersję klawiatury FUTOA, i może nie zostać zaimportowana pomyślnie. Spróbuj najpierw zaktualizować klawiaturę ALTER.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Ta kopia konfiguracji została utworzona przez nową wersję klawiatury ALTERA, i może nie zostać zaimportowana pomyślnie. Spróbuj najpierw zaktualizować klawiaturę ALTER.</string>
   <string name="settings_export_configuration_title">Kopia ustawień</string>
   <string name="settings_export_configuration">Eksportuj konfigurację</string>
   <string name="settings_export_configuration_subtitle">Zrób kopię zapasową wszystkich ustawień, schowka, zapamiętanych słów, zasobów i więcej.</string>
