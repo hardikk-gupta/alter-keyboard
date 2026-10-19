@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="crashed_text_email">ALTER klaviatūroje įvyko technine klaida! Prašome mus pranešti el. paštu, kad galėtume tai ištaisyti</string>
+  <string name="crashed_text">ALTER klaviatūroje įvyko technine klaida! Prašome mus pranešti, kad galėtume tai ištaisyti.</string>
+  <string name="crashed_title">Techninių klaidų pranešėjas</string>
+  <string name="crash_report_accept">Siųsti pranešimą</string>
+  <string name="crash_report_reject">Atmesti</string>
+</resources>

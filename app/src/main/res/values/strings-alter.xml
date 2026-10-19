@@ -5,12 +5,14 @@
     <string name="app_name">ALTER Keyboard</string>
     <string name="alter_about_modified">ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc.</string>
 
+    <string name="theme_alter">ALTER</string>
     <string name="alter_action_minimize">Minimize</string>
     <string name="alter_pill_idle">ALTER voice. Tap to start recording</string>
     <string name="alter_pill_listening">Listening. Tap to finish</string>
     <string name="alter_pill_thinking">Transcribing. Tap to cancel</string>
     <string name="alter_pill_error_retry">Tap to try again.</string>
     <string name="alter_pill_disabled">Voice input is off in password fields</string>
+    <string name="alter_voice_cancel">Cancel voice input</string>
     <string name="alter_pill_show_keyboard">Show keyboard</string>
     <string name="alter_pill_switch_input_method">Switch input method</string>
 
@@ -24,6 +26,10 @@
     <string name="alter_end_on_silence_subtitle">Otherwise tap the pill to finish</string>
     <string name="alter_mic_permission_title">Allow microphone</string>
     <string name="alter_mic_permission_subtitle">Needed to record dictation. Audio stays on this phone.</string>
+    <string name="alter_group_keyboard">Keyboard</string>
+    <string name="alter_speech_model_none">No speech model yet</string>
+    <string name="alter_speech_model_none_hint">Open "All speech models" and download one</string>
+    <string name="alter_speech_models_all">All speech models (%1$d)</string>
     <string name="alter_speech_models_title">Speech model</string>
     <string name="alter_speech_models_hint">Models download into private storage on this phone and are checked against a pinned size and SHA-256. Nothing is sent to the cloud.</string>
     <string name="alter_device_speech_name">Android on-device recognition</string>
@@ -42,4 +48,19 @@
     <string name="alter_voice_language_en_in">English (India)</string>
     <string name="alter_voice_language_hi_in">Hindi</string>
     <string name="alter_storage_used">Storage used: %1$s</string>
+
+    <!-- Settings home groups and ALTER voice setup (UI/UX pass: grouped sitemap, guided setup). -->
+    <string name="alter_group_voice">Voice</string>
+    <string name="alter_group_typing">Typing</string>
+    <string name="alter_group_look">Look &amp; feel</string>
+    <string name="alter_group_more">More</string>
+    <string name="alter_voice_status_needs_mic">Not set up: allow the microphone</string>
+    <string name="alter_voice_status_needs_model">Not set up: download a speech model</string>
+    <string name="alter_voice_status_ready">Ready · %1$s</string>
+    <string name="alter_voice_setup_title">Set up ALTER voice</string>
+    <string name="alter_voice_setup_action">Set up voice</string>
+    <string name="alter_setup_step_mic">Allow the microphone</string>
+    <string name="alter_setup_allow">Allow</string>
+    <string name="alter_setup_step_model">Download %1$s</string>
+    <string name="alter_setup_step_model_hint">Recommended to start. It is used as soon as it finishes</string>
 </resources>

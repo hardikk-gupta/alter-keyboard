@@ -137,7 +137,7 @@
   <string name="theme_amoled_dark">AMOLED tamno ljubičasta</string>
   <string name="theme_classic_dark">AOSP materijal tamni</string>
   <string name="theme_classic_light">AOSP materijal svijetli</string>
-  <string name="theme_vi">FUTO VI tema</string>
+  <string name="theme_vi">VI tema</string>
   <string name="theme_deepsea_dark">Tamno more</string>
   <string name="theme_deepsea_light">Svijetlo more</string>
   <string name="theme_emerald">Smaragd</string>
@@ -254,7 +254,7 @@
   <string name="manual_update_notice_title">Obavijest o ažuriranjima</string>
   <string name="manual_update_notice_paragraph_1">Ova aplikacija se ne povezuje na internet i neće moći provjeriti automatska ažuriranja. Međutim, možete provjeriti ažuriranja ručno.</string>
   <string name="manual_update_notice_paragraph_2">Molimo koristite F-Droid ili Obtainium za automatska ažuriranja. Posjetite keyboard.futo.org za opcije preuzimanja.</string>
-  <string name="manual_update_notice_dev_paragraph">Na ste razvojnoj verziji FUTO tipkovnice. Posjetite keyboard.futo.org ako želite preuzeti stabilnu verziju.</string>
+  <string name="manual_update_notice_dev_paragraph">Na ste razvojnoj verziji ALTER tipkovnice. Posjetite keyboard.futo.org ako želite preuzeti stabilnu verziju.</string>
   <string name="manual_update_notice_visit_site_button">Posjetite</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Zatvori</string>
@@ -342,7 +342,7 @@
   <string name="resource_importer_select_language">Odaberite jezik za uvoz:</string>
   <string name="resource_importer_warning_language_missing">Ova datoteka izgleda da je namijenjena jeziku (%1$s) koji nije omogućen u postavkama</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Jeste li sigurni da želite uvesti ovu sigurnosnu kopiju konfiguracije? Ovo će zamijeniti sve vaše postavke, osobni rječnik (sustavno), naučene riječi rječnika, sve uvezene resurse i još više. Ako niste sigurni, napravite još jednu sigurnosnu kopiju prije ovoga.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Ova sigurnosna kopija konfiguracije je napravljena novijom verzijom FUTO tipkovnice i možda se neće ispravno uvesti. Pokušajte prvo ažurirati FUTO tipkovnicu.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Ova sigurnosna kopija konfiguracije je napravljena novijom verzijom ALTER tipkovnice i možda se neće ispravno uvesti. Pokušajte prvo ažurirati ALTER tipkovnicu.</string>
   <string name="settings_export_configuration_title">Sigurnosna kopija postavki</string>
   <string name="settings_export_configuration">Izvezi konfiguraciju</string>
   <string name="settings_export_configuration_subtitle">Izradite sigurnosnu kopiju svih svojih postavki, međuspremnika, naučenih riječi, resursa i još mnogo toga.</string>
@@ -512,10 +512,10 @@
   <string name="setup_step_1">Postavka - Korak 1</string>
   <string name="setup_step_2">Postavka - Korak 2</string>
   <string name="setup_step_3">Postavka - Korak 3</string>
-  <string name="setup_welcome_text">Dobrodošli u FUTO tipkovnicu (alpha)! Ovaj proizvod je još uvijek u razvoju i nije dovršen, cijenimo vašu strpljivost i razumijevanje.\n\nZa početak, omogućite FUTO tipkovnicu kao metodu unosa.</string>
+  <string name="setup_welcome_text">Dobrodošli u ALTER tipkovnicu (alpha)! Ovaj proizvod je još uvijek u razvoju i nije dovršen, cijenimo vašu strpljivost i razumijevanje.\n\nZa početak, omogućite ALTER tipkovnicu kao metodu unosa.</string>
   <string name="setup_open_input_settings">Otvorite postavke metode unosa</string>
   <string name="setup_warning_multiple_versions">Upozorenje: Čini se da imate instalirane i verzije iz Play Store-a i samostalne verzije, preporučujemo instalaciju samo jedne</string>
-  <string name="setup_active_input_method">Molimo odaberite FUTO tipkovnicu kao svoju aktivnu metodu unosa.</string>
+  <string name="setup_active_input_method">Molimo odaberite ALTER tipkovnicu kao svoju aktivnu metodu unosa.</string>
   <string name="setup_switch_input_methods">Prebaci metode unosa</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Zasluge</string>

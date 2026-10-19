@@ -200,10 +200,7 @@ android {
 }
 
 kotlin {
-  compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_1_8)
-    freeCompilerArgs.addAll("-Xskip-metadata-version-check", "-Xsuppress-version-warnings")
-  }
+  compilerOptions { jvmTarget.set(JvmTarget.JVM_1_8) }
 }
 
 dependencies {
