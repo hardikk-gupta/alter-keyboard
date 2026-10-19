@@ -46,6 +46,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -709,13 +710,14 @@ class UixManager(private val latinIME: LatinIME) {
 
     @Composable
     private fun RowScope.AlterVoiceStrip(session: AlterDictationSession) {
-        Row(Modifier.weight(1f).fillMaxHeight().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.weight(1f).fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
             val cancelDescription = stringResource(R.string.alter_voice_cancel)
-            Box(Modifier.size(36.dp).clip(RoundedCornerShape(12.dp)).clickable(role = Role.Button) { stopInlineVoice() }
+            // The whole action-bar height (40dp) by 48dp wide: as large as the bar allows.
+            Box(Modifier.width(48.dp).fillMaxHeight().clip(RoundedCornerShape(12.dp)).clickable(role = Role.Button) { stopInlineVoice() }
                 .semantics { contentDescription = cancelDescription }, contentAlignment = Alignment.Center) {
                 Icon(painterResource(R.drawable.close), null, Modifier.size(20.dp))
             }
-            session.Pill(disabled = inlineVoiceDisabled, modifier = Modifier.weight(1f).fillMaxHeight().padding(end = 4.dp))
+            session.Pill(disabled = inlineVoiceDisabled, modifier = Modifier.weight(1f).fillMaxHeight().padding(top = 4.dp, bottom = 4.dp, end = 4.dp))
         }
     }
 

@@ -107,5 +107,5 @@ flowchart LR
 | Remove needless steps | A finished download is used automatically when no model is chosen yet |
 | Grouped navigation, predictable back | Four labelled home groups; one back arrow left of every page title |
 | Multi-step progress | Numbered step badges that turn yellow with a check when done |
-| Touch targets 48 dp, 8 dp spacing | Rows, buttons, pill bar buttons and the voice strip's ✕ |
+| Touch targets 48 dp, 8 dp spacing | Rows, buttons and pill bar buttons; the voice strip's ✕ is 48 dp wide and the full 40 dp action-bar height |
 | Don't send users to wrong destinations | FUTO's "check for updates" item removed from the home (ALTER builds come from Releases) |
