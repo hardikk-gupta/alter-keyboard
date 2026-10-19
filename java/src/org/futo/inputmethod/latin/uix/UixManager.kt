@@ -92,6 +92,15 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import com.aistudio.altermind.voice.ui.AlterColors
+import com.aistudio.altermind.voice.ui.LucidePill
+import com.aistudio.altermind.voice.ui.PillBarButton
+import org.futo.inputmethod.latin.uix.actions.AlterDictationSession
+import org.futo.inputmethod.latin.uix.actions.commitDictation
 import androidx.core.view.inputmethod.InputConnectionCompat
 import androidx.core.view.inputmethod.InputContentInfoCompat
 import androidx.lifecycle.LifecycleCoroutineScope
@@ -647,6 +656,52 @@ class UixManager(private val latinIME: LatinIME) {
         get() = measuredTouchableHeight
 
     val isMainKeyboardHidden get() = mainKeyboardHidden.value
+
+    // ALTER Keyboard: pill mode replaces the keyboard with a 56dp bar holding ALTER's mic pill.
+    private val pillMode = mutableStateOf(false)
+    private val pillSession = mutableStateOf<AlterDictationSession?>(null)
+    val isPillMode get() = pillMode.value
+
+    fun setPillMode(to: Boolean) {
+        val pill = to && !latinIME.currentInputEditorInfo.isAlterSensitiveField()
+        if (pill == pillMode.value) return
+        if (pill) {
+            closeActionWindow()
+            pillSession.value = AlterDictationSession(latinIME, latinIME.lifecycleScope) {
+                keyboardManagerForAction.commitDictation(it)
+            }
+        } else {
+            pillSession.value?.close()
+            pillSession.value = null
+        }
+        pillMode.value = pill
+        if (!pill) latinIME.onKeyboardShown()
+    }
+
+    /** Every time a text field gets focus, the keyboard opens in the user's chosen start mode. */
+    fun applyStartMode(editorInfo: EditorInfo?, restarting: Boolean) {
+        if (restarting && !editorInfo.isAlterSensitiveField()) return
+        setPillMode(latinIME.getSettingBlocking(ALTER_START_MODE) == ALTER_START_MODE_PILL)
+    }
+
+    @Composable
+    private fun AlterPillBar(session: AlterDictationSession) {
+        val floating = latinIME.size.value is FloatingKeyboardSize
+        Column(Modifier.fillMaxWidth().background(AlterColors.PitchBlack)) {
+            Row(Modifier.fillMaxWidth().height(56.dp).safeKeyboardPadding().padding(horizontal = 4.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                val switchDescription = stringResource(R.string.alter_pill_switch_input_method)
+                Box(Modifier.size(48.dp).clip(RoundedCornerShape(12.dp))
+                    .clickable(role = Role.Button) { keyboardManagerForAction.openInputMethodPicker() }
+                    .semantics { contentDescription = switchDescription }, contentAlignment = Alignment.Center) {
+                    Icon(painterResource(R.drawable.globe), null, Modifier.size(24.dp), tint = AlterColors.LightText)
+                }
+                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { session.Pill() }
+                PillBarButton(LucidePill.Keyboard, stringResource(R.string.alter_pill_show_keyboard), onClick = { setPillMode(false) })
+            }
+            if (!floating) Spacer(Modifier.height(navBarHeight()))
+        }
+    }
 
     private fun onActionActivatedInternal(rawAction: Action, skipOverride: Boolean = false) {
         resizers.hideResizer()
@@ -1279,7 +1334,12 @@ class UixManager(private val latinIME: LatinIME) {
             TutorialArrow()
 
             KeyboardWindowSelector { gap ->
-                Column {
+                val pill = pillSession.value
+                if (pillMode.value && pill != null) {
+                    AlterPillBar(pill)
+                    // The keyboard view must stay attached; it is only resized to zero.
+                    latinIME.LegacyKeyboardView(modifier = Modifier, hidden = true)
+                } else Column {
                     Box(Modifier.onGloballyPositioned { floatingPreeditPosition.value = it })
                     // TODO: Refactor how we handle expandable suggestions here to not be a mess
                     val needToUseExpandableSuggestionUi =
@@ -1636,6 +1696,8 @@ class UixManager(private val latinIME: LatinIME) {
 
     fun onInputFinishing() {
         closeActionWindow()
+        // Recording stops and is discarded when the field loses focus or the keyboard hides.
+        pillSession.value?.controller?.cancel()
         languageSwitcherDialog?.dismiss()
         isShowingActionEditor.value = false
         resizers.hideResizer()

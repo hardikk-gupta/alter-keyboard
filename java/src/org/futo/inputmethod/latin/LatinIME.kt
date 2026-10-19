@@ -632,6 +632,7 @@ class LatinIME : InputMethodServiceCompose(), LatinIMELegacy.SuggestionStripCont
         lifecycleScope.launch { uixManager.showUpdateNoticeIfNeeded() }
         updateColorsIfDynamicChanged()
         uixManager.updateEmojiTranslationsIfNeeded()
+        uixManager.applyStartMode(info, restarting)
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {

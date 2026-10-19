@@ -87,6 +87,9 @@ val HelpMenu = UserSettingsMenu(
                     BuildConfig.VERSION_NAME
                 ))
         },
+        userSettingDecorationOnly {
+            Tip(stringResource(R.string.alter_about_modified))
+        },
 
         userSettingNavigationItem(
             title = R.string.help_menu_website,

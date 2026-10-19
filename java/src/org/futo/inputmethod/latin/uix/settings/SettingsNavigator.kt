@@ -59,6 +59,7 @@ import org.futo.inputmethod.latin.uix.settings.pages.SelectLayoutsScreen
 import org.futo.inputmethod.latin.uix.settings.pages.SwipeMenu
 import org.futo.inputmethod.latin.uix.settings.pages.TypingSettingsMenu
 import org.futo.inputmethod.latin.uix.settings.pages.VoiceInputMenu
+import org.futo.inputmethod.latin.uix.settings.pages.AlterVoiceScreen
 import org.futo.inputmethod.latin.uix.settings.pages.addModelManagerNavigation
 import org.futo.inputmethod.latin.uix.settings.pages.buggyeditors.BuggyTextEditVariations
 import org.futo.inputmethod.latin.uix.settings.pages.pdict.ConfirmDeleteExtraDictFileDialog
@@ -184,6 +185,7 @@ fun SettingsNavigator(
             composable("payment") { PaymentScreen(navController) { navController.navigateUp() } }
             composable("paid") { PaymentThankYouScreen { navController.navigateUp() } }
             composable("credits") { CreditsScreen(navController) }
+            composable(org.futo.inputmethod.latin.uix.actions.AlterVoiceNavPath) { AlterVoiceScreen(navController) }
             composable("exportingcfg") { ExportingMenu(navController) }
             composable("kasroz") { KASROZMenu() }
             dialog("update") {

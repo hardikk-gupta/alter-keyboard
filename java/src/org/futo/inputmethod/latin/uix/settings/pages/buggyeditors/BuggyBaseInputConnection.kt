@@ -704,7 +704,7 @@ open class BuggyBaseInputConnection : InputConnection {
                 val style = ta.getText(0)
                 ta.recycle()
                 if (style != null && style is Spanned) {
-                    mDefaultComposingSpans = style.getSpans<Any?>(
+                    mDefaultComposingSpans = style.getSpans<Any>(
                         0, style.length, Any::class.java
                     )
                 }

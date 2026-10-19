@@ -1,57 +1,55 @@
 //file:noinspection HardCodedStringLiteral
 plugins {
     id 'com.android.application' version '8.10.1'
-    id 'org.jetbrains.kotlin.android' version '2.1.0'
-    id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0'
+    id 'org.jetbrains.kotlin.android' version '2.4.0'
+    id 'org.jetbrains.kotlin.plugin.compose' version '2.4.0'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '2.4.0'
     id 'com.android.library' version '8.10.1' apply false
 }
 
-def getVersionCode = { ->
-    def envCode = System.getenv('VERSION_CODE')
-    if (envCode?.trim()) {
-        try {
-            return Integer.parseInt(envCode.trim())
-        } catch (NumberFormatException ignored) {
-            project.logger.warn("VERSION_CODE='$envCode' is not a valid integer – falling back to git rev-list.")
-        }
-    } else {
-        project.logger.warn("VERSION_CODE env variable not set – falling back to git rev-list.")
-    }
-
+// ALTER Keyboard: each build is versioned from its source commit time (minutes since 2026-01-01 UTC), so a
+// newer build always installs as an update. Without git, the build time is used so builds never downgrade.
+def commitStamp = { ->
+    if (!file("${rootDir}/.git").exists()) return []
     try {
         def stdout = new ByteArrayOutputStream()
         exec {
-            commandLine 'git', 'rev-list', '--first-parent', '--count', 'master'
+            commandLine 'git', 'log', '-1', '--format=%ct %h'
             standardOutput = stdout
+            ignoreExitValue = true
         }
-        return Integer.parseInt(stdout.toString().trim())
+        return stdout.toString().trim().split(' ').findAll { !it.isBlank() }
     } catch (ignored) {
-        project.logger.lifecycle("Failed to get rev-list count from git!")
-        return -1
+        return []
     }
+}()
+def commitSeconds = (commitStamp.size() > 0 && commitStamp[0].isLong()) ? commitStamp[0].toLong() : (long) (System.currentTimeMillis() / 1000L)
+
+def getVersionCode = { ->
+    return Math.max(2, (int) ((commitSeconds - 1767225600L) / 60L))
 }
 
 def getVersionName = { ->
-    def envName = System.getenv('VERSION_NAME')
-    if (envName?.trim()) {
-        return envName.trim()
-    } else {
-        project.logger.warn("VERSION_NAME env variable not set – falling back to git describe.")
-    }
-
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'describe', '--tags'
-            standardOutput = stdout
-        }
-        return stdout.toString().trim()
-    } catch (ignored) {
-        project.logger.lifecycle("Failed to get version name tag from git!")
-        return "0.0.0"
-    }
+    def stamp = new java.text.SimpleDateFormat("yyMMdd.HHmm")
+    stamp.setTimeZone(TimeZone.getTimeZone("UTC"))
+    return "1.0." + stamp.format(new Date(commitSeconds * 1000L)) + (commitStamp.size() > 1 ? "-" + commitStamp[1] : "-local")
 }
+
+// One shared key signs every ALTER build so updates install over each other (docs/SIGNING.md). It comes from the
+// ALTER_SIGNING_KEYSTORE_B64 environment variable when set, else the git-ignored debug.keystore in the repo root.
+def sharedSigningKeystore = { ->
+    def encoded = System.getenv('ALTER_SIGNING_KEYSTORE_B64')
+    if (encoded?.trim()) {
+        def out = file("$buildDir/signing/alter-debug.keystore")
+        out.parentFile.mkdirs()
+        out.bytes = Base64.getMimeDecoder().decode(encoded.trim())
+        return out
+    }
+    def local = file("${rootDir}/debug.keystore")
+    if (local.exists()) return local
+    project.logger.warn("No shared ALTER signing key (ALTER_SIGNING_KEYSTORE_B64 or debug.keystore); signing with FUTO's test key. This APK will not install over ALTER builds.")
+    return null
+}()
 
 def getBranch = { ->
     def envName = System.getenv('BRANCH_NAME')
@@ -201,8 +199,8 @@ android {
         versionName getVersionName()
         versionCode getVersionCode()
 
-        applicationId 'org.futo.inputmethod.latin'
-        testApplicationId 'org.futo.inputmethod.latin.tests'
+        applicationId 'com.aistudio.altermind.keyboard'
+        testApplicationId 'com.aistudio.altermind.keyboard.tests'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = false
     }
@@ -215,7 +213,16 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file("java/shared.keystore")
+            if (sharedSigningKeystore != null) {
+                storeFile sharedSigningKeystore
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            } else {
+                storeFile file("java/shared.keystore")
+            }
+            enableV2Signing true
+            enableV3Signing true
         }
     }
 
@@ -288,7 +295,8 @@ android {
             versionNameSuffix "-unstable"
 
             buildConfigField "boolean", "IS_PLAYSTORE_BUILD", "false"
-            buildConfigField "boolean", "UPDATE_CHECKING", "true"
+            // ALTER Keyboard must never offer FUTO's APK as an update.
+            buildConfigField "boolean", "UPDATE_CHECKING", "false"
             buildConfigField "boolean", "UPDATE_CHECKING_NETWORK", "false"
             buildConfigField "String", "BRANCH", "\"${getBranch()}\""
             getIsDefault().set(true)
@@ -299,7 +307,8 @@ android {
         stable {
             dimension "buildType"
             buildConfigField "boolean", "IS_PLAYSTORE_BUILD", "false"
-            buildConfigField "boolean", "UPDATE_CHECKING", "true"
+            // ALTER Keyboard must never offer FUTO's APK as an update.
+            buildConfigField "boolean", "UPDATE_CHECKING", "false"
             buildConfigField "boolean", "UPDATE_CHECKING_NETWORK", "false"
             buildConfigField "String", "BRANCH", "\"${getBranch()}\""
 
@@ -369,6 +378,9 @@ android {
 
     aaptOptions {
         noCompress 'dict'
+        // ALTER Keyboard: FUTO's bundled 43 MB Whisper model is replaced by ALTER's voice pack, which downloads
+        // its models on demand. Keep aapt's default ignore list and add the model file.
+        ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~:!tiny_en_acft_q8_0.bin.not.tflite'
     }
 
     packagingOptions {
@@ -442,6 +454,7 @@ dependencies {
     //implementation "androidx.work:work-runtime:$work_version"
 
     implementation project(":voiceinput-shared")
+    implementation project(":alter-voice")
 
     implementation "com.charleskorn.kaml:kaml:0.61.0"
 

@@ -84,24 +84,14 @@ val HomeScreenLite = UserSettingsMenu(
             icon = R.drawable.text_prediction
         ),
 
-        UserSetting(
-            name = R.string.voice_input_settings_title
-        ) {
-            val navController = LocalNavController.current
-            val useExternal = useDataStoreValue(USE_SYSTEM_VOICE_INPUT)
-            val externalPkg = useDataStoreValue(SYSTEM_VOICE_INPUT_PACKAGE)
-            val name = usePackageReadableName(externalPkg)
-
-            NavigationItem(
-                title = stringResource(R.string.voice_input_settings_title),
-                style = NavigationItemStyle.HomePrimary,
-                subtitle = if(useExternal && name != null) {
-                    stringResource(R.string.voice_input_settings_builtin_disabled_notice2, name)
-                } else { null },
-                navigate = { navController!!.navigate(VoiceInputMenu.navPath) },
-                icon = painterResource(R.drawable.mic_fill)
-            )
-        },
+        // ALTER Keyboard: the mic uses ALTER's voice pack, configured on its own page.
+        userSettingNavigationItem(
+            title = R.string.alter_voice_settings_title,
+            subtitle = R.string.alter_voice_settings_subtitle,
+            style = NavigationItemStyle.HomePrimary,
+            navigateTo = org.futo.inputmethod.latin.uix.actions.AlterVoiceNavPath,
+            icon = R.drawable.mic_fill
+        ),
 
         userSettingNavigationItem(
             title = R.string.action_settings_title,
