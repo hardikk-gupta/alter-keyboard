@@ -138,7 +138,7 @@
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
   <string name="theme_classic_dark">AOSP Material Dunkel</string>
   <string name="theme_classic_light">AOSP Material Hell</string>
-  <string name="theme_vi">FUTO VI Thema</string>
+  <string name="theme_vi">VI Thema</string>
   <string name="theme_deepsea_dark">Tiefsee Dunkel</string>
   <string name="theme_deepsea_light">Tiefsee Hell</string>
   <string name="theme_emerald">Smaragd</string>
@@ -255,7 +255,7 @@
   <string name="manual_update_notice_title">Hinweis zu Updates</string>
   <string name="manual_update_notice_paragraph_1">Diese App verbindet sich nicht mit dem Internet und kann keine automatischen Updates überprüfen. Sie können jedoch manuell nach Updates suchen.</string>
   <string name="manual_update_notice_paragraph_2">Bitte verwenden Sie F-Droid oder Obtainium für automatische Updates. Besuchen Sie keyboard.futo.org für Download-Optionen.</string>
-  <string name="manual_update_notice_dev_paragraph">Sie verwenden die Entwicklungsversion der FUTO Tastatur. Besuchen Sie keyboard.futo.org, wenn Sie die stabile Version herunterladen möchten.</string>
+  <string name="manual_update_notice_dev_paragraph">Sie verwenden die Entwicklungsversion der ALTER Tastatur. Besuchen Sie keyboard.futo.org, wenn Sie die stabile Version herunterladen möchten.</string>
   <string name="manual_update_notice_visit_site_button">Besuchen</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Verstanden</string>
@@ -343,7 +343,7 @@
   <string name="resource_importer_select_language">Wählen Sie die Sprache aus, für die importiert werden soll:</string>
   <string name="resource_importer_warning_language_missing">Diese Datei scheint für eine Sprache (%1$s) bestimmt zu sein, die in den Einstellungen nicht aktiviert ist.</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Bist du sicher, dass du dieses Konfigurations-Backup importieren möchtest? Dadurch werden alle deine Einstellungen, dein persönliches Wörterbuch (systemweit), gelernte Wörterbuchwörter, alle importierten Ressourcen und mehr ersetzt. Wenn du dir unsicher bist, mach vorher lieber noch ein Backup.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Diese Konfigurationssicherung wurde mit einer neueren Version der FUTO-Tastatur erstellt und lässt sich möglicherweise nicht korrekt importieren. Versuchen Sie zuerst, die FUTO-Tastatur zu aktualisieren.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Diese Konfigurationssicherung wurde mit einer neueren Version der ALTER-Tastatur erstellt und lässt sich möglicherweise nicht korrekt importieren. Versuchen Sie zuerst, die ALTER-Tastatur zu aktualisieren.</string>
   <string name="settings_export_configuration_title">Backup Einstellungen</string>
   <string name="settings_export_configuration">Konfiguration exportieren</string>
   <string name="settings_export_configuration_subtitle">Sichere all deine Einstellungen, die Zwischenablage, gelernte Wörter, Ressourcen und mehr.</string>
@@ -519,10 +519,10 @@
   <string name="setup_step_1">Einrichtung - Schritt 1</string>
   <string name="setup_step_2">Einrichtung - Schritt 2</string>
   <string name="setup_step_3">Einrichtung - Schritt 3</string>
-  <string name="setup_welcome_text">Willkommen bei der FUTO Tastatur (Alpha)! Dieses Produkt befindet sich noch in der Entwicklung und ist noch nicht fertig. Wir danken Ihnen für Ihre Geduld und Ihr Verständnis.\n\nUm zu beginnen, aktivieren Sie die FUTO Tastatur als Eingabemethode.</string>
+  <string name="setup_welcome_text">Willkommen bei der ALTER Tastatur (Alpha)! Dieses Produkt befindet sich noch in der Entwicklung und ist noch nicht fertig. Wir danken Ihnen für Ihre Geduld und Ihr Verständnis.\n\nUm zu beginnen, aktivieren Sie die ALTER Tastatur als Eingabemethode.</string>
   <string name="setup_open_input_settings">Eingabemethoden-Einstellungen öffnen</string>
   <string name="setup_warning_multiple_versions">Warnung: Es scheint, dass Sie sowohl die Play Store- als auch die Standalone-Version installiert haben. Wir empfehlen, nur eine zu installieren.</string>
-  <string name="setup_active_input_method">Bitte wählen Sie die FUTO Tastatur als Ihre aktive Eingabemethode aus.</string>
+  <string name="setup_active_input_method">Bitte wählen Sie die ALTER Tastatur als Ihre aktive Eingabemethode aus.</string>
   <string name="setup_switch_input_methods">Eingabemethoden wechseln</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Mitwirkende</string>

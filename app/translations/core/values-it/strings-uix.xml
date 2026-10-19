@@ -142,7 +142,7 @@
   <string name="theme_default_light">Modalità Chiara</string>
   <string name="theme_amoled_dark">Viola Scuro AMOLED</string>
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
-  <string name="theme_vi">Tema FUTO VI</string>
+  <string name="theme_vi">Tema VI</string>
   <string name="theme_deepsea_light">Luce Abissale</string>
   <string name="theme_emerald">Smeraldo</string>
   <string name="theme_gradient1">Gradiente 1</string>
@@ -257,7 +257,7 @@
   <string name="manual_update_notice_title">Avviso sugli aggiornamenti</string>
   <string name="manual_update_notice_paragraph_1">Questa applicazione non si connette ad Internet e non è in grado di controllare gli aggiornamenti in automatico. È tuttavia possibile verificare manualmente la presenza di aggiornamenti.</string>
   <string name="manual_update_notice_paragraph_2">Utilizzare F-Droid o Obtainium per gli aggiornamenti automatici. Visitare keyboard.futo.org per le opzioni di download.</string>
-  <string name="manual_update_notice_dev_paragraph">Siete sulla versione di sviluppo della Tastiera FUTO. Visitate keyboard.futo.org se volete scaricare la versione stabile.</string>
+  <string name="manual_update_notice_dev_paragraph">Siete sulla versione di sviluppo della Tastiera ALTER. Visitate keyboard.futo.org se volete scaricare la versione stabile.</string>
   <string name="manual_update_notice_visit_site_button">Visita</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Ho capito</string>
@@ -343,7 +343,7 @@
   <string name="resource_importer_select_language">Seleziona la lingua per la quale importare:</string>
   <string name="resource_importer_warning_language_missing">Questo file sembra essere destinato a una lingua (%1$s) che non è abilitata nelle impostazioni</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Vuoi davvero importare questo backup di configurazione? Questo sostituirà tutte le tue impostazioni, il dizionario personale (a livello di sistema), le parole apprese del dizionario, tutte le risorse importate e altro ancora. In caso di dubbi, esegui un altro backup prima di procedere.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Questo backup di configurazione è stato creato da una versione più recente della Tastiera FUTO e potrebbe non essere importato correttamente. Prova prima ad aggiornare la Tastiera FUTO.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Questo backup di configurazione è stato creato da una versione più recente della Tastiera ALTER e potrebbe non essere importato correttamente. Prova prima ad aggiornare la Tastiera ALTER.</string>
   <string name="settings_export_configuration_title">Backup delle impostazioni</string>
   <string name="settings_export_configuration">Esportazione della configurazione</string>
   <string name="settings_export_configuration_subtitle">Esegui il backup di tutte le tue impostazioni, degli appunti, delle parole apprese, delle risorse e altro ancora.</string>
@@ -499,10 +499,10 @@
   <string name="setup_step_1">Configurazione - Fase 1</string>
   <string name="setup_step_2">Configurazione - Fase 2</string>
   <string name="setup_step_3">Configurazione - Fase 3</string>
-  <string name="setup_welcome_text">Benvenuto alla tastiera FUTO (alpha)! Questo prodotto è ancora in fase di sviluppo e non è ancora completato. Apprezziamo la tua pazienza e la tua comprensione.\n\nPer iniziare, abilita la tastiera FUTO come metodo di input.</string>
+  <string name="setup_welcome_text">Benvenuto alla tastiera ALTER (alpha)! Questo prodotto è ancora in fase di sviluppo e non è ancora completato. Apprezziamo la tua pazienza e la tua comprensione.\n\nPer iniziare, abilita la tastiera ALTER come metodo di input.</string>
   <string name="setup_open_input_settings">Apri le impostazioni del metodo di input</string>
   <string name="setup_warning_multiple_versions">Attenzione: sembra che tu abbia installato sia la versione del Play Store che quella Standalone. Ti consigliamo di installarne solo una</string>
-  <string name="setup_active_input_method">Seleziona la tastiera FUTO come metodo di input attivo.</string>
+  <string name="setup_active_input_method">Seleziona la tastiera ALTER come metodo di input attivo.</string>
   <string name="setup_switch_input_methods">Cambia metodo di input</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Crediti</string>

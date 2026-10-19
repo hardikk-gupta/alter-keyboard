@@ -91,3 +91,15 @@ rendered previews or any phone check of the new strip, theme and settings layout
 
 Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest` passed; the launcher
 foreground was rendered to an image and checked. Not run: screenshots of the settings screens or any phone check.
+
+## PR 7: ALTER branding, FUTO kept to the required corner (Oct 19, 2026)
+
+- User-visible "FUTO Keyboard" text now says ALTER Keyboard (setup, crash, newer-version and dev-build messages, VI
+  theme name, activation announcement), in English and all translations (only those strings are touched).
+- Help no longer links to FUTO's website, docs, Discord, chat, GitHub issues or email; the attribution line is the last
+  item of Help, and it was removed from the ALTER voice page footer.
+- README opens as ALTER Keyboard; FUTO appears only in its License section and the upstream README link.
+- Kept, as the license requires: payment page and reminders, Credits, LICENSE.md, NOTICE, MODIFICATIONS.md, copyright
+  notices, the release-notes attribution line.
+
+Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest` passed (9 tests). Not run: phone check.

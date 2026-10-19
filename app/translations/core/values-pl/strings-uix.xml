@@ -139,7 +139,7 @@
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
   <string name="theme_classic_dark">Ciemny AOSP Material</string>
   <string name="theme_classic_light">Jasny AOSP Material</string>
-  <string name="theme_vi">Motyw FUTO VI</string>
+  <string name="theme_vi">Motyw VI</string>
   <string name="theme_deepsea_dark">Ciemny Głęboki Ocean</string>
   <string name="theme_deepsea_light">Jasny Głęboki Ocean</string>
   <string name="theme_emerald">Szmaragdowy</string>
@@ -258,7 +258,7 @@
   <string name="manual_update_notice_title">Powiadomienie o aktualizacjach</string>
   <string name="manual_update_notice_paragraph_1">Ta aplikacja nie łączy się z internetem i nie będzie mogła sprawdzić czy są dostępne aktualizacje. Możesz jednak sprawdzić aktualizacje ręcznie.</string>
   <string name="manual_update_notice_paragraph_2">Proszę używać sklepu F-Droid lub aplikacji Obtainium do automatycznej aktualizacji. Odwiedź stronę keyboard.futo.org, aby zobaczyć opcje pobierania.</string>
-  <string name="manual_update_notice_dev_paragraph">Używasz wersji deweloperskiej klawiatury FUTO. Odwiedź stronę keyboard.futo.org, jeśli chcesz pobrać stabilną wersję.</string>
+  <string name="manual_update_notice_dev_paragraph">Używasz wersji deweloperskiej klawiatury ALTER. Odwiedź stronę keyboard.futo.org, jeśli chcesz pobrać stabilną wersję.</string>
   <string name="manual_update_notice_visit_site_button">Odwiedź</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Odrzuć</string>
@@ -346,7 +346,7 @@
   <string name="resource_importer_select_language">Wybierz język do zaimportowania:</string>
   <string name="resource_importer_warning_language_missing">Ten plik wydaje się być przeznaczony dla języka (%1$s), który nie jest włączony w ustawieniach</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Czy na pewno chcesz zaimportować tę kopię konfiguracji? Zastąpi ona wszystkie aktualne ustawienia, osobisty słownik (systemowy), słowa dodane do słownika, wszystkie zaimportowane zasoby, itp. Jeśli nie jesteś pewny, najpierw zrób dodatkową kopię zapasową.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Ta kopia konfiguracji została utworzona przez nową wersję klawiatury FUTOA, i może nie zostać zaimportowana pomyślnie. Spróbuj najpierw zaktualizować klawiaturę FUTO.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Ta kopia konfiguracji została utworzona przez nową wersję klawiatury FUTOA, i może nie zostać zaimportowana pomyślnie. Spróbuj najpierw zaktualizować klawiaturę ALTER.</string>
   <string name="settings_export_configuration_title">Kopia ustawień</string>
   <string name="settings_export_configuration">Eksportuj konfigurację</string>
   <string name="settings_export_configuration_subtitle">Zrób kopię zapasową wszystkich ustawień, schowka, zapamiętanych słów, zasobów i więcej.</string>
@@ -543,10 +543,10 @@
   <string name="setup_step_1">Konfiguracja - Krok 1</string>
   <string name="setup_step_2">Konfiguracja - Krok 2</string>
   <string name="setup_step_3">Konfiguracja - Krok 3</string>
-  <string name="setup_welcome_text">Witamy w klawiaturze FUTO (alfa)! Ten produkt jest wciąż w fazie rozwoju i nie jest jeszcze ukończony. Doceniamy Twoją cierpliwość i wyrozumiałość.\n\nAby rozpocząć, ustaw klawiaturę FUTO jako metodę wprowadzania.</string>
+  <string name="setup_welcome_text">Witamy w klawiaturze ALTER (alfa)! Ten produkt jest wciąż w fazie rozwoju i nie jest jeszcze ukończony. Doceniamy Twoją cierpliwość i wyrozumiałość.\n\nAby rozpocząć, ustaw klawiaturę ALTER jako metodę wprowadzania.</string>
   <string name="setup_open_input_settings">Otwórz ustawienia metody wprowadzania</string>
   <string name="setup_warning_multiple_versions">Uwaga: Wygląda na to, że masz zainstalowane zarówno wersje z Play Store, jak i wersję samodzielną. Zalecamy zainstalowanie tylko jednej z nich.</string>
-  <string name="setup_active_input_method">Proszę wybrać klawiaturę FUTO jako aktywną metodę wprowadzania.</string>
+  <string name="setup_active_input_method">Proszę wybrać klawiaturę ALTER jako aktywną metodę wprowadzania.</string>
   <string name="setup_switch_input_methods">Zmień metodę wprowadzania</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Podziękowania</string>

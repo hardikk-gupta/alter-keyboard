@@ -206,8 +206,7 @@ fun AlterVoiceScreen(navController: NavHostController) {
         }
 
         Text(
-            stringResource(R.string.alter_storage_used, Formatter.formatShortFileSize(context, storage)) + "\n" +
-                stringResource(R.string.alter_about_modified),
+            stringResource(R.string.alter_storage_used, Formatter.formatShortFileSize(context, storage)),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)

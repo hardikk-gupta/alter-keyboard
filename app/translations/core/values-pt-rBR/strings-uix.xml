@@ -147,7 +147,7 @@
   <string name="theme_catppuccin_mocha">Mocha de Gatoccino</string>
   <string name="theme_classic_dark">Material AOSP Escuro</string>
   <string name="theme_classic_light">Material AOSP claro</string>
-  <string name="theme_vi">Tema FUTO VI</string>
+  <string name="theme_vi">Tema VI</string>
   <string name="theme_deepsea_dark">Oceano profundo escuro</string>
   <string name="theme_deepsea_light">Oceano profundo claro</string>
   <string name="theme_emerald">Esmeralda</string>
@@ -266,7 +266,7 @@
   <string name="manual_update_notice_title">Comunicado sobre atualizações</string>
   <string name="manual_update_notice_paragraph_1">Este app não se conecta a internet e não consegue atualizações automaticamente. Mas, você pode verificar se há alguma atualização manualmente.</string>
   <string name="manual_update_notice_paragraph_2">Por favor o F-Droid ou o Obtainium para atualizações automáticas. Visite keyboard.futo.org para opções de download.</string>
-  <string name="manual_update_notice_dev_paragraph">Você está na versão de desenvolvimento do Teclado FUTO. Visite keyboard.futo.org se você deseja baixar a versão estável.</string>
+  <string name="manual_update_notice_dev_paragraph">Você está na versão de desenvolvimento do Teclado ALTER. Visite keyboard.futo.org se você deseja baixar a versão estável.</string>
   <string name="manual_update_notice_visit_site_button">Visitar</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Entendi</string>
@@ -356,7 +356,7 @@
   <string name="resource_importer_select_language">Selecione o idioma para qual importar:</string>
   <string name="resource_importer_warning_language_missing">Esse arquivo parece ser feito para um idioma (%1$s) que não está ativado nas configurações</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Tem certeza que quer importar esse backup de configuração? Fazer isto substituirá todas as suas configurações, seu dicionario pessoal (sistema), palavras aprendidas do dicionário, qualquer recurso que foi importado, e outros. Se não tiver certeza, crie outro backup antes de fazer isto.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Esse backup de configuração foi criado por uma versão mais nova do Teclado FUTO, e pode não ser importado corretamente. Tente atualizar o Teclado FUTO primeiro.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Esse backup de configuração foi criado por uma versão mais nova do Teclado ALTER, e pode não ser importado corretamente. Tente atualizar o Teclado ALTER primeiro.</string>
   <string name="settings_export_configuration_title">Backup de configurações</string>
   <string name="settings_export_configuration">Exportar configuração</string>
   <string name="settings_export_configuration_subtitle">Exporte todas as suas configurações, palavras aprendidas, recursos e mais.</string>
@@ -595,10 +595,10 @@
   <string name="setup_step_1">Configuração - 1ª etapa</string>
   <string name="setup_step_2">Configuração - 2ª etapa</string>
   <string name="setup_step_3">Configuração - 3ª etapa</string>
-  <string name="setup_welcome_text">Boas vindas ao Teclado FUTO (alpha)! Esse produto ainda está em desenvolvimento e não está concluído, apreciamos a sua paciência e seu entendimento.\n\nPara iniciar, ative o Teclado FUTO como um método de entrada.</string>
+  <string name="setup_welcome_text">Boas vindas ao Teclado ALTER (alpha)! Esse produto ainda está em desenvolvimento e não está concluído, apreciamos a sua paciência e seu entendimento.\n\nPara iniciar, ative o Teclado ALTER como um método de entrada.</string>
   <string name="setup_open_input_settings">Abrir as configurações de método de entrada</string>
   <string name="setup_warning_multiple_versions">Alerta: Você parece ter tanto a versão da Play Store e a versão independente instaladas, nós recomendamos instalar só uma</string>
-  <string name="setup_active_input_method">Por favor selecione o Teclado FUTO como o seu método de entrada ativo.</string>
+  <string name="setup_active_input_method">Por favor selecione o Teclado ALTER como o seu método de entrada ativo.</string>
   <string name="setup_switch_input_methods">Alterar métodos de entrada</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Créditos</string>

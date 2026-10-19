@@ -138,7 +138,7 @@
   <string name="theme_catppuccin_mocha">キャットプチノ・モカ</string>
   <string name="theme_classic_dark">AOSP マテリアダーク</string>
   <string name="theme_classic_light">AOSP マテリアライト</string>
-  <string name="theme_vi">FUTO VI テーマ</string>
+  <string name="theme_vi">VI テーマ</string>
   <string name="theme_deepsea_dark">ディープシーダーク</string>
   <string name="theme_deepsea_light">ディープシーライト</string>
   <string name="theme_emerald">エメラルド</string>
@@ -255,7 +255,7 @@
   <string name="manual_update_notice_title">アップデート通知</string>
   <string name="manual_update_notice_paragraph_1">このアプリはインターネットに接続されておらず、自動でアップデートを確認することができません。しかし、手動でアップデートを確認することは可能です。</string>
   <string name="manual_update_notice_paragraph_2">自動アップデートのためには F-Droid または Obtainium を使用してください。ダウンロードオプションについては、keyboard.futo.org をご覧ください。</string>
-  <string name="manual_update_notice_dev_paragraph">現在、FUTO キーボードの開発版ビルドを使用しています。安定版をダウンロードするには、keyboard.futo.org をご覧ください。</string>
+  <string name="manual_update_notice_dev_paragraph">現在、ALTER キーボードの開発版ビルドを使用しています。安定版をダウンロードするには、keyboard.futo.org をご覧ください。</string>
   <string name="manual_update_notice_visit_site_button">アクセス</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">無視</string>
@@ -343,7 +343,7 @@
   <string name="resource_importer_select_language">インポートする言語を選択：</string>
   <string name="resource_importer_warning_language_missing">このファイルは、設定で有効になっていない言語 (%1$s) 用のようです。</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">この設定バックアップをインポートしてもよろしいですか？これにより、すべての設定、システム全体の個人辞書、学習した辞書の単語、インポートしたリソースなどが上書きされます。念のため、事前に別のバックアップを作成しておくことをお勧めします。</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">この設定バックアップは新しいバージョンの FUTO キーボードで作成されたため、正常にインポートできない可能性があります。まず FUTO キーボードをアップデートしてください。</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">この設定バックアップは新しいバージョンの ALTER キーボードで作成されたため、正常にインポートできない可能性があります。まず ALTER キーボードをアップデートしてください。</string>
   <string name="settings_export_configuration_title">設定のバックアップ</string>
   <string name="settings_export_configuration">設定をエクスポート</string>
   <string name="settings_export_configuration_subtitle">設定、クリップボード、学習した単語、リソースなど、すべてをバックアップしてください。</string>
@@ -519,10 +519,10 @@
   <string name="setup_step_1">セットアップ - ステップ 1</string>
   <string name="setup_step_2">セットアップ - ステップ 2</string>
   <string name="setup_step_3">セットアップ - ステップ 3</string>
-  <string name="setup_welcome_text">FUTO キーボード（アルファ版）へようこそ！この製品はまだ開発中で未完成です。皆様のご理解とご協力に感謝いたします。\n\n使い始めるには、FUTOキーボードを入力方法で有効にしてください。</string>
+  <string name="setup_welcome_text">ALTER キーボード（アルファ版）へようこそ！この製品はまだ開発中で未完成です。皆様のご理解とご協力に感謝いたします。\n\n使い始めるには、FUTOキーボードを入力方法で有効にしてください。</string>
   <string name="setup_open_input_settings">入力方法の設定を開く</string>
   <string name="setup_warning_multiple_versions">警告： Play ストア版とスタンドアロン版の両方がインストールされているようです。どちらか一方のインストールのみを推奨します。</string>
-  <string name="setup_active_input_method">入力方法に FUTO キーボードを選択してください。</string>
+  <string name="setup_active_input_method">入力方法に ALTER キーボードを選択してください。</string>
   <string name="setup_switch_input_methods">入力方法を切り替える</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">クレジット</string>
