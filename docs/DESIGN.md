@@ -1,10 +1,34 @@
 # ALTER Keyboard design
 
-## Decision: FUTO's keyboard look stays
+## Decision: FUTO's keyboard, ALTER's skin
 
-ALTER Keyboard looks and works exactly like FUTO Keyboard. The handoff's restyle step (ALTER theme as default,
-Lucide toolbar icons, restyled settings) was dropped at the owner's request (Oct 19, 2026). FUTO's themes, theme
-picker, keys, toolbar icons and settings are unchanged. Only ALTER's voice surfaces use ALTER's design.
+ALTER Keyboard works exactly like FUTO Keyboard: FUTO's themes and theme picker, settings, toolbar actions (undo,
+redo, clipboard, emoji, text editing) and layouts stay. Since Oct 19, 2026 the default skin is the **ALTER** theme
+(`theme/presets/AlterTheme.kt`): PitchBlack background, SlateGrayCard keys, RaisedSurface pressed and function keys,
+LightText labels, MutedText hints and AlterYellow as the one accent (enter key, highlights). FUTO's other themes stay
+selectable. ALTER's voice surfaces use ALTER's design below.
+
+## Launcher icon
+
+`res/mipmap-anydpi-v26/ic_launcher*.xml` (adaptive; minSdk 26, so no bitmap icons are used): a light `#ECECEC`
+keyboard outline with 11 keys and an AlterYellow `#FFBD00` spacebar (`drawable/ic_alter_launcher_foreground.xml`) on
+ALTER's `#121212` launcher background, plus a white monochrome layer for Android 13 themed icons. The setup screen shows
+the same mark in its own colours; the training notification uses the monochrome layer. FUTO's icon is not used.
+
+## App screens (settings, setup, payment)
+
+The app's own screens follow the ALTER app's settings design (DESIGN_SYSTEM.md in ALTER-AI-code-base, "App
+redesign, pass 1"), whatever keyboard theme is picked: `UixThemeAuto` always applies the ALTER colours, and
+`uix/settings/AlterStyle.kt` holds the shared pieces.
+
+- Page heading 26/34sp semibold, one Lucide arrow-left back icon immediately left of it.
+- Each menu's settings sit in one grouped section: an optional 12sp label above one borderless 20dp SlateGrayCard
+  surface with 16dp page gutters.
+- Rows: 16/24sp title, concise 12/18sp secondary line; navigation rows lead with a 36dp tile (6% foreground fill,
+  10dp corners, 20dp icon) and end with a Lucide chevron-right.
+- Tips: a neutral RaisedSurface note with 16dp corners and 14sp muted text; warnings keep the error colours.
+- Yellow means selection, activity and the brand; download/use controls are neutral outlined buttons.
+- FUTO's payment page keeps all its content and actions; only the shared styling applies to it.
 
 ## ALTER voice surfaces
 
@@ -20,11 +44,12 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 | ErrorRed | `#EF4444` | Voice error triangle only |
 | Orb ink | `#F5F5F5` | Thinking orb and monochrome logo |
 
-- Pill: 40 dp tall, 12 dp corners, no outline, no glass, blur, gradients or multicolour effects. Touch targets 48 dp.
+- Pill: 12 dp corners, SlateGrayCard body inside a thin (1 dp) AlterYellow boundary at 60% (25% when disabled), the
+  ALTER mark of every voice surface. No glass, blur or gradients. Touch targets 48 dp.
 - Idle: the flat-eyes ALTER mark (`ic_alter_ai_doodle_closed`) tinted `#F5F5F5`, plus the Lucide mic.
 - Listening: one AlterYellow line driven by the real microphone RMS, flat in silence (ALTER's `voiceWavePoints`).
 - Thinking: the AICSS Orbs S1 lattice (3×3 dots, 6-unit pitch on a 28-unit stage at 20 dp, 1.7 s cycle, centre leads
-  by 180 ms, resting ink 20% on dark).
+  by 180 ms, resting ink 20% on dark), in white and yellow: each dot moves from `#F5F5F5` to AlterYellow as it lights.
 - Error: the red Lucide triangle-alert, no text; TalkBack reads the error and "Tap to try again".
 - Animations off: the wave and orb show still frames (the orb lights only its centre dot).
 
@@ -33,8 +58,11 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 - **Start mode** (Settings → ALTER voice): Full keyboard (default) or Pill. Applied each time a text field gets focus.
 - **Pill mode:** 56 dp PitchBlack bar. Left: FUTO's globe (input-method picker). Centre: the pill. Right: Lucide
   keyboard button back to the full keyboard. No other controls.
-- **Full keyboard:** FUTO's keyboard as built. The mic action opens a 56 dp strip above the keys with the pill states
-  while the keys stay visible. A pinned "Minimize" action (FUTO's chevron-down icon) switches to pill mode.
+- **Full keyboard:** FUTO's keyboard with the ALTER skin. The voice action uses ALTER's flat-eye mark
+  (`ic_alter_ai_doodle_closed`), tinted by the selected keyboard theme. It adds no layer: the suggestions in the action
+  bar row are replaced by ALTER's voice strip (a cancel ✕ and the bounded pill with the wave, orb or error) while the
+  expand button, pinned actions and keys stay where they are. Tapping the flat-eye action again acts like tapping the
+  strip. A pinned "Minimize" action (FUTO's chevron-down icon) switches to pill mode.
 - **Pill taps:** idle → record; listening → finish; thinking → cancel; error → retry the same recording held in memory
   (no new mic session), or record again when nothing was captured.
 - Text goes in through `commitText` at the cursor, replacing any selection, and is never sent.

@@ -3,17 +3,16 @@ package org.futo.inputmethod.latin.uix.actions
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.core.content.ContextCompat
+import com.aistudio.altermind.voice.R as VoiceR
 import com.aistudio.altermind.voice.DictationController
 import com.aistudio.altermind.voice.SpeechModels
 import com.aistudio.altermind.voice.ui.AlterVoicePill
@@ -24,13 +23,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.futo.inputmethod.latin.R
 import org.futo.inputmethod.latin.uix.Action
-import org.futo.inputmethod.latin.uix.ActionWindow
 import org.futo.inputmethod.latin.uix.ALTER_END_ON_SILENCE
-import org.futo.inputmethod.latin.uix.CloseResult
 import org.futo.inputmethod.latin.uix.KeyboardManagerForAction
 import org.futo.inputmethod.latin.uix.UixActionKeyboardManager
 import org.futo.inputmethod.latin.uix.getSetting
-import org.futo.inputmethod.latin.uix.isAlterSensitiveField
 import org.futo.inputmethod.latin.uix.settings.SettingsActivity
 import org.futo.inputmethod.latin.uix.utils.ModelOutputSanitizer
 
@@ -89,7 +85,7 @@ class AlterDictationSession(
     }
 
     @Composable
-    fun Pill(disabled: Boolean = false) {
+    fun Pill(disabled: Boolean = false, modifier: Modifier = Modifier.height(40.dp).width(176.dp)) {
         val recording by controller.recording.collectAsState()
         val processing by controller.processing.collectAsState()
         val error by controller.error.collectAsState()
@@ -108,7 +104,7 @@ class AlterDictationSession(
             PillState.Error -> error + " " + stringResource(R.string.alter_pill_error_retry)
             PillState.Disabled -> stringResource(R.string.alter_pill_disabled)
         }
-        AlterVoicePill(state, level, onTap = { tap() }, description = description)
+        AlterVoicePill(state, level, onTap = { tap() }, modifier = modifier, description = description)
     }
 }
 
@@ -119,48 +115,17 @@ fun KeyboardManagerForAction.commitDictation(text: String) {
     announce(text)
 }
 
-/** In the full keyboard, the mic turns a strip above the keys into the pill states while the keys stay visible. */
-private class AlterVoiceWindow(val manager: KeyboardManagerForAction) : ActionWindow() {
-    private val disabled = (manager as? UixActionKeyboardManager)?.latinIME?.currentInputEditorInfo.isAlterSensitiveField()
-    private var closed = false
-    private val session = AlterDictationSession(manager.getContext(), manager.getLifecycleScope()) { text ->
-        if (closed) return@AlterDictationSession
-        manager.commitDictation(text)
-        manager.closeActionWindow()
-    }
-
-    init {
-        if (!disabled) session.start()
-    }
-
-    override val onlyShowAboveKeyboard: Boolean get() = true
-    override val positionIsUserManagable: Boolean get() = false
-    override val fixedWindowHeight: Dp get() = 56.dp
-
-    @Composable
-    override fun windowName(): String = stringResource(R.string.action_voice_input_title)
-
-    @Composable
-    override fun WindowContents(keyboardShown: Boolean) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            session.Pill(disabled = disabled)
-        }
-    }
-
-    override fun close(): CloseResult {
-        closed = true
-        session.close()
-        return CloseResult.Default
-    }
-}
-
+/**
+ * In the full keyboard the mic turns the suggestion row into ALTER's voice strip; the keys stay as they are.
+ * Tapping the mic again acts like tapping the strip (finish, cancel or retry).
+ */
 val VoiceInputAction = Action(
-    icon = R.drawable.mic_fill,
+    icon = VoiceR.drawable.ic_alter_ai_doodle_closed,
     name = R.string.action_voice_input_title,
-    simplePressImpl = null,
-    keepScreenAwake = true,
-    persistentState = null,
-    windowImpl = { manager, _ -> AlterVoiceWindow(manager) }
+    simplePressImpl = { manager, _ ->
+        (manager as? UixActionKeyboardManager)?.uixManager?.toggleInlineVoice()
+    },
+    windowImpl = null
 )
 
 /** Switches the full keyboard to ALTER's pill bar. */

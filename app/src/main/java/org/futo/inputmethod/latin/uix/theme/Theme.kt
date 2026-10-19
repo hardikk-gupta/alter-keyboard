@@ -111,15 +111,13 @@ fun ThemeOption?.ensureAvailable(context: Context): ThemeOption? {
     }
 }
 
+/**
+ * ALTER Keyboard: the app's own screens (settings, setup, payment) always use ALTER's look, like the ALTER app.
+ * The keyboard theme the user picks applies to the keyboard itself (LatinIME), not to these screens.
+ */
 @Composable
 fun UixThemeAuto(content: @Composable () -> Unit) {
     val context = LocalContext.current
-
-    val themeIdx = useDataStoreValue(THEME_KEY)
-
-    val theme: ThemeOption = getThemeOption(context, themeIdx).orDefault(context)
-
-    val colors = remember(theme.key) { theme.obtainColors(context) }
-
+    val colors = remember { org.futo.inputmethod.latin.uix.theme.presets.AlterTheme.obtainColors(context) }
     UixThemeWrapper(colorScheme = colors, content)
 }

@@ -118,14 +118,15 @@ fun ScreenTitle(title: String, showBack: Boolean = false, navController: NavHost
     } else {
         Modifier.fillMaxWidth()
     }
+    // ALTER Keyboard: ALTER's page heading, one back icon immediately left of a 26sp semibold title.
     Row(modifier = rowModifier) {
         Spacer(modifier = Modifier.width(16.dp))
 
         if(showBack) {
-            Icon(Icons.Default.ArrowBack, contentDescription = null, modifier = Modifier.align(CenterVertically))
-            Spacer(modifier = Modifier.width(18.dp))
+            Icon(com.aistudio.altermind.voice.ui.LucidePill.ArrowLeft, contentDescription = null, modifier = Modifier.align(CenterVertically).size(24.dp))
+            Spacer(modifier = Modifier.width(12.dp))
         }
-        Text(title, style = Typography.Heading.Medium, modifier = Modifier
+        Text(title, style = AlterType.PageHeading, modifier = Modifier
             .align(CenterVertically)
             .padding(0.dp, 16.dp))
     }
@@ -147,16 +148,17 @@ fun ScreenTitleWithIcon(title: String, painter: Painter) {
 @Composable
 @Preview
 fun Tip(text: String = "This is an example tip") {
+    // ALTER Keyboard: neutral 16dp note, supporting text in ALTER's muted colour.
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier
+        color = com.aistudio.altermind.voice.ui.AlterColors.RaisedSurface, modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp), shape = RoundedCornerShape(4.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp), shape = RoundedCornerShape(16.dp)
     ) {
         Text(
             text,
-            modifier = Modifier.padding(8.dp),
-            style = Typography.Body.RegularMl,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            modifier = Modifier.padding(16.dp),
+            style = AlterType.Supporting,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -167,7 +169,7 @@ fun WarningTip(text: String = "This is an example tip") {
     Surface(
         color = MaterialTheme.colorScheme.errorContainer, modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp), shape = RoundedCornerShape(4.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp), shape = RoundedCornerShape(16.dp)
     ) {
 
         Text(
@@ -284,9 +286,10 @@ fun SettingItem(
                     )
             ) {
                 SpacedColumn(4.dp) {
+                    // ALTER Keyboard: ALTER's 16sp row title and concise 12sp secondary line.
                     Text(
                         title,
-                        style = Typography.Heading.RegularMl,
+                        style = AlterType.RowTitle,
                         color = textColor,
                         modifier = Modifier.heightIn(min = 24.dp)
                     )
@@ -294,7 +297,7 @@ fun SettingItem(
                     if (subtitle != null) {
                         Text(
                             subtitle,
-                            style = Typography.SmallMl,
+                            style = AlterType.Meta,
                             color = subTextColor
                         )
                     } else if (subcontent != null) {
@@ -675,46 +678,15 @@ fun NavigationItem(title: String, style: NavigationItemStyle, navigate: () -> Un
         subtitle = subtitle,
         onClick = navigate,
         compact = compact,
-        icon = {
-            icon?.let {
-                val circleColor = when(style) {
-                    NavigationItemStyle.HomePrimary -> MaterialTheme.colorScheme.primaryContainer
-                    NavigationItemStyle.HomeSecondary -> MaterialTheme.colorScheme.secondaryContainer
-                    NavigationItemStyle.HomeTertiary -> MaterialTheme.colorScheme.tertiaryContainer
-
-                    NavigationItemStyle.MiscNoArrow,
-                    NavigationItemStyle.Misc,
-                    NavigationItemStyle.ExternalLink,
-                    NavigationItemStyle.Mail -> Color.Transparent
-                }
-
-                val iconColor = when(style) {
-                    NavigationItemStyle.HomePrimary -> MaterialTheme.colorScheme.onPrimaryContainer
-                    NavigationItemStyle.HomeSecondary -> MaterialTheme.colorScheme.onSecondaryContainer
-                    NavigationItemStyle.HomeTertiary -> MaterialTheme.colorScheme.onTertiaryContainer
-
-                    NavigationItemStyle.MiscNoArrow,
-                    NavigationItemStyle.Mail,
-                    NavigationItemStyle.ExternalLink,
-                    NavigationItemStyle.Misc -> LocalContentColor.current.copy(alpha = 0.75f)
-                }
-
-                Canvas(modifier = Modifier.size(48.dp)) {
-                    drawCircle(circleColor, this.size.maxDimension / 2.4f)
-                    translate(
-                        left = this.size.width / 2.0f - icon.intrinsicSize.width / 2.0f,
-                        top = this.size.height / 2.0f - icon.intrinsicSize.height / 2.0f
-                    ) {
-                        with(icon) {
-                            draw(icon.intrinsicSize, colorFilter = ColorFilter.tint(iconColor))
-                        }
-                    }
-                }
-            }
-        }
+        // ALTER Keyboard: ALTER's 36dp tinted icon tile instead of FUTO's coloured circles.
+        icon = icon?.let { { AlterIconTile(it) } }
     ) {
         when(style) {
-            NavigationItemStyle.Misc -> Icon(Icons.Default.ArrowForward, contentDescription = null)
+            NavigationItemStyle.Misc,
+            NavigationItemStyle.HomePrimary,
+            NavigationItemStyle.HomeSecondary,
+            NavigationItemStyle.HomeTertiary -> Icon(com.aistudio.altermind.voice.ui.LucidePill.ChevronRight, contentDescription = null,
+                modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
             NavigationItemStyle.Mail -> Icon(Icons.Default.Send, contentDescription = null)
             NavigationItemStyle.ExternalLink -> Icon(painterResource(R.drawable.external_link), contentDescription = null)
             else -> {}

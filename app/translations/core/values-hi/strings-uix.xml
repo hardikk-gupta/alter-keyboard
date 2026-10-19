@@ -110,7 +110,7 @@
     <string name="theme_amoled_dark">AMOLED डार्क पर्पल</string>
     <string name="theme_classic_dark">AOSP मैटेरियल डार्क</string>
     <string name="theme_classic_light">AOSP मैटेरियल लाइट</string>
-    <string name="theme_vi">FUTO VI थीम</string>
+    <string name="theme_vi">VI थीम</string>
     <string name="theme_deepsea_dark">डीप सी डार्क</string>
     <string name="theme_deepsea_light">डीप सी लाइट</string>
     <string name="theme_emerald">एमराल्ड</string>
@@ -198,7 +198,7 @@
     <string name="manual_update_notice_title">अपडेट नोटिस</string>
     <string name="manual_update_notice_paragraph_1">यह ऐप इंटरनेट से कनेक्ट नहीं होता है और यह स्वचालित अपडेट की जांच नहीं कर सकेगा। हालांकि, आप मैन्युअल रूप से अपडेट की जांच कर सकते हैं।</string>
     <string name="manual_update_notice_paragraph_2">कृपया स्वचालित अपडेट के लिए F-Droid या Obtainium का उपयोग करें। डाउनलोड विकल्पों के लिए keyboard.futo.org पर जाएँ।</string>
-    <string name="manual_update_notice_dev_paragraph">आप FUTO कीबोर्ड के विकास निर्माण पर हैं। यदि आप स्थिर निर्माण डाउनलोड करना चाहते हैं, तो keyboard.futo.org पर जाएँ।</string>
+    <string name="manual_update_notice_dev_paragraph">आप ALTER कीबोर्ड के विकास निर्माण पर हैं। यदि आप स्थिर निर्माण डाउनलोड करना चाहते हैं, तो keyboard.futo.org पर जाएँ।</string>
     <string name="manual_update_notice_visit_site_button">जाएँ</string>
     <!-- इसे "समझा" आदि के रूप में अनुवादित किया जा सकता है -->
     <string name="manual_update_notice_dismiss_notice_button">अस्वीकृत करें</string>
@@ -415,10 +415,10 @@
     <string name="setup_step_1">सेटअप - चरण 1</string>
     <string name="setup_step_2">सेटअप - चरण 2</string>
     <string name="setup_step_3">सेटअप - चरण 3</string>
-    <string name="setup_welcome_text">FUTO कीबोर्ड (अल्फा) में आपका स्वागत है! यह उत्पाद अभी भी विकासाधीन है और अभी पूरा नहीं हुआ है, हम आपकी धैर्य और समझ की सराहना करते हैं।\n\nशुरू करने के लिए, FUTO कीबोर्ड को एक इनपुट विधि के रूप में सक्षम करें।</string>
+    <string name="setup_welcome_text">ALTER कीबोर्ड (अल्फा) में आपका स्वागत है! यह उत्पाद अभी भी विकासाधीन है और अभी पूरा नहीं हुआ है, हम आपकी धैर्य और समझ की सराहना करते हैं।\n\nशुरू करने के लिए, ALTER कीबोर्ड को एक इनपुट विधि के रूप में सक्षम करें।</string>
     <string name="setup_open_input_settings">इनपुट विधि सेटिंग्स खोलें</string>
     <string name="setup_warning_multiple_versions">चेतावनी: ऐसा लगता है कि आपके पास Play Store और स्टैंडअलोन दोनों संस्करण स्थापित हैं, हम केवल एक को स्थापित करने की सिफारिश करते हैं</string>
-    <string name="setup_active_input_method">कृपया FUTO कीबोर्ड को अपनी सक्रिय इनपुट विधि के रूप में चुनें।</string>
+    <string name="setup_active_input_method">कृपया ALTER कीबोर्ड को अपनी सक्रिय इनपुट विधि के रूप में चुनें।</string>
     <string name="setup_switch_input_methods">इनपुट विधियाँ बदलें</string>
 
 </resources>
