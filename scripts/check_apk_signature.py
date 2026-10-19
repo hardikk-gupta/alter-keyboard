@@ -2,7 +2,7 @@
 """Check that an ALTER Keyboard APK is signed by the shared ALTER key (scripts/signing_certificate.sha1).
 
 Usage: scripts/check_apk_signature.py [path/to.apk]
-Defaults to build/outputs/apk/stable/debug/alter-keyboard-stable-debug.apk. Needs ANDROID_HOME with build-tools.
+Defaults to app/build/outputs/apk/stable/debug/app-stable-debug.apk. Needs ANDROID_HOME with build-tools.
 """
 import os
 from pathlib import Path
@@ -30,7 +30,7 @@ def signing_certificate(signer, apk):
 
 
 def main():
-    apk = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'build/outputs/apk/stable/debug/alter-keyboard-stable-debug.apk'
+    apk = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'app/build/outputs/apk/stable/debug/app-stable-debug.apk'
     expected = (ROOT / 'scripts/signing_certificate.sha1').read_text().strip()
     actual = signing_certificate(find_apksigner(), apk)
     if actual != expected:

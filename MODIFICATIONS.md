@@ -27,6 +27,14 @@ non-commercial use, shared only for free. The original AOSP code remains under A
 - **Settings:** an "ALTER voice" page replaces the voice input entry on the settings home screen. The help page and
   the ALTER voice page carry the line "ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc."
 
+- **Project layout (Google AI Studio):** the repo uses AI Studio's Android layout: `metadata.json`,
+  `settings.gradle.kts`, a root `build.gradle.kts` and the keyboard as the `app/` module (`app/build.gradle.kts`,
+  converted from FUTO's Groovy `build.gradle`; FUTO's translation filter is kept as `app/translations.gradle`).
+  FUTO's sources moved under `app/` unchanged (`app/java`, `app/common`, `app/native`, `app/tools`, `app/translations`,
+  `app/libs`). FUTO's seven git submodules are included as ordinary files, except FUTO's Whisper model. Only the
+  `stable` flavor is kept; the `unstable` and `playstore` flavors, FUTO's instrumented tests (`tests/`), the source
+  word lists (`dictionaries/`), the dictionary tools and FUTO's CI/upload scripts were removed from this repo.
+
 ## What was not changed
 
 FUTO's keyboard look and behaviour are kept as built: themes, layouts, typing, suggestions, swipe, clipboard, emoji,

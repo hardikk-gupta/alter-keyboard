@@ -1,0 +1,6 @@
+{
+  "name": "ALTER Keyboard",
+  "description": "ALTER Keyboard: FUTO typing keyboard with ALTER voice pack and design.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

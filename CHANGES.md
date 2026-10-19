@@ -24,3 +24,17 @@ Checks run (cloud session, no phone):
 - `scripts/check_apk_signature.py`: **failed as expected**: the shared key was not available in this environment, so
   the APK was signed with FUTO's test key (`5B:36:8C:…:0F:E5`). Rebuild with `ALTER_SIGNING_KEYSTORE_B64` set.
 - Not run: rendered preview images (Roborazzi), FUTO's instrumented tests, any phone acceptance check.
+
+## PR 1, follow-up: Google AI Studio layout (Oct 19, 2026)
+
+AI Studio reported "internal error" when importing the branch. It must stay an AI Studio project, so the repo now
+uses ALTER's AI Studio layout (`metadata.json`, `settings.gradle.kts`, root `build.gradle.kts`, `app/` module) and
+has no submodules: FUTO's submodule contents are ordinary files. Unused parts were removed (unstable/playstore
+flavors, FUTO instrumented tests, word lists, dictionary tools, FUTO CI scripts). Kotlin DSL for `app` and
+`alter-voice`; FUTO's `voiceinput-shared` keeps its Groovy build file.
+
+Checks run (cloud session, no phone, no AI Studio access):
+
+- `./gradlew assembleStableDebug :alter-voice:testDebugUnitTest`: passed; 9 tests passed.
+- The new APK holds exactly the same 1,876 non-code files as the APK before the move, same package and resources.
+- Not verified: the AI Studio import itself.

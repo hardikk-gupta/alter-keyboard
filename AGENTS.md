@@ -13,6 +13,13 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 - Personal and non-commercial only, shared for free. Never sell it or put it on a paid store listing.
 - Every model or library added keeps its own license file under `licenses/`.
 
+## Project layout (must stay a Google AI Studio project)
+
+- Keep AI Studio's layout: `metadata.json`, `settings.gradle.kts`, root `build.gradle.kts`, the keyboard in `app/`
+  (`app/build.gradle.kts`), plus the `alter-voice` and `voiceinput-shared` modules. Do not remove `metadata.json`.
+- No git submodules and no Git LFS: every file must be an ordinary file in this repo, each under 100 MB.
+- Build with `./gradlew assembleStableDebug`; the APK is `app/build/outputs/apk/stable/debug/app-stable-debug.apk`.
+
 ## Identity, signing and updates
 
 - applicationId `com.aistudio.altermind.keyboard`; Java/Kotlin package stays `org.futo.inputmethod.latin`.
