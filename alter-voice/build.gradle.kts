@@ -11,16 +11,12 @@ plugins {
 android {
   namespace = "com.aistudio.altermind.voice"
   compileSdk = 35
-  ndkVersion = "28.2.13676358"
 
+  // libalter_whisper.so is prebuilt into src/main/jniLibs from native/ (scripts/build_native_libs.sh):
+  // Google AI Studio has no NDK or CMake.
   defaultConfig {
-    minSdk = 24
-    externalNativeBuild { cmake { arguments("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON") } }
+    minSdk = 26
     consumerProguardFiles("consumer-rules.pro")
-  }
-
-  externalNativeBuild {
-    cmake { path = file("src/main/cpp/CMakeLists.txt"); version = "3.22.1" }
   }
 
   compileOptions {

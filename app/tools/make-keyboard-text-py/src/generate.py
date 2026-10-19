@@ -123,5 +123,5 @@ if __name__ == "__main__":
 
     code = generate_templated_code(names, texts_by_locale)
 
-    with open("../../java/src/org/futo/inputmethod/keyboard/internal/KeyboardTextsTable.java", "w") as f:
+    with open("../../src/main/java/org/futo/inputmethod/keyboard/internal/KeyboardTextsTable.java", "w") as f:
         f.write(code)

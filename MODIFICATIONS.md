@@ -35,6 +35,14 @@ non-commercial use, shared only for free. The original AOSP code remains under A
   `stable` flavor is kept; the `unstable` and `playstore` flavors, FUTO's instrumented tests (`tests/`), the source
   word lists (`dictionaries/`), the dictionary tools and FUTO's CI/upload scripts were removed from this repo.
 
+- **Google AI Studio build rules:** sources use the standard `app/src/main` / `app/src/stable` layout (FUTO's
+  `java/src` and `common/src` merged into `app/src/main/java`, unchanged). AI Studio has no NDK or CMake, so FUTO's
+  native typing engine (`libjni_latinime.so`) and ALTER's whisper.cpp bridge (`libalter_whisper.so`) are built from
+  their unchanged sources by `scripts/build_native_libs.sh` and committed as prebuilt libraries for arm64-v8a and
+  x86_64 only. The generated `KeyboardTextsTable.java` is committed so builds need no Python. minSdk is 26 (Android
+  8.0). FUTO's committed test signing key, its Play Store icon, `.gitlab-ci.yml` and `.clang-tidy` were removed.
+  Debug and release builds use AI Studio's signing structure; release builds are no longer minified.
+
 ## What was not changed
 
 FUTO's keyboard look and behaviour are kept as built: themes, layouts, typing, suggestions, swipe, clipboard, emoji,
