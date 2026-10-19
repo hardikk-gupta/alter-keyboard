@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: build-apk-${{ github.ref }}
@@ -67,6 +68,7 @@ jobs:
         with:
           name: ALTER-Keyboard-${{ env.VERSION }}
           path: ALTER-Keyboard-*.apk
+          retention-days: 3
 
       - name: Publish release
         if: github.event_name != 'pull_request'
@@ -81,3 +83,20 @@ jobs:
             Install: open this page on your phone, tap the .apk, allow installing from this source,
             then enable "ALTER Keyboard" in Settings -> System -> Keyboard.
             ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc. Personal, non-commercial use.
+
+      # Only the newest APK is kept: delete every older build-N release with its tag, and every APK artifact from
+      # earlier runs, so the repo does not pile up ~118 MB per build.
+      - name: Remove older releases and artifacts
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEEP: build-${{ github.run_number }}
+        run: |
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 1000 --json tagName --jq '.[].tagName' \
+            | grep '^build-' | grep -vx "$KEEP" | while read -r tag; do
+              echo "Deleting release $tag"; gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
+            done
+          gh api --paginate "repos/$GITHUB_REPOSITORY/actions/artifacts" \
+            --jq ".artifacts[] | select(.workflow_run.id != $GITHUB_RUN_ID) | .id" | while read -r id; do
+              echo "Deleting artifact $id"; gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/artifacts/$id"
+            done
