@@ -134,13 +134,16 @@ private fun readVoiceStatus(context: android.content.Context): AlterVoiceStatus 
         if (ready) name else null)
 }
 
-/** Re-read on every resume (permission granted in Android settings) and whenever a download changes state. */
+/**
+ * Re-read on every resume (permission granted in Android settings), whenever a download changes state, and whenever
+ * [selection] changes (pass the selected model id where the screen can change it).
+ */
 @Composable
-fun rememberAlterVoiceStatus(): AlterVoiceStatus {
+fun rememberAlterVoiceStatus(selection: Any? = null): AlterVoiceStatus {
     val context = LocalContext.current
     val downloads by ModelDownloads.states.collectAsState()
     var status by remember { mutableStateOf(readVoiceStatus(context)) }
-    LaunchedEffect(downloads) { status = readVoiceStatus(context) }
+    LaunchedEffect(downloads, selection) { status = readVoiceStatus(context) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) status = readVoiceStatus(context) }
@@ -183,7 +186,6 @@ fun AlterVoiceScreen(navController: NavHostController) {
     val choices = remember { speechChoices(models.catalog) }
     val cleanup = remember { VoiceSettings.cleanupSpec(context) }
     val downloads by ModelDownloads.states.collectAsState()
-    val status = rememberAlterVoiceStatus()
 
     // Re-read installed state and storage after downloads finish or models change.
     var refresh by remember { mutableIntStateOf(0) }
@@ -191,6 +193,7 @@ fun AlterVoiceScreen(navController: NavHostController) {
     var selected by remember(refresh) { mutableStateOf(models.selected) }
     var storage by remember { mutableLongStateOf(0L) }
     LaunchedEffect(refresh) { storage = VoiceSettings.storageBytes(context) }
+    val status = rememberAlterVoiceStatus(selected)
     var error by remember { mutableStateOf<String?>(null) }
     var language by remember { mutableStateOf(VoiceSettings.language(context)) }
 
@@ -199,9 +202,11 @@ fun AlterVoiceScreen(navController: NavHostController) {
         selected = models.selected
     }
 
-    // A finished download is used straight away when no speech model is chosen yet: no extra "Use" tap.
+    // A finished download is used straight away when no usable speech model is chosen (none yet, or the saved one
+    // was removed or disabled): no extra "Use" tap.
     LaunchedEffect(refresh) {
-        if (selected == null) choices.firstOrNull { it.installed(models.store) }?.let { use(it.id) }
+        if (runCatching { models.checkInstalled() }.isFailure)
+            choices.firstOrNull { it.installed(models.store) }?.let { use(it.id) }
     }
 
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { refresh++ }
