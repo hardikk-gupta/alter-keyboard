@@ -46,68 +46,76 @@ import org.futo.inputmethod.latin.uix.theme.Typography
 import org.futo.inputmethod.updates.ConditionalMigrateUpdateNotice
 import org.futo.inputmethod.updates.openManualUpdateCheck
 
-val HomeScreenLite = UserSettingsMenu(
-    title = R.string.settings_home_title,
-    navPath = "home", registerNavPath = false,
-    settings = listOf(
-        userSettingNavigationItem(
-            title = R.string.settings_check_for_updates_manually,
-            style = NavigationItemStyle.Misc,
-            navigate = { nav -> nav.context.openManualUpdateCheck() }
-        ),
+// ALTER Keyboard: the settings home is grouped by what people come to do (UI/UX review: progressive disclosure,
+// visual hierarchy, clear sections). Voice first, with its live setup status; then typing, look & feel, and more.
+// FUTO's "check for updates" item is not shown: ALTER builds come from the repo's Releases page.
+val HomeVoiceSettings = listOf(
+    UserSetting(
+        name = R.string.alter_voice_settings_title,
+        subtitle = R.string.alter_voice_settings_subtitle
+    ) {
+        val navController = LocalNavController.current
+        val status = rememberAlterVoiceStatus()
+        NavigationItem(
+            title = stringResource(R.string.alter_voice_settings_title),
+            style = NavigationItemStyle.HomePrimary,
+            subtitle = status.summary(),
+            navigate = { navController!!.navigate(org.futo.inputmethod.latin.uix.actions.AlterVoiceNavPath) },
+            icon = painterResource(R.drawable.mic_fill)
+        )
+    },
+)
 
+val HomeTypingSettings = listOf(
         userSettingNavigationItem(
             title = R.string.language_settings_title,
             style = NavigationItemStyle.HomePrimary,
             navigateTo = "languages",
             icon = R.drawable.globe
         ),
-
         userSettingNavigationItem(
             title = R.string.settings_keyboard_typing_title,
             style = NavigationItemStyle.HomeSecondary,
             navigateTo = "keyboardAndTyping",
             icon = R.drawable.keyboard
         ),
-
         userSettingNavigationItem(
             title = SwipeMenu.title,
             style = NavigationItemStyle.HomePrimary,
             navigateTo = SwipeMenu.navPath,
             icon = R.drawable.swipe_icon
         ),
-
         userSettingNavigationItem(
             title = R.string.prediction_settings_title,
             style = NavigationItemStyle.HomeTertiary,
             navigateTo = PredictiveTextMenu.navPath,
             icon = R.drawable.text_prediction
         ),
+)
 
-        // ALTER Keyboard: the mic uses ALTER's voice pack, configured on its own page.
-        userSettingNavigationItem(
-            title = R.string.alter_voice_settings_title,
-            subtitle = R.string.alter_voice_settings_subtitle,
-            style = NavigationItemStyle.HomePrimary,
-            navigateTo = org.futo.inputmethod.latin.uix.actions.AlterVoiceNavPath,
-            icon = R.drawable.mic_fill
-        ),
-
-        userSettingNavigationItem(
-            title = R.string.action_settings_title,
-            style = NavigationItemStyle.HomeSecondary,
-            navigateTo = "actions",
-            icon = R.drawable.smile
-        ),
-
+val HomeLookSettings = listOf(
         userSettingNavigationItem(
             title = R.string.theme_settings_title,
             style = NavigationItemStyle.HomeTertiary,
             navigateTo = "themes",
             icon = R.drawable.themes
         ),
+        userSettingNavigationItem(
+            title = R.string.action_settings_title,
+            style = NavigationItemStyle.HomeSecondary,
+            navigateTo = "actions",
+            icon = R.drawable.smile
+        ),
+)
 
-        //if(!isPaid) {
+// The payment page stays visible (FUTO Source First License); it is grouped with the other secondary pages.
+val HomeMoreSettings = listOf(
+        userSettingNavigationItem(
+            title = R.string.help_menu_title,
+            style = NavigationItemStyle.HomeSecondary,
+            navigateTo = "help",
+            icon = R.drawable.help_circle
+        ),
         userSettingNavigationItem(
             title = R.string.payment_screen_short_title,
             style = NavigationItemStyle.HomePrimary,
@@ -116,16 +124,16 @@ val HomeScreenLite = UserSettingsMenu(
         ).copy(visibilityCheck = {
             useDataStoreValue(IS_ALREADY_PAID) == false
         }, appearInSearchIfVisibilityCheckFailed = false),
-        //}
-
         userSettingNavigationItem(
-            title = R.string.help_menu_title,
-            style = NavigationItemStyle.HomeSecondary,
-            navigateTo = "help",
-            icon = R.drawable.help_circle
+            title = R.string.misc_settings_title,
+            style = NavigationItemStyle.Misc,
+            navigateTo = "misc",
         ),
-
-        //if(isDeveloper || LocalInspectionMode.current) {
+        userSettingNavigationItem(
+            title = R.string.credits_menu_title,
+            style = NavigationItemStyle.Misc,
+            navigateTo = "credits",
+        ),
         userSettingNavigationItem(
             title = R.string.dev_settings_title,
             style = NavigationItemStyle.HomeTertiary,
@@ -134,21 +142,20 @@ val HomeScreenLite = UserSettingsMenu(
         ).copy(visibilityCheck = {
             useDataStoreValue(IS_DEVELOPER) == true || LocalInspectionMode.current
         }),
-        //}
-
-        userSettingNavigationItem(
-            title = R.string.misc_settings_title,
-            style = NavigationItemStyle.MiscNoArrow,
-            navigateTo = "misc",
-        ),
-
-        userSettingNavigationItem(
-            title = R.string.credits_menu_title,
-            style = NavigationItemStyle.MiscNoArrow,
-            navigateTo = "credits",
-        ),
-    )
 )
+
+val HomeScreenLite = UserSettingsMenu(
+    title = R.string.settings_home_title,
+    navPath = "home", registerNavPath = false,
+    settings = HomeVoiceSettings + HomeTypingSettings + HomeLookSettings + HomeMoreSettings
+)
+
+@Composable
+private fun HomeGroup(@androidx.annotation.StringRes title: Int, settings: List<UserSetting>) {
+    org.futo.inputmethod.latin.uix.settings.AlterSettingsGroup(stringResource(title)) {
+        settings.forEach { if (it.visibilityCheck?.invoke() != false) it.component() }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -184,9 +191,13 @@ fun HomeScreen(navController: NavHostController = rememberNavController()) {
 
             // ALTER Keyboard: FUTO's manual-update notice (F-Droid, keyboard.futo.tech) is not shown; ALTER builds come
             // from this repo's Releases page.
+            AlterVoiceSetupCard(navController)
             ConditionalUnpaidNoticeWithNav(navController)
 
-            HomeScreenLite.render(showTitle = false)
+            HomeGroup(R.string.alter_group_voice, HomeVoiceSettings)
+            HomeGroup(R.string.alter_group_typing, HomeTypingSettings)
+            HomeGroup(R.string.alter_group_look, HomeLookSettings)
+            HomeGroup(R.string.alter_group_more, HomeMoreSettings)
 
 
             Spacer(modifier = Modifier.height(16.dp))

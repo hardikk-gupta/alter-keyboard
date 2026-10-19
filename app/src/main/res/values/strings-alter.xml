@@ -48,4 +48,19 @@
     <string name="alter_voice_language_en_in">English (India)</string>
     <string name="alter_voice_language_hi_in">Hindi</string>
     <string name="alter_storage_used">Storage used: %1$s</string>
+
+    <!-- Settings home groups and ALTER voice setup (UI/UX pass: grouped sitemap, guided setup). -->
+    <string name="alter_group_voice">Voice</string>
+    <string name="alter_group_typing">Typing</string>
+    <string name="alter_group_look">Look &amp; feel</string>
+    <string name="alter_group_more">More</string>
+    <string name="alter_voice_status_needs_mic">Not set up: allow the microphone</string>
+    <string name="alter_voice_status_needs_model">Not set up: download a speech model</string>
+    <string name="alter_voice_status_ready">Ready · %1$s</string>
+    <string name="alter_voice_setup_title">Set up ALTER voice</string>
+    <string name="alter_voice_setup_action">Set up voice</string>
+    <string name="alter_setup_step_mic">Allow the microphone</string>
+    <string name="alter_setup_allow">Allow</string>
+    <string name="alter_setup_step_model">Download %1$s</string>
+    <string name="alter_setup_step_model_hint">Recommended to start. It is used as soon as it finishes</string>
 </resources>
