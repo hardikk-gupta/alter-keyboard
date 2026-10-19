@@ -7,6 +7,7 @@ import org.futo.inputmethod.latin.uix.KeyboardColorScheme
 import org.futo.inputmethod.latin.uix.actions.BugInfo
 import org.futo.inputmethod.latin.uix.actions.BugViewerState
 import org.futo.inputmethod.latin.uix.theme.presets.AMOLEDDarkPurple
+import org.futo.inputmethod.latin.uix.theme.presets.AlterTheme
 import org.futo.inputmethod.latin.uix.theme.presets.CatppuccinMocha
 import org.futo.inputmethod.latin.uix.theme.presets.ClassicMaterialDark
 import org.futo.inputmethod.latin.uix.theme.presets.ClassicMaterialLight
@@ -37,6 +38,8 @@ data class ThemeOption(
 )
 
 val ThemeOptions = mapOf(
+    // ALTER Keyboard: ALTER's skin first and the default; FUTO's themes stay selectable.
+    AlterTheme.key to AlterTheme,
     DefaultDarkScheme.key to DefaultDarkScheme,
     DefaultLightScheme.key to DefaultLightScheme,
 
@@ -71,11 +74,7 @@ fun defaultThemeOption(context: Context): ThemeOption =
     if(context.resources.getBoolean(R.bool.use_dev_styling)) {
         DevTheme
     } else {
-        if(DynamicSystemTheme.available(context)) {
-            DynamicSystemTheme
-        } else {
-            DefaultDarkScheme
-        }
+        AlterTheme
     }
 
 fun getThemeOption(context: Context, key: String): ThemeOption? {
