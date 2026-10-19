@@ -83,3 +83,5 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 
 `.github/workflows/build-apk.yml` builds the arm64-v8a APK on every push to `main` and publishes it on the Releases page
 (`ALTER-Keyboard-<version>.apk`). The repo cannot hold it as a file: it is over GitHub's 100 MB limit.
+Each run then deletes every older `build-N` release (with its tag) and older APK artifacts, so only the newest APK
+is kept. Do not rely on older releases existing.

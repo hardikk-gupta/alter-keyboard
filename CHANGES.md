@@ -132,3 +132,12 @@ Checks run: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebu
 app Kotlin/Java compilation, resources and dexing completed; all 9 voice tests passed (no failures or skips).
 APK assembly failed only at `:app:validateSigningStableDebug` because the shared signing key is unavailable.
 APK signature verification and phone checks were not run. `git diff --check` passed.
+
+## Keep only the newest APK release (Oct 19, 2026)
+
+`build-apk.yml`: after publishing a release on `main`, the workflow deletes every older `build-N` release with its tag
+and every APK artifact from earlier runs; new artifacts expire after 3 days. Asked for to save space on GitHub.
+AGENTS.md notes it.
+
+Checks run: workflow YAML parsed (`python3 -c 'import yaml'`). The cleanup itself runs on the first `main` build after
+merge.
