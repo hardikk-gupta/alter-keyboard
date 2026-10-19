@@ -147,7 +147,7 @@
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
   <string name="theme_classic_dark">AOSP Material Tối</string>
   <string name="theme_classic_light">AOSP Material Sáng</string>
-  <string name="theme_vi">Chủ đề FUTO VI</string>
+  <string name="theme_vi">Chủ đề VI</string>
   <string name="theme_deepsea_dark">Biển Sâu Tối</string>
   <string name="theme_deepsea_light">Biển Sâu Sáng</string>
   <string name="theme_emerald">Ngọc lục bảo</string>
@@ -266,7 +266,7 @@
   <string name="manual_update_notice_title">Thông báo cập nhật</string>
   <string name="manual_update_notice_paragraph_1">Ứng dụng này không kết nối mạng và không thể kiểm tra cập nhật tự động. Tuy nhiên, bạn có thể kiểm tra cập nhật thủ công.</string>
   <string name="manual_update_notice_paragraph_2">Vui lòng dùng F-Droid hoặc Obtainium để tự động cập nhật. Truy cập keyboard.futo.org để xem các tùy chọn tải xuống.</string>
-  <string name="manual_update_notice_dev_paragraph">Bạn đang sử dụng phiên bản phát triển của Bàn phím FUTO. Truy cập keyboard.futo.org nếu bạn muốn tải phiên bản ổn định.</string>
+  <string name="manual_update_notice_dev_paragraph">Bạn đang sử dụng phiên bản phát triển của Bàn phím ALTER. Truy cập keyboard.futo.org nếu bạn muốn tải phiên bản ổn định.</string>
   <string name="manual_update_notice_visit_site_button">Truy cập</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Bỏ qua</string>
@@ -356,7 +356,7 @@
   <string name="resource_importer_select_language">Chọn ngôn ngữ để nhập:</string>
   <string name="resource_importer_warning_language_missing">Tệp này có vẻ như dành cho ngôn ngữ (%1$s) không được bật trong cài đặt</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Bạn có chắc chắn muốn nhập bản sao lưu cấu hình này không? Tác vụ này sẽ thay thế tất cả cài đặt của bạn, từ điển cá nhân (toàn hệ thống), từ vựng đã học, bất kỳ tài nguyên đã nhập nào, và nhiều hơn nữa. Nếu bạn không chắc chắn, hãy sao lưu dữ liệu thêm một lần nữa trước khi thực hiện việc này.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Bản sao lưu thiết lập này được tạo bằng phiên bản Bàn phím FUTO mới hơn, và có thể không được nhập đúng cách. Hãy thử cập nhật Bàn phím FUTO trước.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Bản sao lưu thiết lập này được tạo bằng phiên bản Bàn phím ALTER mới hơn, và có thể không được nhập đúng cách. Hãy thử cập nhật Bàn phím ALTER trước.</string>
   <string name="settings_export_configuration_title">Cài đặt sao lưu</string>
   <string name="settings_export_configuration">Xuất cấu hình</string>
   <string name="settings_export_configuration_subtitle">Sao lưu tất cả cài đặt, bảng nhớ tạm, từ đã học, tài nguyên, và hơn thế nữa.</string>
@@ -593,10 +593,10 @@
   <string name="setup_step_1">Thiết lập - Bước 1</string>
   <string name="setup_step_2">Thiết lập - Bước 2</string>
   <string name="setup_step_3">Thiết lập - Bước 3</string>
-  <string name="setup_welcome_text">Chào mừng đến với Bàn phím FUTO (phiên bản alpha)! Sản phẩm này vẫn đang trong quá trình phát triển và chưa hoàn thiện, chúng tôi rất mong nhận được sự kiên nhẫn và thông cảm của bạn.\n\nĐể bắt đầu, hãy bật Bàn phím FUTO làm phương thức nhập liệu.</string>
+  <string name="setup_welcome_text">Chào mừng đến với Bàn phím ALTER (phiên bản alpha)! Sản phẩm này vẫn đang trong quá trình phát triển và chưa hoàn thiện, chúng tôi rất mong nhận được sự kiên nhẫn và thông cảm của bạn.\n\nĐể bắt đầu, hãy bật Bàn phím ALTER làm phương thức nhập liệu.</string>
   <string name="setup_open_input_settings">Mở cài đặt phương thức nhập</string>
   <string name="setup_warning_multiple_versions">Cảnh báo: Có vẻ như bạn đã cài đặt cả phiên bản Play Store và phiên bản độc lập, chúng tôi chỉ khuyến nghị cài đặt một trong hai</string>
-  <string name="setup_active_input_method">Vui lòng chọn Bàn phím FUTO làm phương thức nhập liệu đang hoạt động.</string>
+  <string name="setup_active_input_method">Vui lòng chọn Bàn phím ALTER làm phương thức nhập liệu đang hoạt động.</string>
   <string name="setup_switch_input_methods">Chuyển phương thức nhập</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Ghi công</string>

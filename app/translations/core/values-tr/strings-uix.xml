@@ -140,7 +140,7 @@
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
   <string name="theme_classic_dark">AOSP Materyal Koyu</string>
   <string name="theme_classic_light">AOSP Materyal Aydınlık</string>
-  <string name="theme_vi">FUTO VI Teması</string>
+  <string name="theme_vi">VI Teması</string>
   <string name="theme_deepsea_dark">Derin Deniz Karanlık</string>
   <string name="theme_deepsea_light">Derin Deniz Aydınlık</string>
   <string name="theme_emerald">Zümrüt</string>
@@ -259,7 +259,7 @@
   <string name="manual_update_notice_title">Güncellemeler Hakkında</string>
   <string name="manual_update_notice_paragraph_1">Bu uygulama internete bağlanmaz ve otomatik güncellemeleri kontrol edemez. Ancak, güncellemeleri manuel olarak kontrol edebilirsiniz.</string>
   <string name="manual_update_notice_paragraph_2">Otomatik güncellemeler için lütfen F-Droid veya Obtainium kullanın. İndirme seçenekleri için keyboard.futo.org adresini ziyaret edin.</string>
-  <string name="manual_update_notice_dev_paragraph">\"FUTO Klavye\'nin geliştirme sürümündesiniz. Kararlı sürümü indirmek istiyorsanız keyboard.futo.org adresini ziyaret edin.\"</string>
+  <string name="manual_update_notice_dev_paragraph">\"ALTER Klavye\'nin geliştirme sürümündesiniz. Kararlı sürümü indirmek istiyorsanız keyboard.futo.org adresini ziyaret edin.\"</string>
   <string name="manual_update_notice_visit_site_button">Ziyaret et</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Kapat</string>
@@ -349,7 +349,7 @@
   <string name="resource_importer_select_language">İçe aktarılacak dili seçin:</string>
   <string name="resource_importer_warning_language_missing">Bu dosya, ayarlarda etkinleştirilmemiş bir dil (%1$s) için tasarlanmış gibi görünüyor.</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Bu yapılandırma yedeğini içe aktarmak istediğinizden emin misiniz? Bu işlem tüm ayarlarınızı, kişisel sözlüğünüzü (tüm sistem için), öğrenilmiş sözlük kelimelerini, içe aktarılmış kaynakları ve daha fazlasını değiştirecektir. Emin değilseniz, önce başka bir yedek oluşturun.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Bu yapılandırma yedeği FUTO Keyboard’un daha yeni bir sürümüyle oluşturulmuş ve düzgün içe aktarılamayabilir. Önce FUTO Keyboard’u güncellemeyi deneyin.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Bu yapılandırma yedeği ALTER Keyboard’un daha yeni bir sürümüyle oluşturulmuş ve düzgün içe aktarılamayabilir. Önce ALTER Keyboard’u güncellemeyi deneyin.</string>
   <string name="settings_export_configuration_title">Ayarları Yedekle</string>
   <string name="settings_export_configuration">Yapılandırmayı dışa aktar</string>
   <string name="settings_export_configuration_subtitle">Tüm ayarlarınızı, panonuzu, öğrenilmiş sözcüklerinizi, kaynaklarınızı ve daha fazlasını yedekleyin.</string>
@@ -545,10 +545,10 @@
   <string name="setup_step_1">Kurulum - Adım 1</string>
   <string name="setup_step_2">Kurulum - Adım 2</string>
   <string name="setup_step_3">Kurulum - Adım 3</string>
-  <string name="setup_welcome_text">\"FUTO Klavye\'ye (alpha) hoş geldiniz! Bu ürün hala geliştirme aşamasındadır ve henüz tamamlanmamıştır, sabrınız ve anlayışınız için teşekkür ederiz.\n\nBaşlamak için, FUTO Klavye\'yi bir giriş yöntemi olarak etkinleştirin.\"</string>
+  <string name="setup_welcome_text">\"ALTER Klavye\'ye (alpha) hoş geldiniz! Bu ürün hala geliştirme aşamasındadır ve henüz tamamlanmamıştır, sabrınız ve anlayışınız için teşekkür ederiz.\n\nBaşlamak için, ALTER Klavye\'yi bir giriş yöntemi olarak etkinleştirin.\"</string>
   <string name="setup_open_input_settings">Giriş Yöntemi Ayarlarını Aç</string>
   <string name="setup_warning_multiple_versions">Uyarı: Hem Play Store hem de Bağımsız sürümlerin yüklü olduğu görünüyor, yalnızca birini yüklemenizi öneririz.</string>
-  <string name="setup_active_input_method">Lütfen FUTO Klavye\'yi varsayılan giriş yöntemi olarak seçin. Türkçe çeviri: Ahmet Çeliker tarafından sağlanmıştır.</string>
+  <string name="setup_active_input_method">Lütfen ALTER Klavye\'yi varsayılan giriş yöntemi olarak seçin. Türkçe çeviri: Ahmet Çeliker tarafından sağlanmıştır.</string>
   <string name="setup_switch_input_methods">Giriş Yöntemlerini Değiştir</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Katkıda Bulunanlar</string>

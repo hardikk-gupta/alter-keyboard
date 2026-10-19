@@ -147,7 +147,7 @@
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
   <string name="theme_classic_dark">AOSP Medžiaga Tamsi</string>
   <string name="theme_classic_light">AOSP Medžiaga Šviesi</string>
-  <string name="theme_vi">FUTO VI Tema</string>
+  <string name="theme_vi">VI Tema</string>
   <string name="theme_deepsea_dark">Gili jūra Tamsi</string>
   <string name="theme_deepsea_light">Gili jūra Šviesi</string>
   <string name="theme_emerald">Smaragdas</string>
@@ -266,7 +266,7 @@
   <string name="manual_update_notice_title">Atnaujinimų pranešimas</string>
   <string name="manual_update_notice_paragraph_1">Ši programėlė nesijungia prie interneto ir negalės tikrinti automatinio atnaujinimo. Tačiau galite patikrinti atnaujinimus rankiniu būdu.</string>
   <string name="manual_update_notice_paragraph_2">Prašome naudoti F-Droid arba Obtainium automatinio atnaujinimo tikrinimui. Apsilankykite keyboard.futo.org, kad gautumėte atsisiuntimo galimybes.</string>
-  <string name="manual_update_notice_dev_paragraph">Jūs naudojate FUTO klaviatūros kūrimo versiją. Apsilankykite keyboard.futo.org, jei norite atsisiųsti stabilią versiją.</string>
+  <string name="manual_update_notice_dev_paragraph">Jūs naudojate ALTER klaviatūros kūrimo versiją. Apsilankykite keyboard.futo.org, jei norite atsisiųsti stabilią versiją.</string>
   <string name="manual_update_notice_visit_site_button">Apsilankyti</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Atmesti</string>
@@ -356,7 +356,7 @@
   <string name="resource_importer_select_language">Pasirinkite kalbą, kuriai norite importuoti:</string>
   <string name="resource_importer_warning_language_missing">Atrodo, kad šis failas skirtas kalbai (%1$s), kuri nėra įjungta nustatymuose</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Ar tikrai norite importuoti šią konfigūraciją? Tai pakeis visus jūsų nustatymus, jūsų asmeninį žodyną (visoje sistemoje), išmoktus žodžius, bet kuriuos importuotus resursus, ir kita. Jei nesate tikri, sukurkite atsarginę kopiją prieš tai darant.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Šios konfigūracijos atsarginė kopija buvo sukurta naudojant naujesnę FUTO klaviatūros versiją, ir importavimo procesas gali neveikti. Prašome pirma atnaujinti FUTO klaviatūrą.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Šios konfigūracijos atsarginė kopija buvo sukurta naudojant naujesnę ALTER klaviatūros versiją, ir importavimo procesas gali neveikti. Prašome pirma atnaujinti ALTER klaviatūrą.</string>
   <string name="settings_export_configuration_title">Nustatymų atsarginė kopija</string>
   <string name="settings_export_configuration">Kurti konfigūracijos atsarginę kopiją</string>
   <string name="settings_export_configuration_subtitle">Visi nustatymai, iškarpinės istorija, žodžiai, modeliai, ir kiti bus atsarginėje kopijoje</string>
@@ -595,10 +595,10 @@
   <string name="setup_step_1">Nustatymas - 1 žingsnis</string>
   <string name="setup_step_2">Nustatymas - 2 žingsnis</string>
   <string name="setup_step_3">Nustatymas - 3 žingsnis</string>
-  <string name="setup_welcome_text">Sveiki atvykę į FUTO klaviatūrą (alpha)! Šis produktas vis dar yra plėtros stadijoje ir dar nėra baigtas, dėkojame už jūsų kantrybę ir supratimą.\n\nNorėdami pradėti, įjunkite FUTO klaviatūrą kaip įvesties metodą.</string>
+  <string name="setup_welcome_text">Sveiki atvykę į ALTER klaviatūrą (alpha)! Šis produktas vis dar yra plėtros stadijoje ir dar nėra baigtas, dėkojame už jūsų kantrybę ir supratimą.\n\nNorėdami pradėti, įjunkite ALTER klaviatūrą kaip įvesties metodą.</string>
   <string name="setup_open_input_settings">Atidaryti įvesties metodo nustatymus</string>
   <string name="setup_warning_multiple_versions">Įspėjimas: atrodo, kad turite įdiegtas tiek Play Store, tiek nepriklausomas versijas, rekomenduojame įdiegti tik vieną</string>
-  <string name="setup_active_input_method">Prašome pasirinkti FUTO klaviatūrą kaip aktyvų įvesties metodą.</string>
+  <string name="setup_active_input_method">Prašome pasirinkti ALTER klaviatūrą kaip aktyvų įvesties metodą.</string>
   <string name="setup_switch_input_methods">Keisti įvesties metodus</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Autoriai</string>

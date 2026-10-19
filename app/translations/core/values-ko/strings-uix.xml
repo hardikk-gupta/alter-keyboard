@@ -103,7 +103,7 @@
   <string name="theme_amoled_dark">AMOLED 다크 퍼플</string>
   <string name="theme_classic_dark">AOSP 머티리얼 다크</string>
   <string name="theme_classic_light">AOSP 머티리얼 라이트</string>
-  <string name="theme_vi">FUTO VI 테마</string>
+  <string name="theme_vi">VI 테마</string>
   <string name="theme_deepsea_dark">깊은 바다 다크</string>
   <string name="theme_deepsea_light">깊은 바다 라이트</string>
   <string name="theme_emerald">에메랄드</string>
@@ -187,7 +187,7 @@
   <string name="manual_update_notice_title">업데이트 알림</string>
   <string name="manual_update_notice_paragraph_1">이 앱은 인터넷에 연결되지 않으며 자동 업데이트를 확인할 수 없습니다. 하지만 수동으로 업데이트를 확인할 수 있습니다.</string>
   <string name="manual_update_notice_paragraph_2">자동 업데이트를 위해 F-Droid 또는 Obtainium을 사용해 주세요. 다운로드 옵션은 keyboard.futo.org를 방문하세요.</string>
-  <string name="manual_update_notice_dev_paragraph">현재 FUTO 키보드의 개발 빌드를 사용 중입니다. 안정적인 빌드를 다운로드하려면 keyboard.futo.org를 방문하세요.</string>
+  <string name="manual_update_notice_dev_paragraph">현재 ALTER 키보드의 개발 빌드를 사용 중입니다. 안정적인 빌드를 다운로드하려면 keyboard.futo.org를 방문하세요.</string>
   <string name="manual_update_notice_visit_site_button">방문하기</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">확인</string>
@@ -368,10 +368,10 @@
   <string name="setup_step_1">설정 - 1단계</string>
   <string name="setup_step_2">설정 - 2단계</string>
   <string name="setup_step_3">설정 - 3단계</string>
-  <string name="setup_welcome_text">FUTO 키보드(알파)에 오신 것을 환영합니다! 이 제품은 아직 개발 중이며 완성되지 않았습니다. 여러분의 인내와 이해에 감사드립니다.\n\n시작하려면 FUTO 키보드를 입력 방법으로 활성화하세요.</string>
+  <string name="setup_welcome_text">ALTER 키보드(알파)에 오신 것을 환영합니다! 이 제품은 아직 개발 중이며 완성되지 않았습니다. 여러분의 인내와 이해에 감사드립니다.\n\n시작하려면 ALTER 키보드를 입력 방법으로 활성화하세요.</string>
   <string name="setup_open_input_settings">입력 방법 설정 열기</string>
   <string name="setup_warning_multiple_versions">경고: Play 스토어와 독립 실행형 버전이 모두 설치된 것 같습니다. 하나만 설치하는 것을 권장합니다.</string>
-  <string name="setup_active_input_method">FUTO 키보드를 활성 입력 방법으로 선택해 주세요.</string>
+  <string name="setup_active_input_method">ALTER 키보드를 활성 입력 방법으로 선택해 주세요.</string>
   <string name="setup_switch_input_methods">입력 방법 전환</string>
   <!-- Advanced parameters, these are only really relevant for English -->
   <string name="prediction_settings_transformer_advanced_params">고급 매개변수</string>

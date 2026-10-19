@@ -51,7 +51,9 @@ class CrashLoggingApplication : Application() /*, Configuration.Provider*/ {
             }
         }
 
-        if(BuildConfig.DEBUG) return
+        // ALTER Keyboard: the crash dialog below mails reports to FUTO's inbox, which is not ALTER's support channel,
+        // so crash reporting stays off unless crashreporting.properties configures it (ENABLE_ACRA).
+        if(BuildConfig.DEBUG || !BuildConfig.ENABLE_ACRA) return
 
         val userManager = getSystemService(Context.USER_SERVICE) as UserManager
         if(userManager.isUserUnlocked) {

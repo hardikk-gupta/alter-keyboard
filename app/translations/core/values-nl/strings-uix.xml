@@ -103,7 +103,7 @@
   <string name="theme_amoled_dark">AMOLED Donker Paars</string>
   <string name="theme_classic_dark">AOSP Materiaal Donker</string>
   <string name="theme_classic_light">AOSP Materiaal Licht</string>
-  <string name="theme_vi">FUTO VI Thema</string>
+  <string name="theme_vi">VI Thema</string>
   <string name="theme_deepsea_dark">Diepe Zee Donker</string>
   <string name="theme_deepsea_light">Diepe Zee Licht</string>
   <string name="theme_emerald">Smaragd</string>
@@ -187,7 +187,7 @@
   <string name="manual_update_notice_title">Updates Kennisgeving</string>
   <string name="manual_update_notice_paragraph_1">Deze app maakt geen verbinding met het internet en kan geen automatische updates controleren. U kunt echter handmatig naar updates zoeken.</string>
   <string name="manual_update_notice_paragraph_2">Gebruik F-Droid of Obtainium voor automatische updates. Bezoek keyboard.futo.org voor downloadopties.</string>
-  <string name="manual_update_notice_dev_paragraph">U gebruikt de ontwikkelversie van FUTO Toetsenbord. Bezoek keyboard.futo.org als u de stabiele versie wilt downloaden.</string>
+  <string name="manual_update_notice_dev_paragraph">U gebruikt de ontwikkelversie van ALTER Toetsenbord. Bezoek keyboard.futo.org als u de stabiele versie wilt downloaden.</string>
   <string name="manual_update_notice_visit_site_button">Bezoek</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Afwijzen</string>
@@ -368,10 +368,10 @@
   <string name="setup_step_1">Instelling - Stap 1</string>
   <string name="setup_step_2">Instelling - Stap 2</string>
   <string name="setup_step_3">Instelling - Stap 3</string>
-  <string name="setup_welcome_text">Welkom bij FUTO Toetsenbord (alpha)! Dit product is nog in ontwikkeling en nog niet af. We waarderen uw geduld en begrip.\n\nOm te beginnen, schakel FUTO Toetsenbord in als invoermethode.</string>
+  <string name="setup_welcome_text">Welkom bij ALTER Toetsenbord (alpha)! Dit product is nog in ontwikkeling en nog niet af. We waarderen uw geduld en begrip.\n\nOm te beginnen, schakel ALTER Toetsenbord in als invoermethode.</string>
   <string name="setup_open_input_settings">Open Invoermethode-instellingen</string>
   <string name="setup_warning_multiple_versions">Waarschuwing: Het lijkt erop dat u zowel de Play Store- als de Standalone-versies hebt geïnstalleerd. We raden aan om slechts één versie te installeren.</string>
-  <string name="setup_active_input_method">Selecteer alstublieft FUTO Toetsenbord als uw actieve invoermethode.</string>
+  <string name="setup_active_input_method">Selecteer alstublieft ALTER Toetsenbord als uw actieve invoermethode.</string>
   <string name="setup_switch_input_methods">Wissel van Invoermethoden</string>
   <!-- Advanced parameters, these are only really relevant for English -->
   <string name="prediction_settings_transformer_advanced_params">Geavanceerde Parameters</string>

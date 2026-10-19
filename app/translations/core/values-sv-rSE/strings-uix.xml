@@ -139,7 +139,7 @@
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
   <string name="theme_classic_dark">AOSP Material Mörk</string>
   <string name="theme_classic_light">AOSP Material Ljust</string>
-  <string name="theme_vi">FUTO VI-tema</string>
+  <string name="theme_vi">VI-tema</string>
   <string name="theme_deepsea_dark">Djuphavsmörk</string>
   <string name="theme_deepsea_light">Djuphavsljus</string>
   <string name="theme_emerald">Smaragd</string>
@@ -258,7 +258,7 @@
   <string name="manual_update_notice_title">Uppdateringar</string>
   <string name="manual_update_notice_paragraph_1">Den här appen kopplar inte upp sig på internet och kommer inte att kunna söka efter uppdateringar automatiskt. Du kan söka efter uppdateringar manuellt dock.</string>
   <string name="manual_update_notice_paragraph_2">Använd F-Droid eller Obtainium för automatiska uppdateringar. Besök keyboard.futo.org för nedladdningsalternativ.</string>
-  <string name="manual_update_notice_dev_paragraph">Du är på en utvecklingsversion av FUTO Tangentbord. Besök keyboard.futo.org om du vill ladda ner en stabil version.</string>
+  <string name="manual_update_notice_dev_paragraph">Du är på en utvecklingsversion av ALTER Tangentbord. Besök keyboard.futo.org om du vill ladda ner en stabil version.</string>
   <string name="manual_update_notice_visit_site_button">Besök</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Avvisa</string>
@@ -346,7 +346,7 @@
   <string name="resource_importer_select_language">Välj språk att importera för:</string>
   <string name="resource_importer_warning_language_missing">Den här filen verkar vara gjord för ett språk (%1$s) som inte är aktiverat i inställningarna</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Är du säker på att du vill importera den här säkerhetskopian med inställningar? Detta kommer att ersätta alla dina inställningar, din personliga ordlista (systemomfattande), inlärda ord, alla importerade resurser med mera. Om du är osäker bör du göra en ny säkerhetskopia innan du fortsätter.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Den här säkerhetskopian av inställningar skapades med en nyare version av FUTO Tangentbord och kanske inte kommer att importeras korrekt. Försök att uppdatera FUTO Tangentbord först.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Den här säkerhetskopian av inställningar skapades med en nyare version av ALTER Tangentbord och kanske inte kommer att importeras korrekt. Försök att uppdatera ALTER Tangentbord först.</string>
   <string name="settings_export_configuration_title">Säkerhetskopia av Inställningar</string>
   <string name="settings_export_configuration">Exportera inställningarna</string>
   <string name="settings_export_configuration_subtitle">Exportera alla dina inställningar, inlärda ord, resurser med mera.</string>
@@ -543,10 +543,10 @@
   <string name="setup_step_1">Setup - Steg 1</string>
   <string name="setup_step_2">Setup - Steg 2</string>
   <string name="setup_step_3">Setup - Steg 3</string>
-  <string name="setup_welcome_text">Välkommen till FUTO Tangentbord (alfa)! Den här produkten utvecklas fortfarande och är inte färdig ännu. Vi uppskattar ditt tålamod och förståelse.\n\nFör att komma igång aktiverar du FUTO Tangentbord som en inmatningsmetod.</string>
+  <string name="setup_welcome_text">Välkommen till ALTER Tangentbord (alfa)! Den här produkten utvecklas fortfarande och är inte färdig ännu. Vi uppskattar ditt tålamod och förståelse.\n\nFör att komma igång aktiverar du ALTER Tangentbord som en inmatningsmetod.</string>
   <string name="setup_open_input_settings">Öppna Inställningarna för Inmatningsmetoder</string>
   <string name="setup_warning_multiple_versions">Varning: Du verkar ha både Play Butik-versionen och den fristående versionen installerade. Vi rekommenderar att bara ha en installerad</string>
-  <string name="setup_active_input_method">Välj FUTO Tangentbord som din aktiva inmatningsmetod.</string>
+  <string name="setup_active_input_method">Välj ALTER Tangentbord som din aktiva inmatningsmetod.</string>
   <string name="setup_switch_input_methods">Byt Inmatningsmetod</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Omnämnanden</string>

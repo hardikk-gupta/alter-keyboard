@@ -147,7 +147,7 @@
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
   <string name="theme_classic_dark">AOSP Material داكن</string>
   <string name="theme_classic_light">AOSP Material فاتح</string>
-  <string name="theme_vi">ثيم FUTO VI</string>
+  <string name="theme_vi">ثيم VI</string>
   <string name="theme_deepsea_dark">المحيط الداكن</string>
   <string name="theme_deepsea_light">المحيط الفاتح</string>
   <string name="theme_emerald">زمرد</string>
@@ -264,7 +264,7 @@
   <string name="manual_update_notice_title">إشعار التحديثات</string>
   <string name="manual_update_notice_paragraph_1">هذا التطبيق لا يتصل بالإنترنت ولن يتمكن من التحقق من التحديثات التلقائية. يمكنك التحقق من التحديثات يدويًا.</string>
   <string name="manual_update_notice_paragraph_2">يرجى استخدام F-Droid أو Obtainium للتحديثات التلقائية. تفضل بزيارة keyboard.futo.org للاطلاع على خيارات التنزيل.</string>
-  <string name="manual_update_notice_dev_paragraph">أنت تستخدم نسخة تجريبية من لوحة مفاتيح FUTO. تفضل بزيارة keyboard.futo.org إذا كنت ترغب في تنزيل النسخة المستقرة.</string>
+  <string name="manual_update_notice_dev_paragraph">أنت تستخدم نسخة تجريبية من لوحة مفاتيح ALTER. تفضل بزيارة keyboard.futo.org إذا كنت ترغب في تنزيل النسخة المستقرة.</string>
   <string name="manual_update_notice_visit_site_button">زيارة</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">تجاهل</string>
@@ -353,7 +353,7 @@
   <string name="resource_importer_select_language">حدد اللغة المراد استيرادها لـ:</string>
   <string name="resource_importer_warning_language_missing">يبدو أن هذا الملف مخصص للغة (%1$s) غير مفعلة في الإعدادات</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">هل أنت متأكد من رغبتك في استيراد نسخة احتياطية من إعداداتك؟ سيؤدي ذلك إلى استبدال جميع إعداداتك، وقاموسك الشخصي (على مستوى النظام)، وكلمات القاموس التي تعلمتها، وأي موارد مستوردة، وغير ذلك. إذا كنت غير متأكد، فقم بعمل نسخة احتياطية أخرى قبل ذلك.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">تم إنشاء نسخة احتياطية من هذا التكوين بواسطة إصدار أحدث من لوحة مفاتيح FUTO، وقد لا يتم استيرادها بشكل صحيح. حاول تحديث لوحة مفاتيح FUTO أولاً.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">تم إنشاء نسخة احتياطية من هذا التكوين بواسطة إصدار أحدث من لوحة مفاتيح ALTER، وقد لا يتم استيرادها بشكل صحيح. حاول تحديث لوحة مفاتيح ALTER أولاً.</string>
   <string name="settings_export_configuration_title">نسخ احتياطي للإعدادات</string>
   <string name="settings_export_configuration">تصدير الإعدادات</string>
   <string name="settings_export_configuration_subtitle">قم بعمل نسخة احتياطية من جميع إعداداتك، وحافظتك، والكلمات التي تعلمتها، ومواردك، وغير ذلك.</string>
@@ -590,10 +590,10 @@
   <string name="setup_step_1">الإعداد - الخطوة 1</string>
   <string name="setup_step_2">الإعداد - الخطوة 2</string>
   <string name="setup_step_3">الإعداد - الخطوة 3</string>
-  <string name="setup_welcome_text">مرحباً بكم في لوحة مفاتيح FUTO! ما زالت قيد التطوير، لذا قد تفتقر إلى بعض الميزات أو اللغات. نشكر لكم صبركم وتفهمكم.\n\nللبدء، فعّلوا لوحة مفاتيح FUTO كطريقة إدخال.</string>
+  <string name="setup_welcome_text">مرحباً بكم في لوحة مفاتيح ALTER! ما زالت قيد التطوير، لذا قد تفتقر إلى بعض الميزات أو اللغات. نشكر لكم صبركم وتفهمكم.\n\nللبدء، فعّلوا لوحة مفاتيح ALTER كطريقة إدخال.</string>
   <string name="setup_open_input_settings">فتح إعدادات طريقة الإدخال</string>
   <string name="setup_warning_multiple_versions">تحذير: يبدو أن لديك كلًا من إصدار متجر Play والإصدار المستقل مثبتين، ونوصي بتثبيت إصدار واحد فقط</string>
-  <string name="setup_active_input_method">يرجى اختيار لوحة مفاتيح FUTO كطريقة الإدخال النشطة.</string>
+  <string name="setup_active_input_method">يرجى اختيار لوحة مفاتيح ALTER كطريقة الإدخال النشطة.</string>
   <string name="setup_switch_input_methods">تبديل طرق الإدخال</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">الشكر والتقدير</string>

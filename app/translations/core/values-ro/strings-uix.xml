@@ -138,7 +138,7 @@
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
   <string name="theme_classic_dark">AOSP Material întunecat</string>
   <string name="theme_classic_light">AOSP Material luminos</string>
-  <string name="theme_vi">Tema FUTO VI</string>
+  <string name="theme_vi">Tema VI</string>
   <string name="theme_deepsea_dark">Întunericul din adâncul mării</string>
   <string name="theme_deepsea_light">Lumina din adâncul mării</string>
   <string name="theme_emerald">Smarald</string>
@@ -255,7 +255,7 @@
   <string name="manual_update_notice_title">Notificare privind actualizările</string>
   <string name="manual_update_notice_paragraph_1">Această aplicație nu se conectează la internet și nu va putea verifica actualizările automate. Puteți verifica actualizările manual.</string>
   <string name="manual_update_notice_paragraph_2">Vă rugăm să utilizați F-Droid sau Obtainium pentru actualizări automate. Vizitați keyboard.futo.org pentru opțiuni de descărcare.</string>
-  <string name="manual_update_notice_dev_paragraph">Vă aflați pe versiunea de dezvoltare a tastaturii FUTO. Vizitați keyboard.futo.org dacă doriți să descărcați versiunea stabilă.</string>
+  <string name="manual_update_notice_dev_paragraph">Vă aflați pe versiunea de dezvoltare a tastaturii ALTER. Vizitați keyboard.futo.org dacă doriți să descărcați versiunea stabilă.</string>
   <string name="manual_update_notice_visit_site_button">Vizitați</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Am înțeles</string>

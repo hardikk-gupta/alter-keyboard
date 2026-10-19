@@ -138,7 +138,7 @@
   <string name="theme_catppuccin_mocha">Капучино Мокка</string>
   <string name="theme_classic_dark">AOSP Material Темный</string>
   <string name="theme_classic_light">AOSP Material Светлый</string>
-  <string name="theme_vi">Тема FUTO VI</string>
+  <string name="theme_vi">Тема VI</string>
   <string name="theme_deepsea_dark">Темный Глубокий Океан</string>
   <string name="theme_deepsea_light">Светлый Глубокий Океан</string>
   <string name="theme_emerald">Изумрудный</string>
@@ -256,7 +256,7 @@
   <string name="manual_update_notice_title">Уведомление об обновлениях</string>
   <string name="manual_update_notice_paragraph_1">Это приложение не подключается к интернету и не сможет проверять автоматические обновления. Однако вы можете проверять обновления вручную.</string>
   <string name="manual_update_notice_paragraph_2">Пожалуйста, используйте F-Droid или Obtainium для автоматических обновлений. Посетите keyboard.futo.org для получения вариантов загрузки.</string>
-  <string name="manual_update_notice_dev_paragraph">Вы находитесь на сборке для разработчиков FUTO Keyboard. Посетите keyboard.futo.org, если хотите скачать стабильную версию.</string>
+  <string name="manual_update_notice_dev_paragraph">Вы находитесь на сборке для разработчиков ALTER Keyboard. Посетите keyboard.futo.org, если хотите скачать стабильную версию.</string>
   <string name="manual_update_notice_visit_site_button">Посетить</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Понял</string>
@@ -344,7 +344,7 @@
   <string name="resource_importer_select_language">Выберите язык для импорта:</string>
   <string name="resource_importer_warning_language_missing">Этот файл, похоже, предназначен для языка (%1$s), который не включен в настройках</string>
   <string name="resource_importer_warning_cfg_backup_is_destructive2">Вы уверены в импорте этой конфигурации? Будет замена всех ваших нвстроек, личного словаря (системного), выученных слов, любых импортированных ресурсов и более. Если вы не уверены, сделайте ещё один экспорт.</string>
-  <string name="resource_importer_warning_cfg_backup_newer_version">Конфигурация была создана в более новой версии FUTO Keyboard и может быть импортирована неправильно. Сначала попробуйте обновить приложение.</string>
+  <string name="resource_importer_warning_cfg_backup_newer_version">Конфигурация была создана в более новой версии ALTER Keyboard и может быть импортирована неправильно. Сначала попробуйте обновить приложение.</string>
   <string name="settings_export_configuration_title">Резервная копия настроек</string>
   <string name="settings_export_configuration">Экспортировать конфигурацию</string>
   <string name="settings_export_configuration_subtitle">Сохранить все ваши настройки, буферы обмена, обученные слова, ресурсы и другое.</string>
@@ -520,10 +520,10 @@
   <string name="setup_step_1">Настройка - Шаг 1</string>
   <string name="setup_step_2">Настройка - Шаг 2</string>
   <string name="setup_step_3">Настройка - Шаг 3</string>
-  <string name="setup_welcome_text">Добро пожаловать в FUTO Keyboard (альфа)! Этот продукт все еще находится в разработке и не завершен, мы ценим ваше терпение и понимание.\n\nЧтобы начать, включите FUTO Keyboard в качестве метода ввода.</string>
+  <string name="setup_welcome_text">Добро пожаловать в ALTER Keyboard (альфа)! Этот продукт все еще находится в разработке и не завершен, мы ценим ваше терпение и понимание.\n\nЧтобы начать, включите ALTER Keyboard в качестве метода ввода.</string>
   <string name="setup_open_input_settings">Открыть настройки метода ввода</string>
   <string name="setup_warning_multiple_versions">Предупреждение: У вас, похоже, установлены как версия из Play Store, так и отдельная версия. Мы рекомендуем устанавливать только одну из них.</string>
-  <string name="setup_active_input_method">Пожалуйста, выберите FUTO Keyboard в качестве вашего активного метода ввода.</string>
+  <string name="setup_active_input_method">Пожалуйста, выберите ALTER Keyboard в качестве вашего активного метода ввода.</string>
   <string name="setup_switch_input_methods">Переключить методы ввода</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Благодарности</string>

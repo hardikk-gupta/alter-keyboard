@@ -1,13 +1,8 @@
 # ALTER Keyboard
 
-ALTER Keyboard is FUTO Keyboard's complete typing keyboard with ALTER's voice pack and ALTER's design built in.
-It types into any app through Android's input-method system, so it needs no accessibility service (banking apps such
-as YONO SBI have nothing to flag), and all speech recognition runs on the phone.
-
-> ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc. It is licensed under the
-> [FUTO Source First License 1.1](LICENSE.md) (personal, non-commercial use, shared only for free); the original AOSP
-> code remains Apache 2.0 ([NOTICE](NOTICE)). Every change from FUTO is listed in [MODIFICATIONS.md](MODIFICATIONS.md).
-> FUTO's original README is kept as [docs/FUTO_README.md](docs/FUTO_README.md).
+ALTER Keyboard is a complete typing keyboard with ALTER's on-device voice pack and ALTER's design built in. It types
+into any app through Android's input-method system, so it needs no accessibility service (banking apps such as YONO
+SBI have nothing to flag), and all speech recognition runs on the phone.
 
 ## Install on a phone
 
@@ -24,11 +19,10 @@ Updates install over the previous build only when both are signed with the same 
 
 ## What it does
 
-**Full keyboard (FUTO's):** typing, suggestions and autocorrect, swipe typing, undo/redo, cut/copy/paste, clipboard
-history, emoji, text editing, number row, many languages and layouts, themes and resizing. Everything FUTO Keyboard
-has, behaving the same way.
+**Full keyboard:** typing, suggestions and autocorrect, swipe typing, undo/redo, cut/copy/paste, clipboard history,
+emoji, text editing, number row, many languages and layouts, themes and resizing.
 
-**ALTER voice (replaces FUTO's voice input):**
+**ALTER voice:**
 
 - Tap the mic in the action bar: the suggestion row turns into ALTER's voice strip (a ✕ and the pill), with no extra
   layer above the keys. The pill shows a live yellow wave driven by the real microphone level; tap it to finish.
@@ -40,12 +34,12 @@ has, behaving the same way.
   capitals, removes fillers and never answers the text. Models download on demand into private storage from a
   pinned list with exact size and SHA-256 checks; nothing is sent to the cloud.
 
-**Pill mode:** a 56 dp bar with only the mic pill, FUTO's globe (switch input method) and a keyboard button. Choose
+**Pill mode:** a 56 dp bar with only the mic pill, a globe (switch input method) and a keyboard button. Choose
 the start mode in Settings → ALTER voice (Full keyboard by default), or tap **Minimize** (chevron-down, pinned in the
 action bar) at any time. Password fields always open the full keyboard with the mic disabled. Recording stops and is
 discarded when the field loses focus or the keyboard hides.
 
-**ALTER design:** the default keyboard skin is the ALTER theme (black, dark grey keys, yellow accent; FUTO's themes
+**ALTER design:** the default keyboard skin is the ALTER theme (black, dark grey keys, yellow accent; the other themes
 stay in the picker), the app's own screens follow the ALTER app's settings design, and the launcher icon is a light
 keyboard with a yellow spacebar on ALTER's dark background. Details: [docs/DESIGN.md](docs/DESIGN.md).
 
@@ -57,8 +51,8 @@ without the ALTER app installed.
 - **ALTER voice** (top of the settings home): Keyboard card (start mode, end recording after silence, dictation
   language), Speech model card (current model; all models under "All speech models" with download, cancel, use and
   delete), Cleanup card (switch and model), storage used and the About line.
-- Every FUTO setting is still there: languages, keyboard and typing, swipe, predictive text, actions, themes, help,
-  and FUTO's payment page (kept as FUTO's license requires).
+- Languages, keyboard and typing, swipe, predictive text, actions, themes and help, plus the upstream payment page,
+  which the license requires to stay.
 
 ## Build
 
@@ -77,7 +71,7 @@ fails rather than signing with another key. Maven Central sometimes answers HTTP
 Native code is prebuilt because Google AI Studio has no NDK or CMake. After changing C/C++ sources, install NDK
 28.2.13676358 and CMake 3.22.1 and run `scripts/build_native_libs.sh`, which rebuilds and replaces:
 
-- `app/src/main/jniLibs/<abi>/libjni_latinime.so`, FUTO's typing engine, from `app/native/jni`;
+- `app/src/main/jniLibs/<abi>/libjni_latinime.so`, the typing engine, from `app/native/jni`;
 - `alter-voice/src/main/jniLibs/<abi>/libalter_whisper.so`, ALTER's whisper.cpp bridge, from `alter-voice/native`.
 
 ## Repository layout
@@ -85,11 +79,11 @@ Native code is prebuilt because Google AI Studio has no NDK or CMake. After chan
 | Path | Contents |
 | --- | --- |
 | `metadata.json`, `settings.gradle.kts`, `build.gradle.kts` | Google AI Studio project files |
-| `app/` | The keyboard: FUTO's sources in `app/src/main/java` (package `org.futo.inputmethod.latin`), resources, assets, translations, prebuilt AARs (`app/libs`), FUTO's native sources (`app/native`), locale tools (`app/tools`) |
+| `app/` | The keyboard: sources in `app/src/main/java` (upstream package `org.futo.inputmethod.latin`), resources, assets, translations, prebuilt AARs (`app/libs`), native sources (`app/native`), locale tools (`app/tools`) |
 | `alter-voice/` | ALTER's voice pack (`com.aistudio.altermind.voice`): dictation, speech models, cleanup, model catalog and downloads, the pill, orb and wave |
-| `voiceinput-shared/` | FUTO's voice module, still needed by FUTO code |
-| `docs/` | `DESIGN.md`, `SIGNING.md`, `FUTO_README.md` |
-| `licenses/` | Licenses of everything added on top of FUTO |
+| `voiceinput-shared/` | Upstream voice module, still needed by the keyboard code |
+| `docs/` | `DESIGN.md`, `SIGNING.md`, `FUTO_README.md` (upstream README) |
+| `licenses/` | Licenses of the added models and libraries |
 | `scripts/` | `build_native_libs.sh`, `check_apk_signature.py`, `signing_certificate.sha1` |
 | `.github/workflows/build-apk.yml` | Builds the phone APK and publishes it as a Release |
 
@@ -102,3 +96,10 @@ pill mode), `uix/AlterSettingKeys.kt`, `uix/theme/presets/AlterTheme.kt`, `uix/s
 
 Read [AGENTS.md](AGENTS.md) first (license, signing, AI Studio, design, voice and PR rules). Each PR appends its
 checks to [CHANGES.md](CHANGES.md). Phone acceptance is checked by a person and never claimed from host tests.
+
+## License
+
+ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc., used under the
+[FUTO Source First License 1.1](LICENSE.md): personal, non-commercial use, shared only for free. The original AOSP code
+remains Apache 2.0 ([NOTICE](NOTICE)). Changes from upstream are listed in [MODIFICATIONS.md](MODIFICATIONS.md); the
+upstream README is kept as [docs/FUTO_README.md](docs/FUTO_README.md).
