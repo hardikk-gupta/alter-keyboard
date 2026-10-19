@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.core.content.ContextCompat
+import com.aistudio.altermind.voice.R as VoiceR
 import com.aistudio.altermind.voice.DictationController
 import com.aistudio.altermind.voice.SpeechModels
 import com.aistudio.altermind.voice.ui.AlterVoicePill
@@ -119,7 +120,7 @@ fun KeyboardManagerForAction.commitDictation(text: String) {
  * Tapping the mic again acts like tapping the strip (finish, cancel or retry).
  */
 val VoiceInputAction = Action(
-    icon = R.drawable.mic_fill,
+    icon = VoiceR.drawable.ic_alter_ai_doodle_closed,
     name = R.string.action_voice_input_title,
     simplePressImpl = { manager, _ ->
         (manager as? UixActionKeyboardManager)?.uixManager?.toggleInlineVoice()

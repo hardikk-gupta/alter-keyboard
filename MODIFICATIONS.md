@@ -47,8 +47,8 @@ non-commercial use, shared only for free. The original AOSP code remains under A
   own screens always use ALTER's settings design (`uix/settings/AlterStyle.kt`, shared `Components.kt` styling, grouped
   menus). The launcher icon is ALTER's keyboard mark instead of FUTO's (also on the setup screen and the training
   notification).
-- **Voice in the full keyboard:** the mic turns the suggestion row of FUTO's action bar into ALTER's voice strip
-  (`ActionBar` gained a `voiceStrip` slot); FUTO's above-keyboard voice window is not used.
+- **Voice in the full keyboard:** the ALTER flat-eye voice action (replacing the microphone icon) turns the
+  suggestion row of FUTO's action bar into ALTER's voice strip (`ActionBar` gained a `voiceStrip` slot); FUTO's above-keyboard voice window is not used.
 - **README:** this repo's `README.md` describes ALTER Keyboard; FUTO's original README is kept unchanged as
   `docs/FUTO_README.md`.
 

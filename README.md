@@ -24,8 +24,8 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
 
 **ALTER voice:**
 
-- Tap the mic in the action bar: the suggestion row turns into ALTER's voice strip (a ✕ and the pill), with no extra
-  layer above the keys. The pill shows a live yellow wave driven by the real microphone level; tap it to finish.
+- Tap the ALTER flat-eye icon in the action bar: the suggestion row turns into ALTER's voice strip (a ✕ and the
+  pill), with no extra layer above the keys. The pill shows a live yellow wave driven by the real microphone level; tap it to finish.
 - The thinking orb (ALTER's S1 lattice, lighting from white to yellow) shows while the speech is transcribed and
   cleaned up; tap to cancel. The text is inserted at the cursor (replacing any selection) and is never sent.
 - Errors show a red triangle; tap to retry the same recording, held in memory only.
@@ -92,7 +92,7 @@ Native code is prebuilt because Google AI Studio has no NDK or CMake. After chan
 | `.github/workflows/build-apk.yml` | Builds the phone APK and publishes it as a Release |
 
 ALTER's additions in `app/` are marked with "ALTER Keyboard" comments; the main ones are
-`uix/actions/AlterVoiceAction.kt` (dictation session, mic and Minimize actions), `uix/UixManager.kt` (voice strip and
+`uix/actions/AlterVoiceAction.kt` (dictation session, ALTER voice and Minimize actions), `uix/UixManager.kt` (voice strip and
 pill mode), `uix/AlterSettingKeys.kt`, `uix/theme/presets/AlterTheme.kt`, `uix/settings/AlterStyle.kt` and
 `uix/settings/pages/AlterVoice.kt`.
 

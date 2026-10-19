@@ -28,7 +28,7 @@ Android launcher: ALTER Keyboard icon
     │   └── Predictive text
     ├── Look & feel
     │   ├── Themes ........................... ALTER theme is the default; other themes stay
-    │   └── Actions .......................... toolbar actions (mic, Minimize, undo, clipboard, …)
+    │   └── Actions .......................... toolbar actions (ALTER flat-eye voice icon, Minimize, undo, clipboard, …)
     └── More
         ├── Help ............................. version, attribution line (last item)
         ├── Payment .......................... upstream payment page, until paid (license requirement)
@@ -43,8 +43,8 @@ The keyboard itself has two surfaces:
 ```
 Text field focused
 ├── Full keyboard (default start mode)
-│   ├── Action bar: expand · suggestions · pinned actions (Minimize, mic)
-│   │   └── mic → suggestion row becomes ALTER's voice strip (✕ + pill); keys stay
+│   ├── Action bar: expand · suggestions · pinned actions (Minimize, ALTER flat-eye voice icon)
+│   │   └── ALTER flat-eye icon → suggestion row becomes ALTER's voice strip (✕ + pill); keys stay
 │   └── Keys
 └── Pill mode (start mode "Pill", or Minimize)
     └── 56 dp bar: globe (switch input method) · pill · keyboard button (back to full keyboard)
@@ -74,10 +74,10 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Tap mic in the action bar] --> B{Voice ready?}
+    A[Tap ALTER flat-eye icon in the action bar] --> B{Voice ready?}
     B -- no --> S[Opens Settings → ALTER voice at the setup steps]
     B -- yes --> C[Suggestions become the voice strip; wave follows the real mic level]
-    C -- tap strip or mic --> D[Thinking orb: transcribe and clean up]
+    C -- tap strip or flat-eye icon --> D[Thinking orb: transcribe and clean up]
     C -- "✕ / field loses focus / keyboard hides" --> X[Recording discarded; suggestions return]
     D -- tap --> X
     D --> E[Text inserted at the cursor; suggestions return]

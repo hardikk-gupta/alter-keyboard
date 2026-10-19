@@ -58,10 +58,11 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 - **Start mode** (Settings → ALTER voice): Full keyboard (default) or Pill. Applied each time a text field gets focus.
 - **Pill mode:** 56 dp PitchBlack bar. Left: FUTO's globe (input-method picker). Centre: the pill. Right: Lucide
   keyboard button back to the full keyboard. No other controls.
-- **Full keyboard:** FUTO's keyboard with the ALTER skin. The mic action adds no layer: the suggestions in the action
+- **Full keyboard:** FUTO's keyboard with the ALTER skin. The voice action uses ALTER's flat-eye mark
+  (`ic_alter_ai_doodle_closed`), tinted by the selected keyboard theme. It adds no layer: the suggestions in the action
   bar row are replaced by ALTER's voice strip (a cancel ✕ and the bounded pill with the wave, orb or error) while the
-  expand button, pinned actions and keys stay where they are. Tapping the mic again acts like tapping the strip. A
-  pinned "Minimize" action (FUTO's chevron-down icon) switches to pill mode.
+  expand button, pinned actions and keys stay where they are. Tapping the flat-eye action again acts like tapping the
+  strip. A pinned "Minimize" action (FUTO's chevron-down icon) switches to pill mode.
 - **Pill taps:** idle → record; listening → finish; thinking → cancel; error → retry the same recording held in memory
   (no new mic session), or record again when nothing was captured.
 - Text goes in through `commitText` at the cursor, replacing any selection, and is never sent.

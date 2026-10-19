@@ -121,3 +121,14 @@ navigation, empty states with guidance, multi-step progress, 48 dp targets):
   MODIFICATIONS updated.
 
 Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest` passed (9 tests). Not run: phone check.
+
+## ALTER flat-eye voice action (Oct 19, 2026)
+
+The full keyboard's ALTER voice action now uses the existing flat-eye mark (`ic_alter_ai_doodle_closed`) instead of
+its microphone icon. The selected keyboard theme still supplies its tint; the voice-input accessibility label and
+tap behavior stay the same. Based on latest `main` at `0db147354`.
+
+Checks run: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`:
+app Kotlin/Java compilation, resources and dexing completed; all 9 voice tests passed (no failures or skips).
+APK assembly failed only at `:app:validateSigningStableDebug` because the shared signing key is unavailable.
+APK signature verification and phone checks were not run. `git diff --check` passed.
