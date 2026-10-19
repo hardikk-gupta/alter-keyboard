@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- ALTER Keyboard launcher icon (foreground): a light keyboard with a yellow spacebar, ALTER's one accent. -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-    <path android:strokeColor="#ECECEC" android:strokeWidth="3.5" android:pathData="M31,36h46a7,7 0 0 1 7,7v22a7,7 0 0 1 -7,7h-46a7,7 0 0 1 -7,-7v-22a7,7 0 0 1 7,-7z" />
-    <path android:fillColor="#ECECEC" android:pathData="M30.0,43h5v5h-5z M38.5,43h5v5h-5z M47.0,43h5v5h-5z M55.5,43h5v5h-5z M64.0,43h5v5h-5z M72.5,43h5v5h-5z M34.25,51h5v5h-5z M42.75,51h5v5h-5z M51.25,51h5v5h-5z M59.75,51h5v5h-5z M68.25,51h5v5h-5z" />
-    <path android:fillColor="#FFBD00" android:pathData="M38,59.5h32v5h-32z" />
-</vector>

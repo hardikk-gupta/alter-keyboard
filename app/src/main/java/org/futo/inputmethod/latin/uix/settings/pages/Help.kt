@@ -87,10 +87,58 @@ val HelpMenu = UserSettingsMenu(
                     BuildConfig.VERSION_NAME
                 ))
         },
-        // ALTER Keyboard: FUTO's support links (website, docs, Discord, chat, GitHub issues, email) are not ALTER's
-        // support channels and are left out. The required attribution stays, as the last line of this page.
         userSettingDecorationOnly {
             Tip(stringResource(R.string.alter_about_modified))
         },
+
+        userSettingNavigationItem(
+            title = R.string.help_menu_website,
+            subtitle = R.string.help_menu_website_subtitle,
+            style = NavigationItemStyle.Misc,
+            navigate = { nav ->
+                nav.context.openURI("https://futo.tech/")
+            }
+        ).copy(searchTags = R.string.help_menu_website_tags),
+
+        userSettingNavigationItem(
+            title = R.string.help_menu_documentation,
+            subtitle = R.string.help_menu_documentation_subtitle,
+            style = NavigationItemStyle.Misc,
+            navigate = { nav ->
+                nav.context.openURI("https://docs.keyboard.futo.tech/")
+            }
+        ),
+        userSettingNavigationItem(
+            title = R.string.help_menu_discord,
+            subtitle = R.string.help_menu_discord_subtitle,
+            style = NavigationItemStyle.Misc,
+            navigate = { nav ->
+                nav.context.openURI("https://keyboard.futo.tech/discord")
+            }
+        ),
+        userSettingNavigationItem(
+            title = R.string.help_menu_futo_chat,
+            subtitle = R.string.help_menu_futo_chat_subtitle,
+            style = NavigationItemStyle.Misc,
+            navigate = { nav ->
+                nav.context.openURI("https://chat.futo.org/")
+            }
+        ),
+        userSettingNavigationItem(
+            title = R.string.help_menu_github,
+            subtitle = R.string.help_menu_github_subtitle,
+            style = NavigationItemStyle.Misc,
+            navigate = { nav ->
+                nav.context.openURI("https://github.com/futo-org/android-keyboard/issues")
+            }
+        ),
+        userSettingNavigationItem(
+            title = R.string.help_menu_email,
+            subtitle = R.string.help_menu_email_subtitle,
+            style = NavigationItemStyle.Mail,
+            navigate = { nav ->
+                nav.context.openURI("mailto:keyboard@futo.org")
+            }
+        ).copy(searchTags = R.string.help_menu_email_tags),
     )
 )

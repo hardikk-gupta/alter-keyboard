@@ -52,9 +52,8 @@ internal fun latticeStillFrame(rest: Float = latticeRest(true)): List<LatticeCel
 
 /** Activity indicator: appears after [appearAfterMs], stops when hidden, static with animations off. */
 /** Ink is the surrounding content colour (#F5F5F5 on dark, near-black on light), as the source's currentColor. */
-/** With [accent], a cell's colour moves from [ink] towards [accent] as it lights (ALTER: white and yellow). */
 @Composable fun ActivityOrb(modifier: Modifier = Modifier, ink: androidx.compose.ui.graphics.Color = androidx.compose.material3.LocalContentColor.current,
-    accent: androidx.compose.ui.graphics.Color? = null, appearAfterMs: Long = 2000) {
+    appearAfterMs: Long = 2000) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     var active by remember { mutableStateOf(lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) }
@@ -76,9 +75,7 @@ internal fun latticeStillFrame(rest: Float = latticeRest(true)): List<LatticeCel
         val rest = latticeRest(ink.luminance() > .5f)
         (clock?.let { latticeFrame(it, rest) } ?: latticeStillFrame(rest)).forEach { cell ->
             val c = Offset((6.5f + 1.5f + cell.x * 6f) * k, (6.5f + 1.5f + cell.y * 6f) * k)
-            val lit = ((cell.alpha - rest) / (1f - rest)).coerceIn(0f, 1f)
-            val colour = accent?.let { androidx.compose.ui.graphics.lerp(ink, it, lit) } ?: ink
-            drawCircle(colour.copy(alpha = cell.alpha), max(.6f, 1.5f * k * cell.scale), c)
+            drawCircle(ink.copy(alpha = cell.alpha), max(.6f, 1.5f * k * cell.scale), c)
         }
     }
 }

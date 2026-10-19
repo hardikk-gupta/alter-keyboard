@@ -23,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,14 +49,13 @@ fun SetupContainer(inner: @Composable () -> Unit) {
                 .fillMaxWidth()
                 .weight(0.75f)
         ) {
-            // ALTER Keyboard: the ALTER keyboard mark, in its own colours (light keys, yellow spacebar).
             Icon(
-                painter = painterResource(id = R.drawable.ic_alter_launcher_foreground),
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = null,
                 modifier = Modifier
                     .matchParentSize()
                     .align(Alignment.Center),
-                tint = Color.Unspecified
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 

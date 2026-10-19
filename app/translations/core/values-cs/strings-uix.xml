@@ -138,7 +138,7 @@
   <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
   <string name="theme_classic_dark">AOSP Material tmavá</string>
   <string name="theme_classic_light">AOSP Material světlá</string>
-  <string name="theme_vi">Motiv VI</string>
+  <string name="theme_vi">Motiv FUTO VI</string>
   <string name="theme_deepsea_dark">Podmořská tmavá</string>
   <string name="theme_deepsea_light">Podmořská světlá</string>
   <string name="theme_emerald">Smaragd</string>
@@ -255,7 +255,7 @@
   <string name="manual_update_notice_title">Informace o aktualizacích</string>
   <string name="manual_update_notice_paragraph_1">Tato aplikace nemá připojení k internetu a nebude moci automaticky kontrolovat aktualizace. Můžete je ale zkontrolovat ručně.</string>
   <string name="manual_update_notice_paragraph_2">Pro automatické aktualizace prosím použijte F-Droid nebo Obtainium. Navštivte keyboard.futo.org pro možnosti stažení.</string>
-  <string name="manual_update_notice_dev_paragraph">Používáte vývojářské sestavení Klávesnice ALTER. Navštivte keyboard.futo.org, pokud si chcete stáhnout stabilní sestavení.</string>
+  <string name="manual_update_notice_dev_paragraph">Používáte vývojářské sestavení Klávesnice FUTO. Navštivte keyboard.futo.org, pokud si chcete stáhnout stabilní sestavení.</string>
   <string name="manual_update_notice_visit_site_button">Navštívit</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Zavřít</string>
@@ -454,9 +454,9 @@
   <string name="setup_step_1">Počáteční konfigurace - krok 1</string>
   <string name="setup_step_2">Počáteční konfigurace - krok 2</string>
   <string name="setup_step_3">Počáteční konfigurace - krok 3</string>
-  <string name="setup_welcome_text">Vítejte v Klávesnici ALTER (alfa)! Tento produkt je stále ve vývoji a není dokončen, ceníme si vaší trpělivosti a pochopení.\n\nAbyste mohli začít, nastavte si Klávesnici ALTER jako způsob zadávání vstupu.</string>
+  <string name="setup_welcome_text">Vítejte v Klávesnici FUTO (alfa)! Tento produkt je stále ve vývoji a není dokončen, ceníme si vaší trpělivosti a pochopení.\n\nAbyste mohli začít, nastavte si Klávesnici FUTO jako způsob zadávání vstupu.</string>
   <string name="setup_open_input_settings">Otevřít nastavení způsobu zadávání vstupu</string>
-  <string name="setup_active_input_method">Prosím vyberte Klávesnici ALTER jako váš aktivní způsob zadávání vstupu.</string>
+  <string name="setup_active_input_method">Prosím vyberte Klávesnici FUTO jako váš aktivní způsob zadávání vstupu.</string>
   <string name="setup_switch_input_methods">Přepnout způsob zadávání vstupu</string>
   <!-- Credits menu -->
   <string name="credits_menu_title">Poděkování</string>

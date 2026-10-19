@@ -125,7 +125,7 @@
   <string name="theme_amoled_dark">AMOLED tume Lilla</string>
   <string name="theme_classic_dark">AOSP Material tume</string>
   <string name="theme_classic_light">AOSP Material hele</string>
-  <string name="theme_vi">VI teema</string>
+  <string name="theme_vi">FUTO VI teema</string>
   <string name="theme_rainbow">Vikerkaar</string>
   <string name="theme_snowfall">Lumesadu</string>
   <string name="theme_steel_gray">Terashall</string>
@@ -227,7 +227,7 @@
   <string name="manual_update_notice_title">Uuenduse märguanne</string>
   <string name="manual_update_notice_paragraph_1">See rakendus ei loo internetiühendust ja ei saa automaatselt uuendusi kontrollida. Kuid uuendusi saab otsida käsitsi.</string>
   <string name="manual_update_notice_paragraph_2">Automaatsete uuenduste jaoks kasuta F-Droidi või Obtainiumit. Allalaadimisvõimaluste nägemiseks külasta veebilehte keyboard.futo.org.</string>
-  <string name="manual_update_notice_dev_paragraph">Kasutad ALTER klaviatuuri arendusversiooni. Stabiilse versiooni allalaadimiseks külasta keyboard.futo.org.</string>
+  <string name="manual_update_notice_dev_paragraph">Kasutad FUTO klaviatuuri arendusversiooni. Stabiilse versiooni allalaadimiseks külasta keyboard.futo.org.</string>
   <string name="manual_update_notice_visit_site_button">Külasta</string>
   <!-- can be translated as "understood", etc -->
   <string name="manual_update_notice_dismiss_notice_button">Eira</string>

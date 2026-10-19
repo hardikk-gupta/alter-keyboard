@@ -38,7 +38,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -668,7 +667,6 @@ class UixManager(private val latinIME: LatinIME) {
         if (pill == pillMode.value) return
         if (pill) {
             closeActionWindow()
-            stopInlineVoice()
             pillSession.value = AlterDictationSession(latinIME, latinIME.lifecycleScope) {
                 keyboardManagerForAction.commitDictation(it)
             }
@@ -678,45 +676,6 @@ class UixManager(private val latinIME: LatinIME) {
         }
         pillMode.value = pill
         if (!pill) latinIME.onKeyboardShown()
-    }
-
-    // ALTER Keyboard: in the full keyboard, the mic turns the suggestion row into ALTER's voice strip.
-    private val inlineVoice = mutableStateOf<AlterDictationSession?>(null)
-    private var inlineVoiceDisabled = false
-
-    /** Mic action: opens the voice strip and starts recording; while it is open, acts like tapping the strip. */
-    fun toggleInlineVoice() {
-        inlineVoice.value?.let { it.tap(); return }
-        if (pillMode.value) return
-        closeActionWindow()
-        inlineVoiceDisabled = latinIME.currentInputEditorInfo.isAlterSensitiveField()
-        val session = AlterDictationSession(latinIME, latinIME.lifecycleScope) { text ->
-            keyboardManagerForAction.commitDictation(text)
-            stopInlineVoice()
-        }
-        inlineVoice.value = session
-        latinIME.window.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        if (!inlineVoiceDisabled) session.start()
-    }
-
-    /** Recording stops and is discarded; the suggestions come back. */
-    fun stopInlineVoice() {
-        val session = inlineVoice.value ?: return
-        inlineVoice.value = null
-        session.close()
-        latinIME.window.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
-
-    @Composable
-    private fun RowScope.AlterVoiceStrip(session: AlterDictationSession) {
-        Row(Modifier.weight(1f).fillMaxHeight().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            val cancelDescription = stringResource(R.string.alter_voice_cancel)
-            Box(Modifier.size(36.dp).clip(RoundedCornerShape(12.dp)).clickable(role = Role.Button) { stopInlineVoice() }
-                .semantics { contentDescription = cancelDescription }, contentAlignment = Alignment.Center) {
-                Icon(painterResource(R.drawable.close), null, Modifier.size(20.dp))
-            }
-            session.Pill(disabled = inlineVoiceDisabled, modifier = Modifier.weight(1f).fillMaxHeight().padding(end = 4.dp))
-        }
     }
 
     /** Every time a text field gets focus, the keyboard opens in the user's chosen start mode. */
@@ -805,8 +764,7 @@ class UixManager(private val latinIME: LatinIME) {
                 if(!inlineStuffHiddenByTyping.value) inlineSuggestions.value else emptyList()
             }
 
-            val voice = inlineVoice.value
-            if(actionBarShown.value || inlineSuggestions.isNotEmpty() || voice != null) {
+            if(actionBarShown.value || inlineSuggestions.isNotEmpty()) {
                 ActionBar(
                     suggestedWordsOrNull,
                     suggestionStripListener,
@@ -837,8 +795,7 @@ class UixManager(private val latinIME: LatinIME) {
                     },
                     onQuickClipDismiss = { quickClipState.value = null },
                     needToUseExpandableSuggestionUi = needToUseExpandableSuggestionUi,
-                    loading = latinIME.imeManager.isImeLoading(),
-                    voiceStrip = voice?.let { session -> { AlterVoiceStrip(session) } }
+                    loading = latinIME.imeManager.isImeLoading()
                 )
             }
         }
@@ -846,7 +803,6 @@ class UixManager(private val latinIME: LatinIME) {
 
     private fun enterActionWindowView(action: Action) {
         assert(action.windowImpl != null)
-        stopInlineVoice()
 
         currWindowAction.value = action
 
@@ -1387,8 +1343,7 @@ class UixManager(private val latinIME: LatinIME) {
                     Box(Modifier.onGloballyPositioned { floatingPreeditPosition.value = it })
                     // TODO: Refactor how we handle expandable suggestions here to not be a mess
                     val needToUseExpandableSuggestionUi =
-                        inlineVoice.value == null
-                                && expandableSuggestionCfg.value.useExpandableUi && suggestedWords.value?.size()?.equals(0) != true
+                        expandableSuggestionCfg.value.useExpandableUi && suggestedWords.value?.size()?.equals(0) != true
                                 && mainKeyboardHidden.value == false
                                 && (quickClipState.value == null || inlineStuffHiddenByTyping.value)
                                 && currentNotice.value == null
@@ -1743,7 +1698,6 @@ class UixManager(private val latinIME: LatinIME) {
         closeActionWindow()
         // Recording stops and is discarded when the field loses focus or the keyboard hides.
         pillSession.value?.controller?.cancel()
-        stopInlineVoice()
         languageSwitcherDialog?.dismiss()
         isShowingActionEditor.value = false
         resizers.hideResizer()

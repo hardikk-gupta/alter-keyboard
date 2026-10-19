@@ -9,12 +9,10 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -76,10 +74,6 @@ object LucidePill {
     val Keyboard = icon("Keyboard", "M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z",
         "M6 8h.01", "M10 8h.01", "M14 8h.01", "M18 8h.01", "M8 12h.01", "M12 12h.01", "M16 12h.01", "M7 16h10")
     val ChevronDown = icon("ChevronDown", "M6 9l6 6 6-6")
-    val ChevronRight = icon("ChevronRight", "M9 18l6-6-6-6")
-    val ArrowLeft = icon("ArrowLeft", "M12 19l-7-7 7-7", "M19 12H5")
-    val Search = icon("Search", "M11 3a8 8 0 1 0 0 16a8 8 0 1 0 0-16Z", "M21 21l-4.3-4.3")
-    val Info = icon("Info", "M12 2a10 10 0 1 0 0 20a10 10 0 1 0 0-20Z", "M12 16v-4", "M12 8h.01")
     val TriangleAlert = icon("TriangleAlert", "M21.73 18l-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z", "M12 9v4", "M12 17h.01")
 }
 
@@ -113,18 +107,17 @@ internal fun voiceWavePoints(level: Float, phase: Float, strand: Int): List<Offs
 }
 
 /**
- * ALTER's mic pill: idle (flat-eyes mark + mic), listening (live wave), thinking (S1 orb in white and yellow), error
- * (red triangle, no text). SlateGrayCard body inside a thin AlterYellow boundary, the ALTER mark of the voice
- * surface; 12dp corners, no glass or gradients. The caller sizes it ([modifier]). [description] is read by TalkBack,
- * so the error triangle still has its message.
+ * ALTER's mic pill: idle (flat-eyes mark + mic), listening (live wave), thinking (S1 orb), error (red triangle,
+ * no text). Pill body SlateGrayCard, 12dp corners, no outline, no glass or gradients. [description] is read by
+ * TalkBack, so the error triangle still has its message.
  */
 @Composable fun AlterVoicePill(state: PillState, level: Float, onTap: () -> Unit, modifier: Modifier = Modifier,
     description: String = "") {
-    val shape = RoundedCornerShape(12.dp)
     Box(modifier
-        .clip(shape)
+        .height(40.dp)
+        .width(152.dp)
+        .clip(RoundedCornerShape(12.dp))
         .background(AlterColors.SlateGrayCard)
-        .border(1.dp, AlterColors.AlterYellow.copy(alpha = if (state == PillState.Disabled) .25f else .6f), shape)
         .clickable(enabled = state != PillState.Disabled, role = Role.Button, onClick = onTap)
         .semantics { contentDescription = description },
         contentAlignment = Alignment.Center) {
@@ -135,8 +128,8 @@ internal fun voiceWavePoints(level: Float, phase: Float, strand: Int): List<Offs
                 Icon(painterResource(R.drawable.ic_alter_ai_doodle_closed), null, Modifier.size(22.dp), tint = ink)
                 Icon(if (state == PillState.Disabled) LucidePill.MicOff else LucidePill.Mic, null, Modifier.size(20.dp), tint = ink)
             }
-            PillState.Listening -> VoiceWave(level, Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 6.dp))
-            PillState.Thinking -> ActivityOrb(ink = AlterColors.OrbInk, accent = AlterColors.AlterYellow, appearAfterMs = 0)
+            PillState.Listening -> VoiceWave(level, Modifier.fillMaxWidth().height(28.dp).padding(horizontal = 14.dp))
+            PillState.Thinking -> ActivityOrb(ink = AlterColors.OrbInk, appearAfterMs = 0)
             PillState.Error -> Icon(LucidePill.TriangleAlert, null, Modifier.size(22.dp), tint = AlterColors.ErrorRed)
         }
     }

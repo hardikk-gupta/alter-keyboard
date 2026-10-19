@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- ALTER Keyboard: keyboard mark on ALTER's #121212 launcher background (FUTO's icon replaced). -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/alter_launcher_background"/>
-    <foreground android:drawable="@drawable/ic_alter_launcher_foreground"/>
-    <monochrome android:drawable="@drawable/ic_alter_launcher_monochrome"/>
+    <background android:drawable="@color/ic_launcher_background"/>
+    <foreground android:drawable="@drawable/ic_launcher_foreground"/>
+    <monochrome android:drawable="@drawable/ic_launcher_foreground"/>
 </adaptive-icon>

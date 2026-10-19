@@ -328,12 +328,28 @@ class SettingsActivity : ComponentActivity(), DynamicThemeProviderOwner {
         return themeProvider!!
     }
 
-    // ALTER Keyboard: the app's screens always use the dark ALTER scheme (UixThemeAuto), whatever keyboard theme is
-    // picked, so the system bars always need light icons. The picked theme still drives the keyboard previews.
     fun updateEdgeToEdge() {
-        enableEdgeToEdge(
-            SystemBarStyle.dark(Color.TRANSPARENT),
-            SystemBarStyle.dark(Color.TRANSPARENT)
-        )
+        themeProvider?.let {
+            val color = it.colorScheme.background.toArgb()
+
+            val luminance = sqrt(
+                0.299 * Color.red(color) / 255.0
+                        + 0.587 * Color.green(color) / 255.0
+                        + 0.114 * Color.blue(color) / 255.0
+            )
+
+            if (luminance > 0.5 && color != android.graphics.Color.TRANSPARENT) {
+                enableEdgeToEdge(
+                    SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+                    SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+                )
+            } else {
+                enableEdgeToEdge(
+                    SystemBarStyle.dark(Color.TRANSPARENT),
+                    SystemBarStyle.dark(Color.TRANSPARENT)
+                )
+            }
+
+        }
     }
 }
