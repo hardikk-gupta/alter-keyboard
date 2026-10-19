@@ -1,37 +1,47 @@
-# Modifications & Licensing Notice
+# Modifications
 
-**ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc.**
+ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc.
 
-## FUTO License Compliance
+It is based on [FUTO Keyboard](https://github.com/futo-org/android-keyboard) (imported with its history from `master`
+at `70a5d390c`) and is distributed under the same [FUTO Source First License 1.1](LICENSE.md): personal,
+non-commercial use, shared only for free. The original AOSP code remains under Apache 2.0 (see [NOTICE](NOTICE)).
+`LICENSE.md`, `NOTICE` and every FUTO copyright and license notice in source files are kept unchanged.
 
-This project is derived from the FUTO Keyboard codebase (`org.futo.inputmethod.latin`), available at [https://github.com/futo-org/android-keyboard](https://github.com/futo-org/android-keyboard).
+## What was changed
 
-- **License:** FUTO Source First License 1.1 (and Apache 2.0 for original AOSP components).
-- **Personal and Non-Commercial:** This software is for personal, non-commercial use and is distributed free of charge.
-- **Payment Features:** FUTO payment features, including the payment settings screen, `PaymentCompleteActivity`, and payment reminders are retained and operational in accordance with license requirements.
-- **Copyrights:** All original FUTO and AOSP copyright notices are retained in source headers.
+- **Identity:** application ID `com.aistudio.altermind.keyboard`; visible app and keyboard name "ALTER Keyboard"
+  (`java/res/values/strings-appname.xml`). The Java/Kotlin package `org.futo.inputmethod.latin` is unchanged.
+- **Versioning and signing:** version code is minutes since 2026-01-01 UTC of the source commit (build time without
+  git); debug builds are signed with the shared ALTER key (`docs/SIGNING.md`). FUTO's release signing setup is unused.
+- **Updates:** FUTO's update checker is disabled (`UPDATE_CHECKING = false`) so ALTER Keyboard never offers FUTO's APK
+  as an update.
+- **Kotlin:** the project builds with Kotlin 2.4.0 (was 2.1.0), required by LiteRT-LM 0.18. One type annotation in
+  `BuggyBaseInputConnection.kt` was adjusted for the newer compiler.
+- **Voice input:** FUTO's built-in Whisper voice input is replaced by ALTER's voice pack in the new `alter-voice/`
+  module (Whisper via whisper.cpp, Moonshine, Android on-device recognition, and the optional LFM2.5 cleanup model).
+  FUTO's bundled 43 MB Whisper model is left out of the APK. The option to use another installed voice keyboard is kept.
+  The `voiceinput-shared` module is still built because other FUTO code depends on it.
+- **Pill mode:** a minimized 56 dp bar with ALTER's mic pill, a keyboard button and FUTO's input-method globe, plus a
+  "Minimize" action on the full keyboard and a start-mode setting. Password fields always open the full keyboard
+  with the mic disabled.
+- **Settings:** an "ALTER voice" page replaces the voice input entry on the settings home screen. The help page and
+  the ALTER voice page carry the line "ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc."
 
-## Summary of Modifications
+## What was not changed
 
-1. **Rebranding & Identity:**
-   - App and IME Name: `ALTER Keyboard`
-   - Application ID: `com.aistudio.altermind.keyboard`
-   - Custom app icons and brand assets based on the ALTER visual identity.
+FUTO's keyboard look and behaviour are kept as built: themes, layouts, typing, suggestions, swipe, clipboard, emoji,
+text editing, languages and settings. FUTO's payment features (the Payment settings page, `PaymentCompleteActivity`
+and the payment reminders) are kept and working.
 
-2. **Design System & Theming:**
-   - Integrated ALTER's design system tokens: `PitchBlack` (#000000), `SlateGrayCard` (#18181B), `RaisedSurface` (#262626), `AlterYellow` (#FFBD00), `ErrorRed` (#EF4444), and Lucide icons.
-   - S1 thinking orb animation for processing states.
-   - Live audio RMS wave visualization during dictation.
+## Third-party components added
 
-3. **Pill Mode & Minimize Action:**
-   - Dedicated 56dp minimized pill mode providing one-tap voice input with Idle, Listening, Thinking, and Error states.
-   - Toggle action to switch between Pill Mode and the Full Keyboard.
+Each keeps its own license under [`licenses/`](licenses):
 
-4. **ALTER Voice Pack (`alter-voice/`):**
-   - Direct integration of ALTER's on-device voice transcription (Moonshine and Whisper live engines).
-   - Text post-processing and cleanup using LFM2.5 350M INT8 on LiteRT-LM.
-   - Direct text insertion into focused input via `currentInputConnection.commitText()`.
-   - Disabled FUTO's proprietary bundled voice model in favor of dynamic on-demand model downloads.
-
-5. **Update Checker:**
-   - Disabled FUTO update checker mechanism to avoid conflicting upstream updates.
+| Component | License |
+| --- | --- |
+| whisper.cpp 1.9.5 (CPU subset, `alter-voice/src/main/cpp/whisper`) | MIT |
+| Moonshine Voice 0.1.5 and Moonshine models | MIT |
+| LiteRT-LM 0.18.0 | Apache 2.0 |
+| LFM2.5 350M INT8 cleanup model (downloaded on demand, never bundled) | LFM Open License v1.0 |
+| Lucide icon paths | ISC |
+| AICSS "Orbs" S1 thinking lattice (native re-implementation) | MIT |

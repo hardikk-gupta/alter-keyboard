@@ -1,18 +1,16 @@
-*.iml
-.gradle
-.kotlin
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Gradle
+.externalNativeBuild/
+.gradle/
+.idea/
+LatinIME.iml
+build/
 local.properties
-.env
+crashreporting.properties
+keystore.properties
+key.jks
+java/res/raw/mozc.data
+.cxx
+java/src/org/futo/inputmethod/keyboard/internal/KeyboardTextsTable.java
+# ALTER Keyboard
 debug.keystore
+.env

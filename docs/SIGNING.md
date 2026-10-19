@@ -1,29 +1,33 @@
-# ALTER Keyboard Signing & Release Guide
+# Signing: one shared key for every ALTER build, including ALTER Keyboard
 
-## Target Signing Identity
+Android installs an update only when it is signed by the **same key** as the installed app. Different keys make the
+installer fail ("App not installed" / "package conflicts", or it silently closes), so the phone keeps the old ALTER.
 
-The keyboard must be signed with the same shared key as ALTER, so builds and updates install over each other cleanly.
+ALTER Keyboard (`com.aistudio.altermind.keyboard`) is a separate app from ALTER, signed with the same shared key.
+Without the key, the build falls back to FUTO's committed test key (`java/shared.keystore`) and warns: such an APK
+will not install over a build signed with the shared key.
 
-| Parameter | Value |
-| --- | --- |
-| SHA-1 Fingerprint | `B5:E5:7C:D6:93:49:2E:96:ED:5E:96:30:0D:7C:AC:38:73:5B:7E:BB` |
-| Alias | `androiddebugkey` |
-| Key Password | `android` |
-| Keystore Password | `android` |
-| CI Key Source | `ALTER_SIGNING_KEYSTORE_B64` environment variable (base64 of `debug.keystore`) |
-| Local Fallback | Repo root `debug.keystore` (must be git-ignored) |
+## The shared key
 
-## Commit-Time Version Code
+- Its SHA-1 is pinned in `scripts/signing_certificate.sha1` (currently `B5:E5:7C:D6:93:49:2E:96:ED:5E:96:30:0D:7C:AC:38:73:5B:7E:BB`,
+  the key also registered for Google Drive sign-in in docs/GOOGLE_DRIVE_SETUP.md).
+- `scripts/check_apk_signature.py` checks a built APK against it.
+- The keystore itself is never committed. Every builder provides it in one of two ways:
+  1. **Environment variable `ALTER_SIGNING_KEYSTORE_B64`** — the keystore file encoded as base64. Use this for Claude/Codex
+     cloud environments (environment settings → environment variables) and GitHub (Settings → Secrets and variables →
+     Actions → `ALTER_SIGNING_KEYSTORE_B64`).
+  2. **`debug.keystore` in the repo root** — for Android Studio on your own computer. Copy the shared file there.
 
-To prevent downgrade errors across builds:
-- Version code = minutes elapsed since `2026-01-01T00:00:00Z` of the commit date.
-- Fallback when no `.git` directory exists: current build timestamp in minutes.
+Store password, key password and alias are the standard debug values: `android` / `android` / `androiddebugkey`.
 
-## Security Constraints
+Make the base64 value from the keystore file:
 
-1. Never commit `.jks`, `.keystore`, `.env`, or `local.properties` files to version control.
-2. Verify the APK SHA-1 fingerprint before any release:
-   ```bash
-   apksigner verify --print-certs path/to/app-release.apk
-   ```
-   Ensure the output matches `scripts/signing_certificate.sha1`.
+- macOS/Linux: `base64 -i debug.keystore | tr -d '\n'`
+- Windows PowerShell: `[Convert]::ToBase64String([IO.File]::ReadAllBytes("debug.keystore"))`
+
+Keep the keystore and its base64 private: anyone holding it can sign an APK that installs over ALTER on a phone.
+
+## Changing the shared key
+
+Only with the designer's approval: replace `scripts/signing_certificate.sha1`, update the secrets on every builder,
+register the new SHA-1 for Google sign-in, and expect every phone to uninstall once.

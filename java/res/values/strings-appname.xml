@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Application name for the keyboard. "ALTER" should not be translated.
+         ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc. -->
+    <string name="english_ime_name">ALTER Keyboard</string>
+
+    <!-- Name of Android spell checker service. "ALTER" should not be translated. -->
+    <string name="spell_checker_service_name">ALTER Spell Checker</string>
+
+    <!-- Title for Android Keyboard settings screen. "ALTER" should not be translated. -->
+    <string name="english_ime_settings">ALTER Keyboard Settings</string>
+
+    <!-- Title for the spell checking service settings screen. "ALTER" should not be translated. -->
+    <string name="android_spell_checker_settings">ALTER Spell Checker Settings</string>
+</resources>
