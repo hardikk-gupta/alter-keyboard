@@ -825,6 +825,8 @@ fun ActionBar(
     onQuickClipDismiss: () -> Unit = {},
     needToUseExpandableSuggestionUi: Boolean = false,
     loading: Boolean = false,
+    // ALTER Keyboard: while dictating, ALTER's voice strip takes the place of the suggestions.
+    voiceStrip: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val view = LocalView.current
     val context = LocalContext.current
@@ -878,7 +880,10 @@ fun ActionBar(
                     )
                 }
 
-                if(oldActionBar.value && isActionsExpanded) {
+                if(voiceStrip != null) {
+                    voiceStrip()
+                    PinnedActionItems(onActionActivated, onActionAltActivated)
+                } else if(oldActionBar.value && isActionsExpanded) {
                     Box(modifier = Modifier
                         .weight(1.0f)
                         .fillMaxHeight()) {

@@ -5,6 +5,15 @@ import android.content.pm.PackageManager
 import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.draw.clip
+import org.futo.inputmethod.latin.uix.settings.CollapsibleSection
+import org.futo.inputmethod.latin.uix.settings.DropDownPickerSettingItem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -46,10 +55,20 @@ import org.futo.inputmethod.latin.uix.ALTER_START_MODE_PILL
 import org.futo.inputmethod.latin.uix.settings.ScreenTitle
 import org.futo.inputmethod.latin.uix.settings.ScrollableList
 import org.futo.inputmethod.latin.uix.settings.SettingItem
-import org.futo.inputmethod.latin.uix.settings.SettingRadio
 import org.futo.inputmethod.latin.uix.settings.SettingToggleDataStore
 import org.futo.inputmethod.latin.uix.settings.Tip
 import org.futo.inputmethod.latin.uix.settings.useDataStore
+
+/** A compact settings group: a small title over a rounded card (20dp, ALTER's settings-card radius). */
+@Composable
+private fun AlterGroup(title: String?, content: @Composable ColumnScope.() -> Unit) {
+    Column(Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+        if (title != null) Text(title, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 12.dp, bottom = 6.dp))
+        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest),
+            content = content)
+    }
+}
 
 /** One model row: download with progress, cancel, use, delete. */
 @Composable
@@ -63,7 +82,7 @@ private fun ModelRow(
     val total = files.sumOf { it.downloadBytes }
     SettingItem(
         title = title,
-        subtitle = subtitle + " · " + Formatter.formatShortFileSize(context, total),
+        subtitle = listOf(subtitle, Formatter.formatShortFileSize(context, total)).filter { it.isNotBlank() }.joinToString(" · "),
         icon = if (onUse != null) {{ RadioButton(selected = inUse, onClick = if (installed && !inUse) onUse else null) }} else null,
         subcontent = {
             when (download) {
@@ -122,74 +141,86 @@ fun AlterVoiceScreen(navController: NavHostController) {
         ScreenTitle(stringResource(R.string.alter_voice_settings_title), showBack = true, navController)
 
         if (!micGranted) {
-            SettingItem(title = stringResource(R.string.alter_mic_permission_title),
-                subtitle = stringResource(R.string.alter_mic_permission_subtitle),
-                onClick = { permission.launch(Manifest.permission.RECORD_AUDIO) }) {}
+            AlterGroup(null) {
+                SettingItem(title = stringResource(R.string.alter_mic_permission_title),
+                    subtitle = stringResource(R.string.alter_mic_permission_subtitle),
+                    onClick = { permission.launch(Manifest.permission.RECORD_AUDIO) }) {}
+            }
         }
 
-        SettingRadio(
-            title = stringResource(R.string.alter_start_mode_title),
-            options = listOf(ALTER_START_MODE_FULL, ALTER_START_MODE_PILL),
-            optionNames = listOf(stringResource(R.string.alter_start_mode_full), stringResource(R.string.alter_start_mode_pill)),
-            setting = useDataStore(ALTER_START_MODE)
-        )
-        Tip(stringResource(R.string.alter_start_mode_hint))
+        AlterGroup(stringResource(R.string.alter_group_keyboard)) {
+            val startMode = useDataStore(ALTER_START_MODE)
+            val modes = listOf(ALTER_START_MODE_FULL, ALTER_START_MODE_PILL)
+            val modeNames = listOf(stringResource(R.string.alter_start_mode_full), stringResource(R.string.alter_start_mode_pill))
+            DropDownPickerSettingItem(stringResource(R.string.alter_start_mode_title), modes, startMode.value,
+                { startMode.setValue(it) }, { modeNames[modes.indexOf(it).coerceAtLeast(0)] })
+            SettingToggleDataStore(
+                title = stringResource(R.string.alter_end_on_silence_title),
+                subtitle = stringResource(R.string.alter_end_on_silence_subtitle),
+                setting = ALTER_END_ON_SILENCE
+            )
+            val languageNames = listOf(
+                stringResource(R.string.alter_voice_language_auto),
+                stringResource(R.string.alter_voice_language_en_in),
+                stringResource(R.string.alter_voice_language_hi_in)
+            )
+            var language by remember { mutableStateOf(VoiceSettings.language(context)) }
+            DropDownPickerSettingItem(stringResource(R.string.alter_voice_language_title), VoiceSettings.LANGUAGES, language,
+                { VoiceSettings.setLanguage(context, it); language = it },
+                { languageNames[VoiceSettings.LANGUAGES.indexOf(it).coerceAtLeast(0)] })
+        }
 
-        SettingToggleDataStore(
-            title = stringResource(R.string.alter_end_on_silence_title),
-            subtitle = stringResource(R.string.alter_end_on_silence_subtitle),
-            setting = ALTER_END_ON_SILENCE
-        )
+        AlterGroup(stringResource(R.string.alter_speech_models_title)) {
+            val current = choices.find { it.id == selected }?.name
+                ?: if (selected == VoiceSettings.DEVICE_SPEECH_ID) stringResource(R.string.alter_device_speech_name) else null
+            SettingItem(title = current ?: stringResource(R.string.alter_speech_model_none),
+                subtitle = stringResource(if (current != null) R.string.alter_model_in_use else R.string.alter_speech_model_none_hint)) {}
+            error?.let { Tip(it) }
+            CollapsibleSection(stringResource(R.string.alter_speech_models_all, choices.size + if (VoiceSettings.deviceSpeechAvailable(context)) 1 else 0)) {
+                choices.forEach { choice ->
+                    val installed = remember(refresh) { choice.installed(models.store) }
+                    ModelRow(choice.name, choice.description.substringBefore(". ").removeSuffix("."), choice.id, choice.files,
+                        installed, selected == choice.id,
+                        onUse = { use(choice.id) },
+                        onDelete = { scope.launch {
+                            error = runCatching { VoiceSettings.deleteSpeech(context, choice) }.exceptionOrNull()?.message
+                            refresh++
+                        } })
+                }
+                if (VoiceSettings.deviceSpeechAvailable(context)) {
+                    SettingItem(
+                        title = stringResource(R.string.alter_device_speech_name),
+                        subtitle = stringResource(R.string.alter_device_speech_description),
+                        icon = { RadioButton(selected = selected == VoiceSettings.DEVICE_SPEECH_ID, onClick = null) },
+                        onClick = { use(VoiceSettings.DEVICE_SPEECH_ID) }
+                    ) {}
+                }
+                Tip(stringResource(R.string.alter_speech_models_hint))
+            }
+        }
 
-        ScreenTitle(stringResource(R.string.alter_speech_models_title), showBack = false)
-        Tip(stringResource(R.string.alter_speech_models_hint))
-        error?.let { Tip(it) }
-        choices.forEach { choice ->
-            val installed = remember(refresh) { choice.installed(models.store) }
-            ModelRow(choice.name, choice.description, choice.id, choice.files, installed, selected == choice.id,
-                onUse = { use(choice.id) },
+        AlterGroup(stringResource(R.string.alter_cleanup_title)) {
+            val cleanupInstalled = remember(refresh) { models.store.installed(cleanup) }
+            var cleanupOn by remember(refresh) { mutableStateOf(VoicePack.cleanupEnabled(context)) }
+            SettingItem(title = stringResource(R.string.alter_cleanup_toggle), subtitle = stringResource(R.string.alter_cleanup_subtitle),
+                disabled = !cleanupInstalled,
+                onClick = { cleanupOn = !cleanupOn; VoicePack.setCleanupEnabled(context, cleanupOn) }) {
+                Switch(checked = cleanupOn && cleanupInstalled, onCheckedChange = null, enabled = cleanupInstalled)
+            }
+            ModelRow(cleanup.displayName, "", cleanup.id, listOf(cleanup), cleanupInstalled, inUse = false, onUse = null,
                 onDelete = { scope.launch {
-                    error = runCatching { VoiceSettings.deleteSpeech(context, choice) }.exceptionOrNull()?.message
+                    VoicePack.setCleanupEnabled(context, false)
+                    ModelDownloads.delete(context, listOf(cleanup))
                     refresh++
                 } })
         }
-        if (VoiceSettings.deviceSpeechAvailable(context)) {
-            SettingItem(
-                title = stringResource(R.string.alter_device_speech_name),
-                subtitle = stringResource(R.string.alter_device_speech_description),
-                icon = { RadioButton(selected = selected == VoiceSettings.DEVICE_SPEECH_ID, onClick = null) },
-                onClick = { use(VoiceSettings.DEVICE_SPEECH_ID) }
-            ) {}
-        }
 
-        val languageNames = listOf(
-            stringResource(R.string.alter_voice_language_auto),
-            stringResource(R.string.alter_voice_language_en_in),
-            stringResource(R.string.alter_voice_language_hi_in)
+        Text(
+            stringResource(R.string.alter_storage_used, Formatter.formatShortFileSize(context, storage)) + "\n" +
+                stringResource(R.string.alter_about_modified),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
         )
-        var language by remember { mutableStateOf(VoiceSettings.language(context)) }
-        ScreenTitle(stringResource(R.string.alter_voice_language_title), showBack = false)
-        VoiceSettings.LANGUAGES.zip(languageNames).forEach { (code, name) ->
-            SettingItem(title = name, icon = { RadioButton(selected = language == code, onClick = null) },
-                onClick = { VoiceSettings.setLanguage(context, code); language = code }) {}
-        }
-
-        ScreenTitle(stringResource(R.string.alter_cleanup_title), showBack = false)
-        val cleanupInstalled = remember(refresh) { models.store.installed(cleanup) }
-        ModelRow(cleanup.displayName, stringResource(R.string.alter_cleanup_subtitle), cleanup.id, listOf(cleanup),
-            cleanupInstalled, inUse = false, onUse = null,
-            onDelete = { scope.launch {
-                VoicePack.setCleanupEnabled(context, false)
-                ModelDownloads.delete(context, listOf(cleanup))
-                refresh++
-            } })
-        var cleanupOn by remember(refresh) { mutableStateOf(VoicePack.cleanupEnabled(context)) }
-        SettingItem(title = stringResource(R.string.alter_cleanup_toggle), disabled = !cleanupInstalled,
-            onClick = { cleanupOn = !cleanupOn; VoicePack.setCleanupEnabled(context, cleanupOn) }) {
-            Switch(checked = cleanupOn && cleanupInstalled, onCheckedChange = null, enabled = cleanupInstalled)
-        }
-
-        Tip(stringResource(R.string.alter_storage_used, Formatter.formatShortFileSize(context, storage)))
-        Tip(stringResource(R.string.alter_about_modified))
     }
 }

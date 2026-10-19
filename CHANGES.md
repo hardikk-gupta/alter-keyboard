@@ -64,3 +64,17 @@ a GitHub Release. `-PalterAbis=arm64-v8a` limits a build to phone ABIs. Signing 
 
 Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a` passed locally (117 MB, arm64-v8a only); the
 workflow file parses. The workflow itself runs on GitHub after this is pushed.
+
+## PR 5: mic in the suggestion row, ALTER skin, tidier voice settings (Oct 19, 2026)
+
+From phone feedback on the first APK:
+
+- The mic no longer opens a strip above the keyboard. ALTER's voice strip (cancel ✕ + bounded pill) replaces the
+  suggestions in the action bar row; pinned actions and keys stay put. Tapping the mic again acts like the strip.
+- The pill now has a thin AlterYellow boundary; the thinking orb lights in white and yellow.
+- New ALTER theme (`AlterTheme`) is the default skin; FUTO's themes remain in the picker.
+- Settings → ALTER voice is grouped into compact cards: Keyboard (start mode, end on silence, language as
+  drop-downs), Speech model (current model, the full list collapsed), Cleanup, then storage and the About line.
+
+Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest` passed. Not run:
+rendered previews or any phone check of the new strip, theme and settings layout.

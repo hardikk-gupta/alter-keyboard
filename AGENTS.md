@@ -40,9 +40,10 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 
 ## Design
 
-- The keyboard looks and works exactly like FUTO Keyboard. Do not restyle FUTO's keys, themes, toolbar or settings.
-- Only ALTER's voice surfaces (the pill, its bar and its settings page) use ALTER's tokens; see `docs/DESIGN.md`.
-- Every animation has a still frame when Android's "remove animations" setting is on. No outline on the pill.
+- The keyboard works exactly like FUTO Keyboard (settings, toolbar actions, themes). Its default skin is ALTER's.
+- Every animation has a still frame when Android's "remove animations" setting is on.
+- The ALTER theme is the default skin; FUTO's themes stay selectable. Voice surfaces sit inside the thin AlterYellow
+  boundary, and the mic replaces the suggestion row instead of adding a layer (`docs/DESIGN.md`).
 
 ## Voice (`alter-voice/`, ported from ALTER's voice pack)
 
