@@ -48,9 +48,13 @@ without the ALTER app installed.
 
 ## Settings
 
-- **ALTER voice** (top of the settings home): Keyboard card (start mode, end recording after silence, dictation
-  language), Speech model card (current model; all models under "All speech models" with download, cancel, use and
-  delete), Cleanup card (switch and model), storage used and the About line.
+The full sitemap and user flows are in [docs/SITEMAP.md](docs/SITEMAP.md).
+
+- **Home** is grouped: Voice, Typing, Look & feel, More. Until voice works, a "Set up ALTER voice" card sits at the
+  top, and the ALTER voice row shows its status ("Ready · model" or the missing step).
+- **ALTER voice:** numbered setup steps while needed (allow the microphone, download the recommended model, which is
+  used as soon as it finishes), then Speech (model in use, dictation language, all models collapsed), Keyboard (start
+  mode, end recording after silence), Dictation cleanup, and storage used.
 - Languages, keyboard and typing, swipe, predictive text, actions, themes and help, plus the upstream payment page,
   which the license requires to stay.
 
@@ -82,7 +86,7 @@ Native code is prebuilt because Google AI Studio has no NDK or CMake. After chan
 | `app/` | The keyboard: sources in `app/src/main/java` (upstream package `org.futo.inputmethod.latin`), resources, assets, translations, prebuilt AARs (`app/libs`), native sources (`app/native`), locale tools (`app/tools`) |
 | `alter-voice/` | ALTER's voice pack (`com.aistudio.altermind.voice`): dictation, speech models, cleanup, model catalog and downloads, the pill, orb and wave |
 | `voiceinput-shared/` | Upstream voice module, still needed by the keyboard code |
-| `docs/` | `DESIGN.md`, `SIGNING.md`, `FUTO_README.md` (upstream README) |
+| `docs/` | `DESIGN.md`, `SITEMAP.md` (sitemap and user flows), `SIGNING.md`, `FUTO_README.md` (upstream README) |
 | `licenses/` | Licenses of the added models and libraries |
 | `scripts/` | `build_native_libs.sh`, `check_apk_signature.py`, `signing_certificate.sha1` |
 | `.github/workflows/build-apk.yml` | Builds the phone APK and publishes it as a Release |

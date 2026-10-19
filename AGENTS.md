@@ -43,7 +43,8 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 - The keyboard works exactly like FUTO Keyboard (settings, toolbar actions, themes). Its default skin is ALTER's.
 - The app's own screens always use ALTER's settings design (`uix/settings/AlterStyle.kt`); style shared components
   there or in `settings/Components.kt`, not screen by screen. The launcher icon is ALTER's keyboard mark.
-- Keep `README.md`, `MODIFICATIONS.md`, `docs/DESIGN.md` and `CHANGES.md` current with every user-visible change.
+- Keep `README.md`, `MODIFICATIONS.md`, `docs/DESIGN.md`, `docs/SITEMAP.md` and `CHANGES.md` current with every
+  user-visible change. New settings go into the matching home group; keep the primary task (voice) first.
 - Branding: the product is ALTER Keyboard. User-visible text says ALTER, not FUTO, except where FUTO must appear:
   the attribution line (last item of Help, README's License section, release notes), the payment page and payment
   reminders (they pay FUTO and must keep working), the Credits list, `LICENSE.md`, `NOTICE`, `MODIFICATIONS.md` and

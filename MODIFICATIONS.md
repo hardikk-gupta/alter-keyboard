@@ -59,6 +59,10 @@ non-commercial use, shared only for free. The original AOSP code remains under A
   not shown, and crash reports are off unless `crashreporting.properties` configures them, since FUTO's crash dialog
   mails reports to FUTO. The payment page and reminders, the Credits list and internal identifiers keep FUTO's name.
 
+- **Settings structure:** the home is grouped (Voice, Typing, Look & feel, More) with a voice setup card and status,
+  FUTO's "check for updates" item is not shown, and the ALTER voice page follows the setup flow (see
+  `docs/SITEMAP.md`). Every FUTO page is still reachable, including the payment page.
+
 ## What was not changed
 
 FUTO's keyboard look and behaviour are kept as built: themes, layouts, typing, suggestions, swipe, clipboard, emoji,

@@ -107,3 +107,17 @@ Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:te
   setup text without a space before the keyboard word; FUTO's update notice with its keyboard.futo.tech button is gone
   from the settings home; crash reporting (which mails FUTO) stays off unless configured. Re-ran the checks above plus
   `compileStableReleaseKotlin`: passed.
+
+## PR 8: settings sitemap and user flows (Oct 19, 2026)
+
+UI/UX pass using the UI/UX Pro Max skill's `ux` guidelines (primary task first, progressive disclosure, grouped
+navigation, empty states with guidance, multi-step progress, 48 dp targets):
+
+- Settings home grouped into Voice, Typing, Look & feel and More; FUTO's "check for updates" item removed; a "Set up
+  ALTER voice" card with one button until voice works; the ALTER voice row shows live status.
+- ALTER voice page reordered to the setup flow: numbered steps (allow microphone, download the recommended model,
+  auto-used when done), then Speech (with language), Keyboard, Cleanup.
+- New `docs/SITEMAP.md` (sitemap, first-run, dictation and pill-mode flows, rules applied); README, AGENTS and
+  MODIFICATIONS updated.
+
+Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest` passed (9 tests). Not run: phone check.
