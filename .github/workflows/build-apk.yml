@@ -1,0 +1,83 @@
+# Builds the ALTER Keyboard phone APK on GitHub and publishes it as a Release, so it can be downloaded and installed
+# straight from the repo's Releases page. No NDK/CMake needed: native libraries are prebuilt (scripts/build_native_libs.sh).
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      # The shared ALTER key (docs/SIGNING.md). Add it under Settings -> Secrets and variables -> Actions.
+      ALTER_SIGNING_KEYSTORE_B64: ${{ secrets.ALTER_SIGNING_KEYSTORE_B64 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install Android SDK packages
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" > /dev/null
+
+      - name: Signing key
+        run: |
+          if [ -z "$ALTER_SIGNING_KEYSTORE_B64" ]; then
+            echo "::warning::ALTER_SIGNING_KEYSTORE_B64 is not set; signing with a one-off key. This APK will not install as an update over a build signed with another key."
+            keytool -genkeypair -keystore debug.keystore -storepass android -keypass android -alias androiddebugkey \
+              -dname "CN=ALTER Keyboard CI" -keyalg RSA -validity 10000
+          fi
+
+      - name: Build phone APK (arm64-v8a)
+        run: |
+          # Maven Central sometimes answers HTTP 429; retry with a pause.
+          for i in 1 2 3 4; do
+            ./gradlew assembleStableDebug -PalterAbis=arm64-v8a && exit 0
+            echo "Build failed, retrying in 60s ($i)"; sleep 60
+          done
+          exit 1
+
+      - name: Voice unit tests
+        run: ./gradlew :alter-voice:testDebugUnitTest
+
+      - name: Name the APK
+        run: |
+          VERSION=$("$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging app/build/outputs/apk/stable/debug/app-stable-debug.apk \
+            | sed -n "s/.*versionName='\([^']*\)'.*/\1/p")
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          cp app/build/outputs/apk/stable/debug/app-stable-debug.apk "ALTER-Keyboard-$VERSION.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs "ALTER-Keyboard-$VERSION.apk" | grep SHA-1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ALTER-Keyboard-${{ env.VERSION }}
+          path: ALTER-Keyboard-*.apk
+
+      - name: Publish release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: ALTER Keyboard ${{ env.VERSION }}
+          make_latest: true
+          files: ALTER-Keyboard-*.apk
+          body: |
+            Phone APK (arm64-v8a) built from ${{ github.sha }}.
+            Install: open this page on your phone, tap the .apk, allow installing from this source,
+            then enable "ALTER Keyboard" in Settings -> System -> Keyboard.
+            ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc. Personal, non-commercial use.

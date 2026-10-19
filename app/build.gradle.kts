@@ -89,8 +89,9 @@ android {
     versionName = alterVersionName
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = false
-    // Prebuilt native libraries (scripts/build_native_libs.sh) exist for these ABIs only.
-    ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
+    // Prebuilt native libraries (scripts/build_native_libs.sh) exist for these ABIs only. The phone APK in the repo
+    // is built with -PalterAbis=arm64-v8a to stay under GitHub's 100 MB file limit; x86_64 is for emulators.
+    ndk { abiFilters += ((findProperty("alterAbis") as String?)?.split(",") ?: listOf("arm64-v8a", "x86_64")) }
   }
 
   bundle {
