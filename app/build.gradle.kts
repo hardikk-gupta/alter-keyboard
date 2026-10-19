@@ -34,15 +34,13 @@ val alterVersionName = "1.0." + SimpleDateFormat("yyMMdd.HHmm").apply { timeZone
   .format(Date(commitSeconds * 1000L)) + (commitStamp.getOrNull(1)?.let { "-$it" } ?: "-local")
 
 // One shared key signs every ALTER build so updates install over each other (docs/SIGNING.md). It comes from the
-// ALTER_SIGNING_KEYSTORE_B64 environment variable when set, else the git-ignored debug.keystore in the repo root.
-val sharedSigningKeystore: File? = System.getenv("ALTER_SIGNING_KEYSTORE_B64")?.takeIf { it.isNotBlank() }?.let { encoded ->
+// ALTER_SIGNING_KEYSTORE_B64 environment variable when set, else the git-ignored debug.keystore in the repo root
+// (Google AI Studio provides that file).
+val sharedSigningKeystore: File = System.getenv("ALTER_SIGNING_KEYSTORE_B64")?.takeIf { it.isNotBlank() }?.let { encoded ->
   layout.buildDirectory.file("signing/alter-debug.keystore").get().asFile.apply {
     parentFile.mkdirs(); writeBytes(Base64.getMimeDecoder().decode(encoded.trim()))
   }
-} ?: file("${rootDir}/debug.keystore").takeIf { it.exists() }
-if (sharedSigningKeystore == null) {
-  logger.warn("No shared ALTER signing key (ALTER_SIGNING_KEYSTORE_B64 or debug.keystore); signing with FUTO's test key. This APK will not install over ALTER builds.")
-}
+} ?: file("${rootDir}/debug.keystore")
 
 apply(from = "translations.gradle")
 @Suppress("UNCHECKED_CAST")
@@ -50,8 +48,9 @@ val translationsWithoutEngValues = extra["translationsWithoutEngValues"] as groo
 
 val python = if (System.getProperty("os.name").lowercase().contains("windows")) "python" else "python3"
 
-// Generates KeyboardTextsTable.java from the layout texts before every build.
-val updateLocales = tasks.register<Exec>("updateLocales") {
+// Regenerates the committed KeyboardTextsTable.java from the layout texts. Run it by hand
+// (./gradlew :app:updateLocales) after changing layout texts; builds do not need Python.
+tasks.register<Exec>("updateLocales") {
   workingDir = file("tools/make-keyboard-text-py")
   commandLine(python, "src/generate.py")
 }
@@ -68,8 +67,6 @@ tasks.register("updateContributors") {
   }
 }
 
-tasks.named("preBuild") { dependsOn(updateLocales) }
-
 val crashReportPropertiesFile = rootProject.file("crashreporting.properties")
 val crashReportProperties = Properties().apply {
   if (crashReportPropertiesFile.exists()) FileInputStream(crashReportPropertiesFile).use { load(it) }
@@ -79,7 +76,6 @@ val crashReportProperties = Properties().apply {
 android {
   namespace = "org.futo.inputmethod.latin"
   compileSdk = 35
-  ndkVersion = "28.2.13676358"
 
   useLibrary("android.test.runner")
   useLibrary("android.test.base")
@@ -87,12 +83,14 @@ android {
 
   defaultConfig {
     applicationId = "com.aistudio.altermind.keyboard"
-    minSdk = 24
+    minSdk = 26
     targetSdk = 35
     versionCode = alterVersionCode
     versionName = alterVersionName
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = false
+    // Prebuilt native libraries (scripts/build_native_libs.sh) exist for these ABIs only.
+    ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
   }
 
   bundle {
@@ -100,42 +98,33 @@ android {
   }
 
   signingConfigs {
-    getByName("debug") {
-      if (sharedSigningKeystore != null) {
-        storeFile = sharedSigningKeystore
-        storePassword = "android"
-        keyAlias = "androiddebugkey"
-        keyPassword = "android"
-      } else {
-        storeFile = file("java/shared.keystore")
-      }
+    create("release") {
+      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
+      storeFile = file(keystorePath)
+      storePassword = System.getenv("STORE_PASSWORD")
+      keyAlias = "upload"
+      keyPassword = System.getenv("KEY_PASSWORD")
+    }
+    create("debugConfig") {
+      storeFile = sharedSigningKeystore
+      storePassword = "android"
+      keyAlias = "androiddebugkey"
+      keyPassword = "android"
       enableV2Signing = true
       enableV3Signing = true
     }
   }
 
-  val keystorePropertiesFile = rootProject.file("keystore.properties")
-  val releaseSigning = if (keystorePropertiesFile.exists()) {
-    val keystoreProperties = Properties().apply { FileInputStream(keystorePropertiesFile).use { load(it) } }
-    signingConfigs.create("release") {
-      keyAlias = keystoreProperties["keyAlias"] as String
-      keyPassword = keystoreProperties["keyPassword"] as String
-      storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
-      storePassword = keystoreProperties["storePassword"] as String
-    }
-  } else signingConfigs.getByName("debug")
-
   buildTypes {
-    getByName("debug") {
-      isMinifyEnabled = false
-      isShrinkResources = false
-      signingConfig = signingConfigs.getByName("debug")
-    }
     getByName("release") {
-      isMinifyEnabled = true
-      isShrinkResources = false
+      isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      signingConfig = releaseSigning
+      // Without the release key, sign with the shared debug key rather than produce an unsigned APK.
+      val hasReleaseKey = System.getenv("STORE_PASSWORD") != null && file(System.getenv("KEYSTORE_PATH") ?: "nonexistent").exists()
+      signingConfig = signingConfigs.getByName(if (hasReleaseKey) "release" else "debugConfig")
+    }
+    getByName("debug") {
+      signingConfig = signingConfigs.getByName("debugConfig")
     }
     all {
       if (crashReportPropertiesFile.exists()) {
@@ -178,21 +167,14 @@ android {
     targetCompatibility = JavaVersion.VERSION_1_8
   }
 
+  // Standard src/main and src/stable layout, plus FUTO's large resources and filtered translations.
   sourceSets {
     getByName("main") {
-      res.setSrcDirs(listOf(
-        "java/res",
+      res.srcDirs(
         translationsWithoutEngValues.call("translations/core"),
         translationsWithoutEngValues.call("translations/core-ign"),
-        "java/res-large"
-      ))
-      java.setSrcDirs(listOf("common/src", "java/src"))
-      manifest.srcFile("java/AndroidManifest.xml")
-      assets.setSrcDirs(listOf("java/assets"))
-    }
-    getByName("stable") {
-      java.setSrcDirs(listOf("common/src", "java/src", "java/stable/java"))
-      manifest.srcFile("java/stable/AndroidManifest.xml")
+        "src/main/res-large"
+      )
     }
   }
 
@@ -206,10 +188,6 @@ android {
 
   packaging {
     jniLibs { useLegacyPackaging = true }
-  }
-
-  externalNativeBuild {
-    cmake { path = file("native/jni/CMakeLists.txt") }
   }
 
   buildFeatures {

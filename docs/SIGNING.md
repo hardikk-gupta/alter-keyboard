@@ -4,8 +4,9 @@ Android installs an update only when it is signed by the **same key** as the ins
 installer fail ("App not installed" / "package conflicts", or it silently closes), so the phone keeps the old ALTER.
 
 ALTER Keyboard (`com.aistudio.altermind.keyboard`) is a separate app from ALTER, signed with the same shared key.
-Without the key, the build falls back to FUTO's committed test key (`java/shared.keystore`) and warns: such an APK
-will not install over a build signed with the shared key.
+The signing structure is Google AI Studio's: `debugConfig` uses `ALTER_SIGNING_KEYSTORE_B64` when set, else
+`debug.keystore` in the repo root; `release` uses `KEYSTORE_PATH`, `STORE_PASSWORD` and `KEY_PASSWORD`, and falls back
+to `debugConfig` when they are missing. A build without either key fails; it never signs with another key.
 
 ## The shared key
 

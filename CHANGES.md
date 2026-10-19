@@ -38,3 +38,19 @@ Checks run (cloud session, no phone, no AI Studio access):
 - `./gradlew assembleStableDebug :alter-voice:testDebugUnitTest`: passed; 9 tests passed.
 - The new APK holds exactly the same 1,876 non-code files as the APK before the move, same package and resources.
 - Not verified: the AI Studio import itself.
+
+## PR 3: Google AI Studio build rules (Oct 19, 2026)
+
+AI Studio still reported "internal error" after PR 2. Following AI Studio's own requirements: no NDK/CMake in Gradle
+(native libraries prebuilt by `scripts/build_native_libs.sh` and committed for arm64-v8a and x86_64), standard
+`app/src/main` layout, AI Studio's signing structure, `app_name` = "ALTER Keyboard", minSdk 26, no Python step in
+builds (`KeyboardTextsTable.java` committed), no committed keystore, and FUTO's `.gitlab-ci.yml`/`.clang-tidy` removed.
+
+Checks run (cloud session, no phone, no AI Studio access):
+
+- `scripts/build_native_libs.sh`: built both libraries (Release, 16 KB page alignment, JNI entry points present).
+- `./gradlew clean assembleStableDebug :alter-voice:testDebugUnitTest` with the NDK and CMake hidden: passed;
+  9 tests passed. APK 146 MB, label "ALTER Keyboard", minSdk 26, only arm64-v8a and x86_64 libraries.
+- Same non-code APK contents as before, except two library layouts merged by minSdk 26.
+- Signed here with a throwaway local `debug.keystore`; not the shared key.
+- Not verified: the AI Studio import itself, or the repository visibility / GitHub app access it needs.

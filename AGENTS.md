@@ -16,8 +16,18 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 ## Project layout (must stay a Google AI Studio project)
 
 - Keep AI Studio's layout: `metadata.json`, `settings.gradle.kts`, root `build.gradle.kts`, the keyboard in `app/`
-  (`app/build.gradle.kts`), plus the `alter-voice` and `voiceinput-shared` modules. Do not remove `metadata.json`.
+  (`app/build.gradle.kts`, standard `app/src/main` and `app/src/stable`), plus the `alter-voice` and
+  `voiceinput-shared` modules. Do not remove `metadata.json` or its `MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API`;
+  `app_name` must equal its `name` ("ALTER Keyboard").
+- **No NDK or CMake in Gradle.** AI Studio's container has neither. C/C++ is built by `scripts/build_native_libs.sh`
+  (Release, arm64-v8a and x86_64) and the `.so` files are committed to `app/src/main/jniLibs` and
+  `alter-voice/src/main/jniLibs`. Change native sources (`app/native/jni`, `alter-voice/native`) only together with
+  rebuilt libraries. Never add `externalNativeBuild` back.
+- **No Python in builds.** `KeyboardTextsTable.java` is committed; regenerate it with `./gradlew :app:updateLocales`
+  after changing layout texts.
 - No git submodules and no Git LFS: every file must be an ordinary file in this repo, each under 100 MB.
+- Keep AI Studio's signing structure (`release` from `KEYSTORE_PATH`/`STORE_PASSWORD`/`KEY_PASSWORD`,
+  `debugConfig` from `debug.keystore` in the repo root). Never commit `local.properties`, `.env`, `*.keystore`, `*.jks`.
 - Build with `./gradlew assembleStableDebug`; the APK is `app/build/outputs/apk/stable/debug/app-stable-debug.apk`.
 
 ## Identity, signing and updates
