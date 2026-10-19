@@ -54,3 +54,13 @@ Checks run (cloud session, no phone, no AI Studio access):
 - Same non-code APK contents as before, except two library layouts merged by minSdk 26.
 - Signed here with a throwaway local `debug.keystore`; not the shared key.
 - Not verified: the AI Studio import itself, or the repository visibility / GitHub app access it needs.
+
+## PR 4: phone APK on the Releases page (Oct 19, 2026)
+
+The phone APK (arm64-v8a, 117 MB) is over GitHub's 100 MB file limit, so it cannot be committed. A GitHub Actions
+workflow now builds it on every push to `main` (and on pull requests, as a downloadable artifact) and publishes it as
+a GitHub Release. `-PalterAbis=arm64-v8a` limits a build to phone ABIs. Signing uses the
+`ALTER_SIGNING_KEYSTORE_B64` repository secret; without it the workflow signs with a one-off key and warns.
+
+Checks run: `./gradlew assembleStableDebug -PalterAbis=arm64-v8a` passed locally (117 MB, arm64-v8a only); the
+workflow file parses. The workflow itself runs on GitHub after this is pushed.

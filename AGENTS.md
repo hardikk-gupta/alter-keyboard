@@ -69,3 +69,8 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
   available; nothing secret or any model weight is committed.
 - Phone acceptance (typing in real apps, dictation, pill switching, password fields, banking apps, install over the
   previous build) is checked by a person and never claimed from host tests.
+
+## Phone APK
+
+`.github/workflows/build-apk.yml` builds the arm64-v8a APK on every push to `main` and publishes it on the Releases page
+(`ALTER-Keyboard-<version>.apk`). The repo cannot hold it as a file: it is over GitHub's 100 MB limit.
