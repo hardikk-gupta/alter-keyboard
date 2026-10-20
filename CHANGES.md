@@ -177,3 +177,15 @@ Checks run: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebu
 All 20 tests passed, with no failures or skips; app Kotlin/Java compilation, resources and dexing completed.
 APK assembly failed only at signing validation because the shared keystore is unavailable. `git diff --check` passed.
 APK signature verification and real-phone visual/accessibility checks were not run.
+
+## Toolbar-sized rounded Play/Pause icons (Oct 21, 2026)
+
+Play/Pause now uses the toolbar's 20dp icon size and fills more of its 24-unit viewport, fixing the visibly undersized
+symbols. Pause uses outlined bars with explicit 2-unit corner radii; Play uses a curved triangle. Both keep 2-unit
+strokes and the keyboard theme tint. The shared discard control also uses 20dp; external positions and 48dp-wide
+touch areas are unchanged. User and design documentation reflects the corrected sizing and geometry.
+
+Checks run: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 20 tests passed, with no failures, errors or skips; app compilation, resources and dexing completed. APK assembly
+failed only at signing validation because the shared keystore is unavailable. `git diff --check` passed.
+APK signature verification and real-phone visual/accessibility checks were not run.

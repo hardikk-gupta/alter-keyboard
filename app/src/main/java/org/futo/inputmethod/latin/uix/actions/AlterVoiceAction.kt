@@ -141,13 +141,13 @@ class AlterDictationSession(
     }
 }
 
-/** Same compact rounded icon, theme tint, ripple and hit area for discard and pause/resume. */
+/** Same toolbar-sized rounded icon, theme tint, ripple and hit area for discard and pause/resume. */
 @Composable fun VoiceControlButton(painter: Painter, description: String, onClick: () -> Unit,
     modifier: Modifier = Modifier, tint: Color = LocalKeyboardScheme.current.onBackground) {
     Box(modifier.width(48.dp).fillMaxHeight().clip(RoundedCornerShape(12.dp))
         .clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = description },
         contentAlignment = Alignment.Center) {
-        Icon(painter, null, Modifier.size(18.dp), tint = tint)
+        Icon(painter, null, Modifier.size(20.dp), tint = tint)
     }
 }
 
