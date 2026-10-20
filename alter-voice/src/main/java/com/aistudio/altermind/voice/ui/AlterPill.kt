@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -60,7 +61,7 @@ object AlterColors {
     val OrbInk = Color(0xFFF5F5F5)
 }
 
-enum class PillState { Idle, Listening, Thinking, Error, Disabled }
+enum class PillState { Idle, Listening, Paused, Thinking, Error, Disabled }
 
 /** Lucide icons (ISC license) used on the pill bar, from the same path data as ALTER's ui/LucideIcons.kt set. */
 object LucidePill {
@@ -70,6 +71,8 @@ object LucidePill {
                 strokeLineCap = StrokeCap.Round, strokeLineJoin = StrokeJoin.Round)
         }
     }.build()
+    val Pause = icon("Pause", "M8 5v14", "M16 5v14")
+    val Play = icon("Play", "M8 5l11 7-11 7Z")
     val Mic = icon("Mic", "M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z", "M19 10v2a7 7 0 0 1-14 0v-2", "M12 19v3")
     val MicOff = icon("MicOff", "M2 2l20 20", "M18.89 13.23A7.12 7.12 0 0 0 19 12v-2", "M5 10v2a7 7 0 0 0 12 5",
         "M15 9.34V5a3 3 0 0 0-5.68-1.33", "M9 9v3a3 3 0 0 0 5.12 2.12", "M12 19v3")
@@ -112,32 +115,35 @@ internal fun voiceWavePoints(level: Float, phase: Float, strand: Int): List<Offs
     }
 }
 
-/**
- * ALTER's mic pill: idle (flat-eyes mark + mic), listening (live wave), thinking (S1 orb in white and yellow), error
- * (red triangle, no text). SlateGrayCard body inside a thin AlterYellow boundary, the ALTER mark of the voice
- * surface; 12dp corners, no glass or gradients. The caller sizes it ([modifier]). [description] is read by TalkBack,
- * so the error triangle still has its message.
- */
+/** The pill's centre finishes dictation; pause/resume sits at the far right, away from the strip's discard button. */
 @Composable fun AlterVoicePill(state: PillState, level: Float, onTap: () -> Unit, modifier: Modifier = Modifier,
-    description: String = "") {
+    description: String = "", onPauseResume: (() -> Unit)? = null, pauseResumeDescription: String = "") {
     val shape = RoundedCornerShape(12.dp)
-    Box(modifier
-        .clip(shape)
-        .background(AlterColors.SlateGrayCard)
-        .border(1.dp, AlterColors.AlterYellow.copy(alpha = if (state == PillState.Disabled) .25f else .6f), shape)
-        .clickable(enabled = state != PillState.Disabled, role = Role.Button, onClick = onTap)
-        .semantics { contentDescription = description },
-        contentAlignment = Alignment.Center) {
-        when (state) {
-            PillState.Idle, PillState.Disabled -> Row(verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                val ink = if (state == PillState.Disabled) AlterColors.DisabledText else AlterColors.OrbInk
-                Icon(painterResource(R.drawable.ic_alter_ai_doodle_closed), null, Modifier.size(22.dp), tint = ink)
-                Icon(if (state == PillState.Disabled) LucidePill.MicOff else LucidePill.Mic, null, Modifier.size(20.dp), tint = ink)
+    Row(modifier.clip(shape).background(AlterColors.SlateGrayCard)
+        .border(1.dp, AlterColors.AlterYellow.copy(alpha = if (state == PillState.Disabled) .25f else .6f), shape),
+        verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.weight(1f).fillMaxHeight()
+            .clickable(enabled = state != PillState.Disabled, role = Role.Button, onClick = onTap)
+            .semantics { contentDescription = description }, contentAlignment = Alignment.Center) {
+            when (state) {
+                PillState.Idle, PillState.Disabled -> Row(verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    val ink = if (state == PillState.Disabled) AlterColors.DisabledText else AlterColors.OrbInk
+                    Icon(painterResource(R.drawable.ic_alter_ai_doodle_closed), null, Modifier.size(22.dp), tint = ink)
+                    Icon(if (state == PillState.Disabled) LucidePill.MicOff else LucidePill.Mic, null, Modifier.size(20.dp), tint = ink)
+                }
+                PillState.Listening -> VoiceWave(level, Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 6.dp))
+                PillState.Paused -> Icon(LucidePill.Pause, null, Modifier.size(22.dp), tint = AlterColors.AlterYellow)
+                PillState.Thinking -> ProcessingField(Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 4.dp))
+                PillState.Error -> Icon(LucidePill.TriangleAlert, null, Modifier.size(22.dp), tint = AlterColors.ErrorRed)
             }
-            PillState.Listening -> VoiceWave(level, Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 6.dp))
-            PillState.Thinking -> ActivityOrb(ink = AlterColors.OrbInk, accent = AlterColors.AlterYellow, appearAfterMs = 0)
-            PillState.Error -> Icon(LucidePill.TriangleAlert, null, Modifier.size(22.dp), tint = AlterColors.ErrorRed)
+        }
+        if (onPauseResume != null && (state == PillState.Listening || state == PillState.Paused)) {
+            Box(Modifier.width(48.dp).fillMaxHeight().clickable(role = Role.Button, onClick = onPauseResume)
+                .semantics { contentDescription = pauseResumeDescription }, contentAlignment = Alignment.Center) {
+                Icon(if (state == PillState.Paused) LucidePill.Play else LucidePill.Pause, null,
+                    Modifier.size(24.dp), tint = AlterColors.LightText)
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ import java.util.Locale
 interface ActionInputTransaction {
     val textContext: TextContext
     fun updatePartial(text: String)
-    fun commit(text: String)
+    fun commit(text: String): Boolean
     fun cancel()
 }
 

@@ -90,16 +90,14 @@ class ActionInputTransactionIME(val helper: IMEHelper) : IMEInterface, ActionInp
         (ic as? InputConnectionInternalComposingWrapper)?.send()
     }
 
-    override fun commit(text: String) {
-        if (isFinished) return
+    override fun commit(text: String): Boolean {
+        if (isFinished) return false
         helper.requestCursorUpdate()
         isFinished = true
-        ic?.commitText(
-            text,
-            1
-        )
+        val accepted = ic?.commitText(text, 1) == true
         helper.endInputTransaction(this)
         (ic as? InputConnectionInternalComposingWrapper)?.send()
+        return accepted
     }
 
     override fun cancel() {

@@ -60,6 +60,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -660,25 +661,27 @@ class UixManager(private val latinIME: LatinIME) {
     val isMainKeyboardHidden get() = mainKeyboardHidden.value
 
     // ALTER Keyboard: pill mode replaces the keyboard with a 56dp bar holding ALTER's mic pill.
+    private var voiceFieldGeneration = 0
     private val pillMode = mutableStateOf(false)
     private val pillSession = mutableStateOf<AlterDictationSession?>(null)
     val isPillMode get() = pillMode.value
 
     fun setPillMode(to: Boolean) {
-        val pill = to && !latinIME.currentInputEditorInfo.isAlterSensitiveField()
+        val pill = to && latinIME.currentInputEditorInfo != null && !latinIME.currentInputEditorInfo.isAlterSensitiveField()
         if (pill == pillMode.value) return
         if (pill) {
             closeActionWindow()
-            stopInlineVoice()
+            stopInlineVoice(preserve = true)
+            val fieldGeneration = voiceFieldGeneration
             pillSession.value = AlterDictationSession(latinIME, latinIME.lifecycleScope) {
-                keyboardManagerForAction.commitDictation(it)
+                commitVoiceDraft(fieldGeneration, it)
             }
         } else {
             pillSession.value?.close()
             pillSession.value = null
         }
         pillMode.value = pill
-        if (!pill) latinIME.onKeyboardShown()
+        if (!pill) { latinIME.onKeyboardShown(); restoreVoiceDraft() }
     }
 
     // ALTER Keyboard: in the full keyboard, the mic turns the suggestion row into ALTER's voice strip.
@@ -688,28 +691,43 @@ class UixManager(private val latinIME: LatinIME) {
     /** Mic action: opens the voice strip and starts recording; while it is open, acts like tapping the strip. */
     fun toggleInlineVoice() {
         inlineVoice.value?.let { it.tap(); return }
+        openInlineVoice(startRecording = true)
+    }
+
+    private fun openInlineVoice(startRecording: Boolean) {
         if (pillMode.value) return
         closeActionWindow()
-        inlineVoiceDisabled = latinIME.currentInputEditorInfo.isAlterSensitiveField()
+        inlineVoiceDisabled = latinIME.currentInputEditorInfo == null || latinIME.currentInputEditorInfo.isAlterSensitiveField()
+        val fieldGeneration = voiceFieldGeneration
         val session = AlterDictationSession(latinIME, latinIME.lifecycleScope) { text ->
-            keyboardManagerForAction.commitDictation(text)
+            commitVoiceDraft(fieldGeneration, text)
             stopInlineVoice()
         }
         inlineVoice.value = session
-        latinIME.window.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        if (!inlineVoiceDisabled) session.start()
+        if (startRecording && !inlineVoiceDisabled && !session.controller.paused.value) session.start()
     }
 
-    /** Recording stops and is discarded; the suggestions come back. */
-    fun stopInlineVoice() {
+    private fun commitVoiceDraft(fieldGeneration: Int, text: String) {
+        check(fieldGeneration == voiceFieldGeneration && latinIME.isInputViewShown && latinIME.currentInputEditorInfo != null
+            && !latinIME.currentInputEditorInfo.isAlterSensitiveField()) { "The original input field is no longer active." }
+        keyboardManagerForAction.commitDictation(text)
+    }
+
+    /** The explicit cross discards; navigation and keyboard lifecycle changes preserve the draft. */
+    fun stopInlineVoice(preserve: Boolean = false) {
         val session = inlineVoice.value ?: return
         inlineVoice.value = null
-        session.close()
+        session.close(discard = !preserve)
         latinIME.window.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     @Composable
     private fun RowScope.AlterVoiceStrip(session: AlterDictationSession) {
+        val processing by session.controller.processing.collectAsState()
+        LaunchedEffect(session, processing) {
+            if (processing) latinIME.window.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            else latinIME.window.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
         Row(Modifier.weight(1f).fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
             val cancelDescription = stringResource(R.string.alter_voice_cancel)
             // The whole action-bar height (40dp) by 48dp wide: as large as the bar allows.
@@ -721,10 +739,25 @@ class UixManager(private val latinIME: LatinIME) {
         }
     }
 
-    /** Every time a text field gets focus, the keyboard opens in the user's chosen start mode. */
+    /** A pending draft is shown paused only in a normal input field. Never resume or insert automatically. */
+    fun restoreVoiceDraft() {
+        if (!pillMode.value && inlineVoice.value == null && latinIME.currentInputEditorInfo != null
+            && !latinIME.currentInputEditorInfo.isAlterSensitiveField()
+            && com.aistudio.altermind.voice.DictationController.hasSavedDraft(latinIME)) {
+            openInlineVoice(startRecording = false)
+        }
+    }
+
+    /** Every time a text field gets focus, use the chosen start mode and restore pending work. */
     fun applyStartMode(editorInfo: EditorInfo?, restarting: Boolean) {
-        if (restarting && !editorInfo.isAlterSensitiveField()) return
-        setPillMode(latinIME.getSettingBlocking(ALTER_START_MODE) == ALTER_START_MODE_PILL)
+        if (editorInfo == null || editorInfo.isAlterSensitiveField()) {
+            pauseVoiceSessions()
+            return
+        }
+        if (!restarting || (pillSession.value == null && inlineVoice.value == null)) {
+            setPillMode(latinIME.getSettingBlocking(ALTER_START_MODE) == ALTER_START_MODE_PILL)
+        }
+        restoreVoiceDraft()
     }
 
     @Composable
@@ -848,7 +881,7 @@ class UixManager(private val latinIME: LatinIME) {
 
     private fun enterActionWindowView(action: Action) {
         assert(action.windowImpl != null)
-        stopInlineVoice()
+        stopInlineVoice(preserve = true)
 
         currWindowAction.value = action
 
@@ -1718,6 +1751,7 @@ class UixManager(private val latinIME: LatinIME) {
     private val quickClipState: MutableState<QuickClipState?> = mutableStateOf(null)
     fun dismissQuickClips() { quickClipState.value = null }
     fun inputStarted(editorInfo: EditorInfo?) {
+        pauseVoiceSessions()
         try {
             checkIfDictInstalled()
         } catch(e: Exception) {
@@ -1741,11 +1775,16 @@ class UixManager(private val latinIME: LatinIME) {
         floatingPreeditEditing.value = false
     }
 
+    private fun pauseVoiceSessions() {
+        voiceFieldGeneration++
+        pillSession.value?.close(); pillSession.value = null; pillMode.value = false
+        stopInlineVoice(preserve = true)
+    }
+
     fun onInputFinishing() {
         closeActionWindow()
-        // Recording stops and is discarded when the field loses focus or the keyboard hides.
-        pillSession.value?.controller?.cancel()
-        stopInlineVoice()
+        // Losing focus pauses capture and decoding. Reopening displays the private saved draft.
+        pauseVoiceSessions()
         languageSwitcherDialog?.dismiss()
         isShowingActionEditor.value = false
         resizers.hideResizer()
@@ -1792,6 +1831,7 @@ class UixManager(private val latinIME: LatinIME) {
     }
 
     fun onDestroy() {
+        onInputFinishing()
         closeActionWindow()
         persistentStates.values.filterNotNull().forEach {
             it.close()

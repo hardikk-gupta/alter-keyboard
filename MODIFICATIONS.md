@@ -63,6 +63,14 @@ non-commercial use, shared only for free. The original AOSP code remains under A
   FUTO's "check for updates" item is not shown, and the ALTER voice page follows the setup flow (see
   `docs/SITEMAP.md`). Every FUTO page is still reachable, including the payment page.
 
+- **Recoverable dictation:** captures for Whisper/Moonshine append PCM to one private temporary draft before
+  decoding. Pause/resume, keyboard hide, focus changes, process restart and microphone interruptions preserve that
+  draft. Reopening shows a paused pill; playback/recording and insertion require explicit interaction. The draft is
+  excluded from Android backup, bounded to fifteen minutes, and deleted after accepted insertion or explicit discard.
+  Android's recognizer provides no recoverable raw audio, so only its recognized text can be retained and continued.
+- **Voice processing design:** the yellow/gray thinking lattice fills the pill's rectangle rather than a small orb.
+  Reduced motion uses a still frame. Pause/resume sits at the opposite end from the strip's discard cross.
+
 ## What was not changed
 
 FUTO's keyboard look and behaviour are kept as built: themes, layouts, typing, suggestions, swipe, clipboard, emoji,

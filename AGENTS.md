@@ -63,11 +63,15 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 - Models download into private no-backup storage on demand from the pinned catalog
   (`alter-voice/src/main/assets/alter_voice_models.json`) with exact size and SHA-256 checks. Never bundle weights.
 - Android on-device recognition only on API 31+, never a cloud fallback.
-- No recovery cards: on failure the pill shows the red triangle and retries the last recording held in memory.
+- No recovery cards: interrupted recording/processing returns as a paused pill. Keep one private temporary draft
+  in `noBackupFilesDir/dictation-draft`; delete it only after accepted text insertion or explicit discard.
+  Whisper/Moonshine journal raw PCM; Android on-device recognition can preserve only its recognized text.
 - Text goes in through the keyboard's input connection (`commitText`), never sent automatically. No accessibility
   service is used.
-- Recording stops and is discarded when the field loses focus or the keyboard hides. Password and
-  no-personalized-learning fields open the full keyboard with the mic disabled.
+- Losing focus or hiding the keyboard pauses capture/decoding and preserves the draft. Never resume the mic or
+  insert recovered text automatically. Password and no-personalized-learning fields disable voice and hide recovery.
+- Put pause/resume at the far right of the pill, away from the strip's discard cross. Thinking fills the rectangle
+  with yellow/gray cells, with a static frame when animations are disabled.
 
 ## Pull requests
 

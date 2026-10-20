@@ -82,7 +82,10 @@ internal class DeviceSpeechSession(private val context: Context) {
                             override fun onEndOfSpeech() { if (result.isActive) { listening(false); level(0f); waitForFinal() } }
                             override fun onError(error: Int) { fail(deviceSpeechError(error)) }
                             override fun onPartialResults(results: Bundle?) {
-                                if (result.isActive) partial(cleanDictation(results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull().orEmpty()))
+                                if (result.isActive) {
+                                    try { partial(cleanDictation(results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull().orEmpty())) }
+                                    catch (e: Exception) { fail("Could not save recognized text: ${e.message}") }
+                                }
                             }
                             override fun onResults(results: Bundle?) {
                                 val text = cleanDictation(results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull().orEmpty())
