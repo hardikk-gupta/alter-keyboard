@@ -26,9 +26,11 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
 
 - Tap the ALTER flat-eye icon in the action bar: the suggestion row turns into ALTER's voice strip (a ✕ and the
   pill), with no extra layer above the keys. The pill shows a live yellow wave driven by the real microphone level; tap it to finish.
-- Pause/resume is at the far right of the pill, away from the discard cross. While paused, tap the pill centre to
+- Pause/resume sits outside the right edge of the pill, opposite the discard cross. Both use small rounded,
+  theme-colored icons with large touch areas. While paused, tap the pill centre to
   process what is already recorded, or tap Play to keep recording.
-- Yellow/gray thinking cells fill the whole rectangle during transcription and cleanup; tapping pauses processing.
+- The original AICSS orb motion fills the rectangle with round white/yellow dots during transcription and cleanup;
+  tapping the pill or its external Pause button pauses processing.
   With animations off the cells show a still frame. Text is inserted at the cursor and is never sent.
 - If a call interrupts the microphone, or the keyboard hides/loses focus, the draft is saved. Reopening a normal
   text field shows a paused pill; it never records or inserts recovered text automatically. Opening the notification

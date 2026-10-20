@@ -70,8 +70,9 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
   service is used.
 - Losing focus or hiding the keyboard pauses capture/decoding and preserves the draft. Never resume the mic or
   insert recovered text automatically. Password and no-personalized-learning fields disable voice and hide recovery.
-- Put pause/resume at the far right of the pill, away from the strip's discard cross. Thinking fills the rectangle
-  with yellow/gray cells, with a static frame when animations are disabled.
+- Put pause/resume outside the pill's right edge, opposite the external discard cross. Both controls use the same
+  small rounded icons and theme tint, with full-size touch areas. Thinking reuses the original AICSS S1 orb motion
+  across the rectangle, with a static frame when animations are disabled.
 
 ## Pull requests
 

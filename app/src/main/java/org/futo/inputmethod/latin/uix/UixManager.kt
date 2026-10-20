@@ -102,6 +102,7 @@ import androidx.compose.ui.semantics.semantics
 import com.aistudio.altermind.voice.ui.AlterColors
 import com.aistudio.altermind.voice.ui.LucidePill
 import com.aistudio.altermind.voice.ui.PillBarButton
+import org.futo.inputmethod.latin.uix.actions.VoiceControlButton
 import org.futo.inputmethod.latin.uix.actions.AlterDictationSession
 import org.futo.inputmethod.latin.uix.actions.commitDictation
 import androidx.core.view.inputmethod.InputConnectionCompat
@@ -729,13 +730,10 @@ class UixManager(private val latinIME: LatinIME) {
             else latinIME.window.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         Row(Modifier.weight(1f).fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
-            val cancelDescription = stringResource(R.string.alter_voice_cancel)
-            // The whole action-bar height (40dp) by 48dp wide: as large as the bar allows.
-            Box(Modifier.width(48.dp).fillMaxHeight().clip(RoundedCornerShape(12.dp)).clickable(role = Role.Button) { stopInlineVoice() }
-                .semantics { contentDescription = cancelDescription }, contentAlignment = Alignment.Center) {
-                Icon(painterResource(R.drawable.close), null, Modifier.size(20.dp))
-            }
-            session.Pill(disabled = inlineVoiceDisabled, modifier = Modifier.weight(1f).fillMaxHeight().padding(top = 4.dp, bottom = 4.dp, end = 4.dp))
+            VoiceControlButton(painterResource(R.drawable.close), stringResource(R.string.alter_voice_cancel),
+                onClick = { stopInlineVoice() })
+            session.Pill(disabled = inlineVoiceDisabled, modifier = Modifier.weight(1f).fillMaxHeight(),
+                pillModifier = Modifier.padding(vertical = 4.dp, horizontal = 2.dp))
         }
     }
 
@@ -772,7 +770,7 @@ class UixManager(private val latinIME: LatinIME) {
                     .semantics { contentDescription = switchDescription }, contentAlignment = Alignment.Center) {
                     Icon(painterResource(R.drawable.globe), null, Modifier.size(24.dp), tint = AlterColors.LightText)
                 }
-                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { session.Pill() }
+                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { session.Pill(controlTint = AlterColors.LightText) }
                 PillBarButton(LucidePill.Keyboard, stringResource(R.string.alter_pill_show_keyboard), onClick = { setPillMode(false) })
             }
             if (!floating) Spacer(Modifier.height(navBarHeight()))

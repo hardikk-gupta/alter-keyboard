@@ -48,14 +48,16 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
   ALTER mark of every voice surface. No glass, blur or gradients. Touch targets 48 dp.
 - Idle: the flat-eyes ALTER mark (`ic_alter_ai_doodle_closed`) tinted `#F5F5F5`, plus the Lucide mic.
 - Listening: one AlterYellow line driven by the real microphone RMS, flat in silence (ALTER's `voiceWavePoints`).
-- Listening/paused: a pause/resume button occupies the far-right 48dp-wide area, separated from the discard cross
-  by the centre of the pill. Pill mode provides 48dp height; the full keyboard uses the available action-bar height.
-  Paused shows a yellow pause icon in the centre; tapping the centre processes saved dictation, Play continues capture.
-- Thinking: a three-row field of rounded cells adapts its column count to fill the full rectangle. A 1.7-second wave
-  moves from gray to AlterYellow across the field, with no isolated small orb. The existing small orb on other screens
-  is unchanged.
+- Listening/paused/thinking: Pause/Play is outside the right-hand curve; the discard cross is outside the left.
+  Both controls use the same 18dp icons, rounded 2-unit strokes, 12dp ripple corners and keyboard-theme tint (light
+  ink on the fixed black pill-mode bar). The 48dp-wide hit areas use the full available bar height. Only the bounded
+  status surface has vertical padding, so the controls align. Paused shows an 18dp yellow pause marker in the centre;
+  tapping the centre processes saved dictation, Play continues capture, and Pause can also suspend processing.
+- Thinking: the original AICSS S1 orb choreography (1.7-second cycle, 700ms radial delay per cell, 180ms centre lead,
+  eased swelling and fading) is reused across a three-row rectangular lattice. Round dots move from white to yellow
+  as they light. The column count adapts to fill the pill; the small orb on other screens keeps its original 3×3 shape.
 - Error: the red Lucide triangle-alert, no text; TalkBack reads the error and "Tap to try again".
-- Animations off: the waveform is still and the processing field shows a static yellow centre band with gray cells.
+- Animations off: the waveform is still and the processing field shows static centre dots lit against dim white dots.
 
 ## Keyboard UX
 
@@ -68,7 +70,7 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
   expand button, pinned actions and keys stay where they are. Tapping the flat-eye action again acts like tapping the
   strip. A pinned "Minimize" action (FUTO's chevron-down icon) switches to pill mode.
 - **Pill taps:** idle → record; listening → finish; paused → process saved dictation; thinking → pause processing;
-  error → retry saved dictation, or record again if nothing was captured. Pause/Play at the far right pauses/resumes
+  error → retry saved dictation, or record again if nothing was captured. Pause/Play outside the right edge pauses/resumes
   capture. The full keyboard's ✕ explicitly discards the draft.
 - Text goes in through `commitText` at the cursor, replacing any selection, and is never sent.
 - Losing focus, hiding the keyboard, or losing microphone input pauses capture/decoding. One temporary draft in

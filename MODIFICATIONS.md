@@ -68,8 +68,9 @@ non-commercial use, shared only for free. The original AOSP code remains under A
   draft. Reopening shows a paused pill; playback/recording and insertion require explicit interaction. The draft is
   excluded from Android backup, bounded to fifteen minutes, and deleted after accepted insertion or explicit discard.
   Android's recognizer provides no recoverable raw audio, so only its recognized text can be retained and continued.
-- **Voice processing design:** the yellow/gray thinking lattice fills the pill's rectangle rather than a small orb.
-  Reduced motion uses a still frame. Pause/resume sits at the opposite end from the strip's discard cross.
+- **Voice processing design:** the original AICSS S1 orb choreography fills the pill's rectangle with round
+  white/yellow dots. Reduced motion uses a still frame. Pause/resume sits outside the right-hand curve, opposite
+  the discard cross; both use matching 18dp icons, rounded 2-unit strokes, theme tint and 48dp-wide touch areas.
 
 ## What was not changed
 

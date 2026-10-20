@@ -11,6 +11,7 @@
     <string name="alter_pill_listening">Listening. Tap to finish</string>
     <string name="alter_pill_paused">Recording paused. Tap to process saved dictation, or use Resume to keep recording</string>
     <string name="alter_voice_pause">Pause recording</string>
+    <string name="alter_voice_pause_processing">Pause processing</string>
     <string name="alter_voice_resume">Resume recording</string>
     <string name="alter_pill_thinking">Transcribing. Tap to pause processing</string>
     <string name="alter_pill_error_retry">Tap to try again.</string>
