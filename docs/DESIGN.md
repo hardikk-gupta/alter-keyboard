@@ -42,16 +42,20 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 | DisabledText | `#71717A` | Disabled mic (password fields) |
 | AlterYellow | `#FFBD00` | The one accent: the live voice wave |
 | ErrorRed | `#EF4444` | Voice error triangle only |
-| Orb ink | `#F5F5F5` | Thinking orb and monochrome logo |
+| Orb ink | `#F5F5F5` | Monochrome logo and idle icons |
 
 - Pill: 12 dp corners, SlateGrayCard body inside a thin (1 dp) AlterYellow boundary at 60% (25% when disabled), the
   ALTER mark of every voice surface. No glass, blur or gradients. Touch targets 48 dp.
 - Idle: the flat-eyes ALTER mark (`ic_alter_ai_doodle_closed`) tinted `#F5F5F5`, plus the Lucide mic.
 - Listening: one AlterYellow line driven by the real microphone RMS, flat in silence (ALTER's `voiceWavePoints`).
-- Thinking: the AICSS Orbs S1 lattice (3×3 dots, 6-unit pitch on a 28-unit stage at 20 dp, 1.7 s cycle, centre leads
-  by 180 ms, resting ink 20% on dark), in white and yellow: each dot moves from `#F5F5F5` to AlterYellow as it lights.
+- Listening/paused: a pause/resume button occupies the far-right 48dp-wide area, separated from the discard cross
+  by the centre of the pill. Pill mode provides 48dp height; the full keyboard uses the available action-bar height.
+  Paused shows a yellow pause icon in the centre; tapping the centre processes saved dictation, Play continues capture.
+- Thinking: a three-row field of rounded cells adapts its column count to fill the full rectangle. A 1.7-second wave
+  moves from gray to AlterYellow across the field, with no isolated small orb. The existing small orb on other screens
+  is unchanged.
 - Error: the red Lucide triangle-alert, no text; TalkBack reads the error and "Tap to try again".
-- Animations off: the wave and orb show still frames (the orb lights only its centre dot).
+- Animations off: the waveform is still and the processing field shows a static yellow centre band with gray cells.
 
 ## Keyboard UX
 
@@ -63,10 +67,16 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
   bar row are replaced by ALTER's voice strip (a cancel ✕ and the bounded pill with the wave, orb or error) while the
   expand button, pinned actions and keys stay where they are. Tapping the flat-eye action again acts like tapping the
   strip. A pinned "Minimize" action (FUTO's chevron-down icon) switches to pill mode.
-- **Pill taps:** idle → record; listening → finish; thinking → cancel; error → retry the same recording held in memory
-  (no new mic session), or record again when nothing was captured.
+- **Pill taps:** idle → record; listening → finish; paused → process saved dictation; thinking → pause processing;
+  error → retry saved dictation, or record again if nothing was captured. Pause/Play at the far right pauses/resumes
+  capture. The full keyboard's ✕ explicitly discards the draft.
 - Text goes in through `commitText` at the cursor, replacing any selection, and is never sent.
-- Recording stops and is discarded when the field loses focus or the keyboard hides.
+- Losing focus, hiding the keyboard, or losing microphone input pauses capture/decoding. One temporary draft in
+  private `noBackupFilesDir/dictation-draft` survives controller/process recreation. Reopening shows it paused; no
+  automatic capture or insertion. Whisper/Moonshine retain PCM (maximum fifteen minutes); Android recognition only
+  retains text delivered by its callbacks. No stop is requested merely because a notification shade is opened.
+- Final text remains durable until the editor accepts insertion. Explicit discard removes metadata and audio;
+  keyboard surface changes preserve them. Drafts stay until accepted insertion or discard, with no recording history.
 - Password fields (`TYPE_TEXT_VARIATION_PASSWORD` and the other password variations) and
-  `IME_FLAG_NO_PERSONALIZED_LEARNING` always open the full keyboard with the mic disabled.
+  `IME_FLAG_NO_PERSONALIZED_LEARNING` always open the full keyboard with voice disabled and no recovered draft shown.
 - If the microphone permission or a speech model is missing, tapping the mic opens Settings → ALTER voice.

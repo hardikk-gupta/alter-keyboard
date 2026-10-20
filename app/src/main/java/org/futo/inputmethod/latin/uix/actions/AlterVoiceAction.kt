@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 import org.futo.inputmethod.latin.R
 import org.futo.inputmethod.latin.uix.Action
 import org.futo.inputmethod.latin.uix.ALTER_END_ON_SILENCE
@@ -44,13 +45,12 @@ class AlterDictationSession(
 ) {
     val controller = DictationController(context, scope)
     private val watcher: Job = scope.launch(Dispatchers.Main) {
-        var wasProcessing = false
-        controller.processing.collect { processing ->
-            if (wasProcessing && !processing) {
-                val text = controller.text.value
-                if (controller.error.value == null && text.isNotBlank()) onFinished(text)
+        controller.completedText.collect { text ->
+            if (text != null) {
+                try { onFinished(text); controller.acknowledgeInsertion() }
+                catch (e: CancellationException) { throw e }
+                catch (_: Exception) { controller.insertionFailed() }
             }
-            wasProcessing = processing
         }
     }
 
@@ -68,30 +68,33 @@ class AlterDictationSession(
         controller.start(endAfterSilence = context.getSetting(ALTER_END_ON_SILENCE))
     }
 
-    /** Idle: record. Listening: finish. Thinking: cancel. Error: retry the same recording without the mic. */
+    /** Idle: record. Paused: process saved audio. Listening: finish. Thinking: pause. Error: retry. */
     fun tap() {
         when {
+            controller.paused.value -> controller.retrySavedAudio()
             controller.recording.value -> controller.stop()
-            controller.processing.value -> controller.cancel()
+            controller.processing.value -> controller.pause()
             controller.error.value != null && controller.hasRetryRecording -> controller.retrySavedAudio()
             else -> start()
         }
     }
 
-    /** Recording stops and is discarded when the field loses focus or the keyboard hides. */
-    fun close() {
-        controller.cancel()
+    /** Detach before pausing so a late result cannot enter another app or field. Only the explicit cross discards. */
+    fun close(discard: Boolean = false) {
         watcher.cancel()
+        if (discard) controller.cancel() else controller.pause()
     }
 
     @Composable
-    fun Pill(disabled: Boolean = false, modifier: Modifier = Modifier.height(40.dp).width(176.dp)) {
+    fun Pill(disabled: Boolean = false, modifier: Modifier = Modifier.height(48.dp).width(176.dp)) {
         val recording by controller.recording.collectAsState()
+        val paused by controller.paused.collectAsState()
         val processing by controller.processing.collectAsState()
         val error by controller.error.collectAsState()
         val level by controller.level.collectAsState()
         val state = when {
             disabled -> PillState.Disabled
+            paused -> PillState.Paused
             recording -> PillState.Listening
             processing -> PillState.Thinking
             error != null -> PillState.Error
@@ -100,24 +103,27 @@ class AlterDictationSession(
         val description = when (state) {
             PillState.Idle -> stringResource(R.string.alter_pill_idle)
             PillState.Listening -> stringResource(R.string.alter_pill_listening)
+            PillState.Paused -> stringResource(R.string.alter_pill_paused)
             PillState.Thinking -> stringResource(R.string.alter_pill_thinking)
             PillState.Error -> error + " " + stringResource(R.string.alter_pill_error_retry)
             PillState.Disabled -> stringResource(R.string.alter_pill_disabled)
         }
-        AlterVoicePill(state, level, onTap = { tap() }, modifier = modifier, description = description)
+        AlterVoicePill(state, level, onTap = { tap() }, modifier = modifier, description = description,
+            onPauseResume = { if (paused) start() else controller.pause() },
+            pauseResumeDescription = stringResource(if (paused) R.string.alter_voice_resume else R.string.alter_voice_pause))
     }
 }
 
 /** Inserts finished dictation at the cursor through a FUTO input transaction (commitText). */
 fun KeyboardManagerForAction.commitDictation(text: String) {
     val transaction = createInputTransaction()
-    transaction.commit(ModelOutputSanitizer.sanitize(text, transaction.textContext))
+    check(transaction.commit(ModelOutputSanitizer.sanitize(text, transaction.textContext))) { "Text could not be inserted." }
     announce(text)
 }
 
 /**
  * In the full keyboard the mic turns the suggestion row into ALTER's voice strip; the keys stay as they are.
- * Tapping the mic again acts like tapping the strip (finish, cancel or retry).
+ * Tapping the voice action again acts like tapping the strip (finish, pause processing or retry).
  */
 val VoiceInputAction = Action(
     icon = VoiceR.drawable.ic_alter_ai_doodle_closed,

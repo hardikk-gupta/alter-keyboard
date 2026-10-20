@@ -44,11 +44,11 @@ The keyboard itself has two surfaces:
 Text field focused
 ├── Full keyboard (default start mode)
 │   ├── Action bar: expand · suggestions · pinned actions (Minimize, ALTER flat-eye voice icon)
-│   │   └── ALTER flat-eye icon → suggestion row becomes ALTER's voice strip (✕ + pill); keys stay
+│   │   └── ALTER flat-eye icon → suggestion row becomes ALTER's voice strip (discard ✕ + pill with pause/resume at the far right); keys stay
 │   └── Keys
 └── Pill mode (start mode "Pill", or Minimize)
     └── 56 dp bar: globe (switch input method) · pill · keyboard button (back to full keyboard)
-Password / no-personalized-learning field → always the full keyboard, mic disabled
+Password / no-personalized-learning field → full keyboard, voice and recovered draft hidden
 ```
 
 ## User flows
@@ -77,14 +77,22 @@ flowchart TD
     A[Tap ALTER flat-eye icon in the action bar] --> B{Voice ready?}
     B -- no --> S[Opens Settings → ALTER voice at the setup steps]
     B -- yes --> C[Suggestions become the voice strip; wave follows the real mic level]
-    C -- tap strip or flat-eye icon --> D[Thinking orb: transcribe and clean up]
-    C -- "✕ / field loses focus / keyboard hides" --> X[Recording discarded; suggestions return]
-    D -- tap --> X
-    D --> E[Text inserted at the cursor; suggestions return]
-    D -- failure --> F[Red triangle]
-    F -- tap --> G[Retry the same recording, no new mic session]
-    G --> D
+    C -- tap strip or flat-eye icon --> D[Full-width thinking field: transcribe and clean up]
+    C -- Pause / interrupted microphone / keyboard hides --> P[Private draft saved; paused pill on return]
+    P -- Play --> C
+    P -- tap centre --> D
+    C -- explicit discard cross --> X[Draft deleted; suggestions return]
+    P -- explicit discard cross --> X
+    D -- tap / keyboard hides --> P
+    D --> E[Editor accepts text; draft deleted; suggestions return]
+    D -- failure / insertion refused --> P
 ```
+
+Audio for Whisper/Moonshine is journaled before decoding and is recoverable after process restart (one draft,
+maximum fifteen minutes, private storage excluded from Android backup). Android on-device recognition can only save
+recognized text, not source audio. Reopening never starts the microphone or inserts text automatically. Pause/resume
+is separated from the discard cross; the paused centre processes saved dictation. Opening notifications alone does
+not request a stop. Switching between full keyboard and pill mode preserves the draft in a paused state.
 
 ### Pill mode
 

@@ -656,6 +656,7 @@ class LatinIME : InputMethodServiceCompose(), LatinIMELegacy.SuggestionStripCont
         super.onWindowShown()
         latinIMELegacy.onWindowShown()
         updateColorsIfDynamicChanged()
+        uixManager.applyStartMode(currentInputEditorInfo, restarting = true)
     }
 
     override fun onWindowHidden() {

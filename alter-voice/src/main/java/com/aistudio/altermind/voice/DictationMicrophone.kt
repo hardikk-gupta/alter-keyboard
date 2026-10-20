@@ -17,12 +17,16 @@ internal interface DictationMicrophone {
 
 internal class AndroidDictationMicrophone(private val context: Context) : DictationMicrophone {
     private var record: AudioRecord? = null
+    private fun checkMicrophoneAvailable() {
+        val audio = context.getSystemService(AudioManager::class.java)
+        check(!audio.isMicrophoneMute) { "Microphone access is off. Turn it on in Android's Quick Settings, then try again." }
+        // Covers incoming calls and VoIP on API 26–28 too, where client-silencing status is unavailable.
+        check(audio.mode == AudioManager.MODE_NORMAL) { "A call is using the microphone. Resume after the call." }
+    }
     override fun start() {
         if (androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED)
             throw SecurityException("Microphone permission was removed. Allow microphone access in Android's app permissions, then try again.")
-        check(!context.getSystemService(AudioManager::class.java).isMicrophoneMute) {
-            "Microphone access is off. Turn it on in Android's Quick Settings, then try again."
-        }
+        checkMicrophoneAvailable()
         val minimum = AudioRecord.getMinBufferSize(16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
         check(minimum > 0) { "This phone cannot record mono 16 kHz audio." }
         val builder = AudioRecord.Builder()
@@ -39,6 +43,7 @@ internal class AndroidDictationMicrophone(private val context: Context) : Dictat
         check(microphone.recordingState == AudioRecord.RECORDSTATE_RECORDING) { "Android did not start the microphone. Close other recorders and try again." }
     }
     override fun read(buffer: ShortArray): Int {
+        checkMicrophoneAvailable()
         val microphone = checkNotNull(record)
         if (Build.VERSION.SDK_INT >= 29) check(microphone.activeRecordingConfiguration?.isClientSilenced != true) {
             "Android is silencing ALTER Keyboard's microphone. Turn on system microphone access and close other voice or recording apps."

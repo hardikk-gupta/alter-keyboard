@@ -26,9 +26,17 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
 
 - Tap the ALTER flat-eye icon in the action bar: the suggestion row turns into ALTER's voice strip (a ✕ and the
   pill), with no extra layer above the keys. The pill shows a live yellow wave driven by the real microphone level; tap it to finish.
-- The thinking orb (ALTER's S1 lattice, lighting from white to yellow) shows while the speech is transcribed and
-  cleaned up; tap to cancel. The text is inserted at the cursor (replacing any selection) and is never sent.
-- Errors show a red triangle; tap to retry the same recording, held in memory only.
+- Pause/resume is at the far right of the pill, away from the discard cross. While paused, tap the pill centre to
+  process what is already recorded, or tap Play to keep recording.
+- Yellow/gray thinking cells fill the whole rectangle during transcription and cleanup; tapping pauses processing.
+  With animations off the cells show a still frame. Text is inserted at the cursor and is never sent.
+- If a call interrupts the microphone, or the keyboard hides/loses focus, the draft is saved. Reopening a normal
+  text field shows a paused pill; it never records or inserts recovered text automatically. Opening the notification
+  shade alone does not request a stop; if Android actually hides the keyboard or interrupts capture, the draft pauses.
+- One temporary draft is kept in the app's private, excluded-from-backup storage: raw PCM for Whisper/Moonshine,
+  recognized text only for Android's recognizer (Android does not expose its source audio). It survives process restarts
+  and is removed after accepted insertion or an explicit ✕ discard, with a fifteen-minute audio limit. Resume uses the
+  same speech model; reselect it if changed. No recording history is kept. Errors preserve the draft for retry.
 - Speech models: Moonshine Tiny/Small/Medium Streaming (English) or Whisper Tiny/Base/Small/Medium (multilingual),
   or Android's own on-device recognizer (Android 12+). Optional cleanup: the LFM2.5 350M editor adds punctuation and
   capitals, removes fillers and never answers the text. Models download on demand into private storage from a
@@ -36,8 +44,8 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
 
 **Pill mode:** a 56 dp bar with only the mic pill, a globe (switch input method) and a keyboard button. Choose
 the start mode in Settings → ALTER voice (Full keyboard by default), or tap **Minimize** (chevron-down, pinned in the
-action bar) at any time. Password fields always open the full keyboard with the mic disabled. Recording stops and is
-discarded when the field loses focus or the keyboard hides.
+action bar) at any time. Password and no-personalized-learning fields always open the full keyboard with voice and
+recovery disabled. Switching keyboard surfaces pauses pending dictation and shows it ready to resume.
 
 **ALTER design:** the default keyboard skin is the ALTER theme (black, dark grey keys, yellow accent; the other themes
 stay in the picker), the app's own screens follow the ALTER app's settings design, and the launcher icon is a light
@@ -84,7 +92,7 @@ Native code is prebuilt because Google AI Studio has no NDK or CMake. After chan
 | --- | --- |
 | `metadata.json`, `settings.gradle.kts`, `build.gradle.kts` | Google AI Studio project files |
 | `app/` | The keyboard: sources in `app/src/main/java` (upstream package `org.futo.inputmethod.latin`), resources, assets, translations, prebuilt AARs (`app/libs`), native sources (`app/native`), locale tools (`app/tools`) |
-| `alter-voice/` | ALTER's voice pack (`com.aistudio.altermind.voice`): dictation, speech models, cleanup, model catalog and downloads, the pill, orb and wave |
+| `alter-voice/` | ALTER's voice pack (`com.aistudio.altermind.voice`): dictation, speech models, cleanup, model catalog and downloads, temporary recording drafts, the pill, processing field and wave |
 | `voiceinput-shared/` | Upstream voice module, still needed by the keyboard code |
 | `docs/` | `DESIGN.md`, `SITEMAP.md` (sitemap and user flows), `SIGNING.md`, `FUTO_README.md` (upstream README) |
 | `licenses/` | Licenses of the added models and libraries |

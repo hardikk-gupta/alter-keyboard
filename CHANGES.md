@@ -141,3 +141,23 @@ AGENTS.md notes it.
 
 Checks run: workflow YAML parsed (`python3 -c 'import yaml'`). The cleanup itself runs on the first `main` build after
 merge.
+
+## Recoverable dictation and full-width thinking field (Oct 21, 2026)
+
+- Whisper/Moonshine capture appends PCM to one private temporary draft before decoding. Pause/resume, a lost input
+  field, a hidden keyboard, calls/microphone interruptions and process recreation preserve captured audio. Reopening
+  shows a paused pill without opening the microphone or inserting text; Play continues capture and the centre
+  processes the saved draft. Switching keyboard surfaces preserves the draft too.
+- Pause/resume is at the far right of the rectangle, separated from the strip's discard cross. Explicit discard or
+  accepted editor insertion removes the draft. A refused insertion or late result keeps it for recovery; protected
+  fields hide recovery and disable voice. The app-private draft is excluded from Android backup, with a fifteen-minute
+  PCM limit and bounded atomic metadata. Android's recognizer can recover only delivered text, which its model
+  description now explains.
+- Thinking uses yellow/gray cells across the entire pill, with a still frame for reduced motion. No new dependencies,
+  models or native libraries were added. Agent instructions and user/design/flow documentation reflect the new behavior.
+
+Checks run: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 20 tests passed (9 existing, 11 recovery/animation tests; no failures or skips). App Kotlin/Java compilation,
+resources and dexing completed; APK assembly failed only at `validateSigningStableDebug` because the shared signing
+keystore is unavailable. `git diff --check` passed. APK signature verification and real-phone checks (calls,
+notification shade, Back/field switches, process kill, touch targets and accessibility) were not run.
