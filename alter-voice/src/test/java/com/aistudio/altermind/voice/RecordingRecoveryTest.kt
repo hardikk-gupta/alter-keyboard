@@ -239,6 +239,56 @@ class RecordingRecoveryTest {
         assertFalse(DictationController.isActive())
     }
 
+    @Test fun hiddenKeyboardKeepsCleanupRunningAndCompletedTextDurable() = runTest {
+        val saved = store()
+        val draft = saved.begin("whisper-tiny")
+        saved.append(draft.id, shortArrayOf(1000), 1)
+        val gate = CompletableDeferred<Unit>()
+        val current = controller(saved, Speech(), Microphone()) { gate.await(); "Finished paragraph." }
+        current.retrySavedAudio(); runCurrent()
+        assertTrue(current.continueProcessingWhenHidden())
+        assertTrue(current.processing.value)
+        gate.complete(Unit); advanceUntilIdle()
+        assertEquals("Finished paragraph.", current.completedText.value)
+        assertTrue(current.continueProcessingWhenHidden()) // Result ready, UI delivery still pending.
+        // Clipboard delivery does not acknowledge editor insertion or delete the private copy.
+        current.pause()
+        assertEquals("Finished paragraph.", saved.load()!!.completed)
+        val restored = controller(saved, Speech(), Microphone())
+        assertTrue(restored.paused.value)
+        assertNull(restored.completedText.value)
+        restored.retrySavedAudio(); advanceUntilIdle()
+        assertEquals("Finished paragraph.", restored.completedText.value)
+        restored.acknowledgeInsertion()
+        assertNull(saved.load())
+    }
+
+    @Test fun hideBeforeCaptureStartsNeverOpensTheMicrophoneInBackground() = runTest {
+        val mic = Microphone()
+        val current = controller(store(), Speech(), mic)
+        current.start(false) // Capture is scheduled but has not opened the microphone yet.
+        assertFalse(current.continueProcessingWhenHidden())
+        advanceUntilIdle()
+        assertEquals(0, mic.starts)
+        assertFalse(current.processing.value)
+        assertFalse(current.recording.value)
+    }
+
+    @Test fun hideWhileRecordingPausesInsteadOfContinuingCapture() = runTest {
+        val saved = store()
+        val mic = Microphone(ArrayDeque(listOf(shortArrayOf(123, 456))))
+        val current = controller(saved, Speech().apply { warmingUp = true }, mic)
+        current.start(false); runCurrent()
+        assertTrue(current.recording.value)
+        assertFalse(current.continueProcessingWhenHidden())
+        advanceUntilIdle()
+        assertTrue(mic.closed)
+        assertTrue(current.paused.value)
+        assertEquals(2, saved.load()!!.samples)
+        assertNull(current.completedText.value)
+        current.cancel()
+    }
+
     @Test fun thinkingFieldFillsWideRectanglesWithTheOriginalOrbChoreography() {
         val wide = processingFieldFrame(24, 3, 600f)
         assertEquals(72, wide.size)

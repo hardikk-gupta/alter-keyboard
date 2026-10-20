@@ -50,10 +50,11 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 - Listening: one AlterYellow line driven by the real microphone RMS, flat in silence (ALTER's `voiceWavePoints`).
 - Listening/paused/thinking: Pause/Play is outside the right-hand curve; the discard cross is outside the left.
   Both controls use 20dp icons to match the toolbar, with 2-unit strokes, 12dp ripple corners and keyboard-theme tint
-  (light ink on the fixed black pill-mode bar). Play/Pause fills the viewport like the neighboring toolbar symbols; the
-  pause bars have 2-unit corner radii and the play triangle uses curved corners. The 48dp-wide hit areas use the full
-  available bar height. Only the bounded status surface has vertical padding, so the controls align. Paused shows an 18dp yellow pause marker in the centre;
-  tapping the centre processes saved dictation, Play continues capture, and Pause can also suspend processing.
+  (light ink on the fixed black pill-mode bar). Like the discard cross, Pause is two single vertical strokes and Play
+  is a simple triangle outline, with round caps/joins. The 48dp-wide hit areas use the full
+  available bar height. Only the bounded status surface has vertical padding, so the controls align. Paused shows a
+  still white horizontal line in the centre; tapping it processes saved dictation. Play continues capture, and Pause
+  can also suspend processing.
 - Thinking: the original AICSS S1 orb choreography (1.7-second cycle, 700ms radial delay per cell, 180ms centre lead,
   eased swelling and fading) is reused across a three-row rectangular lattice. Round dots move from white to yellow
   as they light. The column count adapts to fill the pill; the small orb on other screens keeps its original 3×3 shape.
@@ -74,12 +75,16 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
   error → retry saved dictation, or record again if nothing was captured. Pause/Play outside the right edge pauses/resumes
   capture. The full keyboard's ✕ explicitly discards the draft.
 - Text goes in through `commitText` at the cursor, replacing any selection, and is never sent.
-- Losing focus, hiding the keyboard, or losing microphone input pauses capture/decoding. One temporary draft in
-  private `noBackupFilesDir/dictation-draft` survives controller/process recreation. Reopening shows it paused; no
-  automatic capture or insertion. Whisper/Moonshine retain PCM (maximum fifteen minutes); Android recognition only
+- Losing focus, hiding the keyboard, or losing microphone input pauses capture. Finished audio continues decoding
+  and cleanup in the IME service scope when the keyboard closes; the final text is copied to the system clipboard
+  and retained in the private draft, without insertion into a different editor. Reopening reuses the running session
+  until completion. Explicit Pause still suspends processing. One temporary draft in
+  private `noBackupFilesDir/dictation-draft` survives controller/process recreation. Reopening after interruption shows
+  it paused; no automatic capture or insertion. Whisper/Moonshine retain PCM (maximum fifteen minutes); Android recognition only
   retains text delivered by its callbacks. No stop is requested merely because a notification shade is opened.
 - Final text remains durable until the editor accepts insertion. Explicit discard removes metadata and audio;
-  keyboard surface changes preserve them. Drafts stay until accepted insertion or discard, with no recording history.
+  keyboard surface changes preserve them. Clipboard copying retains them too. If Android destroys the IME service,
+  background processing stops and the saved draft remains recoverable. Drafts stay until accepted insertion or discard, with no recording history.
 - Password fields (`TYPE_TEXT_VARIATION_PASSWORD` and the other password variations) and
   `IME_FLAG_NO_PERSONALIZED_LEARNING` always open the full keyboard with voice disabled and no recovered draft shown.
 - If the microphone permission or a speech model is missing, tapping the mic opens Settings → ALTER voice.
