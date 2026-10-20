@@ -2,6 +2,9 @@ package com.aistudio.altermind.voice
 
 import android.content.ContextWrapper
 import com.aistudio.altermind.voice.ui.processingFieldFrame
+import com.aistudio.altermind.voice.ui.latticeFrame
+import com.aistudio.altermind.voice.ui.latticeStillFrame
+import com.aistudio.altermind.voice.ui.latticeRest
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import org.junit.Assert.*
@@ -236,12 +239,14 @@ class RecordingRecoveryTest {
         assertFalse(DictationController.isActive())
     }
 
-    @Test fun thinkingFieldFillsWideRectanglesAndHasAStableReducedMotionFrame() {
+    @Test fun thinkingFieldFillsWideRectanglesWithTheOriginalOrbChoreography() {
         val wide = processingFieldFrame(24, 3, 600f)
         assertEquals(72, wide.size)
         assertEquals(0, wide.minOf { it.x }); assertEquals(23, wide.maxOf { it.x })
         assertNotEquals(wide, processingFieldFrame(24, 3, 1200f))
-        assertTrue(processingFieldFrame(24, 3, null).all { it.alpha == .25f || it.alpha == 1f })
+        assertEquals(latticeFrame(600f), processingFieldFrame(3, 3, 600f))
+        assertEquals(latticeStillFrame(), processingFieldFrame(3, 3, null))
+        assertTrue(processingFieldFrame(24, 3, null).all { it.alpha == latticeRest(true) || it.alpha == 1f })
         assertTrue(processingFieldFrame(24, 3, null).any { it.alpha == 1f })
     }
 }

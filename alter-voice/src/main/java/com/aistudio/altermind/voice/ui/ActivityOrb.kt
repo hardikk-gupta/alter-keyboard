@@ -19,6 +19,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.graphics.luminance
 import kotlinx.coroutines.delay
+import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
 
@@ -35,10 +36,10 @@ internal fun latticeRest(dark: Boolean) = if (dark) .2f else .14f
 private fun ease(t: Float) = t * t * (3 - 2 * t) // close to the source's symmetric cubic-bezier(.66,0,.34,1)
 
 /** Each cell's ink (0..1) and scale at [ms]; pure, so the choreography is testable without a clock. */
-internal fun latticeFrame(ms: Float, rest: Float = latticeRest(true)): List<LatticeCell> = buildList {
-    for (y in 0..2) for (x in 0..2) {
-        val dx = x - 1; val dy = y - 1
-        val delay = hypot(dx.toFloat(), dy.toFloat()) * 700f - if (dx == 0 && dy == 0) 180f else 0f
+internal fun latticeFrame(ms: Float, rest: Float = latticeRest(true), columns: Int = 3, rows: Int = 3): List<LatticeCell> = buildList {
+    for (y in 0 until rows) for (x in 0 until columns) {
+        val dx = x - (columns - 1) / 2f; val dy = y - (rows - 1) / 2f
+        val delay = hypot(dx, dy) * 700f - if (abs(dx) <= .5f && abs(dy) <= .5f) 180f else 0f
         val p = (((ms - delay) / 1700f) % 1f + 1f) % 1f
         // Swells over 28% of the cycle, subsides by 56%, then rests: the gap between beats.
         val v = if (p < .28f) ease(p / .28f) else if (p < .56f) ease(1f - (p - .28f) / .28f) else 0f
@@ -47,8 +48,12 @@ internal fun latticeFrame(ms: Float, rest: Float = latticeRest(true)): List<Latt
 }
 
 /** Reduced motion: the source's static frame, centre cell lit. */
-internal fun latticeStillFrame(rest: Float = latticeRest(true)): List<LatticeCell> =
-    (0..8).map { LatticeCell(it % 3, it / 3, if (it == 4) 1f else rest, 1f) }
+internal fun latticeStillFrame(rest: Float = latticeRest(true), columns: Int = 3, rows: Int = 3): List<LatticeCell> =
+    (0 until columns * rows).map {
+        val x = it % columns; val y = it / columns
+        val centre = abs(x - (columns - 1) / 2f) <= .5f && abs(y - (rows - 1) / 2f) <= .5f
+        LatticeCell(x, y, if (centre) 1f else rest, 1f)
+    }
 
 /** Activity indicator: appears after [appearAfterMs], stops when hidden, static with animations off. */
 /** Ink is the surrounding content colour (#F5F5F5 on dark, near-black on light), as the source's currentColor. */

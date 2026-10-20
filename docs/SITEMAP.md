@@ -44,7 +44,7 @@ The keyboard itself has two surfaces:
 Text field focused
 ├── Full keyboard (default start mode)
 │   ├── Action bar: expand · suggestions · pinned actions (Minimize, ALTER flat-eye voice icon)
-│   │   └── ALTER flat-eye icon → suggestion row becomes ALTER's voice strip (discard ✕ + pill with pause/resume at the far right); keys stay
+│   │   └── ALTER flat-eye icon → suggestion row becomes ALTER's voice strip (external discard ✕ + pill + external pause/resume); keys stay
 │   └── Keys
 └── Pill mode (start mode "Pill", or Minimize)
     └── 56 dp bar: globe (switch input method) · pill · keyboard button (back to full keyboard)
@@ -77,7 +77,7 @@ flowchart TD
     A[Tap ALTER flat-eye icon in the action bar] --> B{Voice ready?}
     B -- no --> S[Opens Settings → ALTER voice at the setup steps]
     B -- yes --> C[Suggestions become the voice strip; wave follows the real mic level]
-    C -- tap strip or flat-eye icon --> D[Full-width thinking field: transcribe and clean up]
+    C -- tap strip or flat-eye icon --> D[Full-width original orb animation: transcribe and clean up]
     C -- Pause / interrupted microphone / keyboard hides --> P[Private draft saved; paused pill on return]
     P -- Play --> C
     P -- tap centre --> D
@@ -91,7 +91,7 @@ flowchart TD
 Audio for Whisper/Moonshine is journaled before decoding and is recoverable after process restart (one draft,
 maximum fifteen minutes, private storage excluded from Android backup). Android on-device recognition can only save
 recognized text, not source audio. Reopening never starts the microphone or inserts text automatically. Pause/resume
-is separated from the discard cross; the paused centre processes saved dictation. Opening notifications alone does
+sits outside the right-hand curve, opposite the external discard cross; the paused centre processes saved dictation. Opening notifications alone does
 not request a stop. Switching between full keyboard and pill mode preserves the draft in a paused state.
 
 ### Pill mode

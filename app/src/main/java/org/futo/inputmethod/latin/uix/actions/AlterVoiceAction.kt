@@ -9,9 +9,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.core.content.ContextCompat
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import com.aistudio.altermind.voice.ui.LucidePill
+import org.futo.inputmethod.latin.uix.LocalKeyboardScheme
 import com.aistudio.altermind.voice.R as VoiceR
 import com.aistudio.altermind.voice.DictationController
 import com.aistudio.altermind.voice.SpeechModels
@@ -86,7 +103,8 @@ class AlterDictationSession(
     }
 
     @Composable
-    fun Pill(disabled: Boolean = false, modifier: Modifier = Modifier.height(48.dp).width(176.dp)) {
+    fun Pill(disabled: Boolean = false, modifier: Modifier = Modifier.height(48.dp).width(224.dp),
+        pillModifier: Modifier = Modifier, controlTint: Color = LocalKeyboardScheme.current.onBackground) {
         val recording by controller.recording.collectAsState()
         val paused by controller.paused.collectAsState()
         val processing by controller.processing.collectAsState()
@@ -108,9 +126,28 @@ class AlterDictationSession(
             PillState.Error -> error + " " + stringResource(R.string.alter_pill_error_retry)
             PillState.Disabled -> stringResource(R.string.alter_pill_disabled)
         }
-        AlterVoicePill(state, level, onTap = { tap() }, modifier = modifier, description = description,
-            onPauseResume = { if (paused) start() else controller.pause() },
-            pauseResumeDescription = stringResource(if (paused) R.string.alter_voice_resume else R.string.alter_voice_pause))
+        Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+            AlterVoicePill(state, level, onTap = { tap() }, modifier = Modifier.weight(1f).fillMaxHeight().then(pillModifier),
+                description = description)
+            if (!disabled && (recording || paused || processing)) {
+                VoiceControlButton(rememberVectorPainter(if (paused) LucidePill.Play else LucidePill.Pause),
+                    stringResource(when {
+                        paused -> R.string.alter_voice_resume
+                        recording -> R.string.alter_voice_pause
+                        else -> R.string.alter_voice_pause_processing
+                    }), onClick = { if (paused) start() else controller.pause() }, tint = controlTint)
+            }
+        }
+    }
+}
+
+/** Same compact rounded icon, theme tint, ripple and hit area for discard and pause/resume. */
+@Composable fun VoiceControlButton(painter: Painter, description: String, onClick: () -> Unit,
+    modifier: Modifier = Modifier, tint: Color = LocalKeyboardScheme.current.onBackground) {
+    Box(modifier.width(48.dp).fillMaxHeight().clip(RoundedCornerShape(12.dp))
+        .clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = description },
+        contentAlignment = Alignment.Center) {
+        Icon(painter, null, Modifier.size(18.dp), tint = tint)
     }
 }
 

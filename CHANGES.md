@@ -161,3 +161,19 @@ All 20 tests passed (9 existing, 11 recovery/animation tests; no failures or ski
 resources and dexing completed; APK assembly failed only at `validateSigningStableDebug` because the shared signing
 keystore is unavailable. `git diff --check` passed. APK signature verification and real-phone checks (calls,
 notification shade, Back/field switches, process kill, touch targets and accessibility) were not run.
+
+## External voice controls and original orb motion (Oct 21, 2026)
+
+From phone screenshots: Play/Pause now sits outside the pill's right-hand curve, opposite the external discard cross.
+The two controls share 18dp icons, rounded 2-unit strokes, keyboard-theme tint, ripple shape and 48dp-wide hit areas
+(the full available bar height). Pause also remains available outside the border while processing. The fixed black
+pill-mode bar keeps light controls. The paused status marker is also smaller.
+
+The processing rectangle now reuses the original AICSS S1 orb choreography and round white/yellow dots across its
+width, replacing the newer square-cell wave. Existing small orbs retain their default 3×3 shape and timing; reduced
+motion uses static centre dots. Documentation and animation regression checks are updated.
+
+Checks run: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 20 tests passed, with no failures or skips; app Kotlin/Java compilation, resources and dexing completed.
+APK assembly failed only at signing validation because the shared keystore is unavailable. `git diff --check` passed.
+APK signature verification and real-phone visual/accessibility checks were not run.
