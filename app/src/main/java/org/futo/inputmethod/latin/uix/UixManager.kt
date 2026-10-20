@@ -662,6 +662,24 @@ class UixManager(private val latinIME: LatinIME) {
     val isMainKeyboardHidden get() = mainKeyboardHidden.value
 
     // ALTER Keyboard: pill mode replaces the keyboard with a 56dp bar holding ALTER's mic pill.
+    private var backgroundVoiceSession: AlterDictationSession? = null
+
+    private fun detachVoiceSession(session: AlterDictationSession) {
+        if (session.close()) backgroundVoiceSession = session
+    }
+
+    /** Reuse the active decoder: never create a second controller over the same temporary draft. */
+    private fun takeBackgroundVoiceSession(onFinished: (String) -> Unit): AlterDictationSession? {
+        val session = backgroundVoiceSession ?: return null
+        backgroundVoiceSession = null
+        if (session.controller.processing.value || session.controller.completedText.value != null) {
+            session.attach(onFinished)
+            return session
+        }
+        session.close(preserveProcessing = false)
+        return null
+    }
+
     private var voiceFieldGeneration = 0
     private val pillMode = mutableStateOf(false)
     private val pillSession = mutableStateOf<AlterDictationSession?>(null)
@@ -674,11 +692,11 @@ class UixManager(private val latinIME: LatinIME) {
             closeActionWindow()
             stopInlineVoice(preserve = true)
             val fieldGeneration = voiceFieldGeneration
-            pillSession.value = AlterDictationSession(latinIME, latinIME.lifecycleScope) {
-                commitVoiceDraft(fieldGeneration, it)
-            }
+            val onFinished: (String) -> Unit = { commitVoiceDraft(fieldGeneration, it) }
+            pillSession.value = takeBackgroundVoiceSession(onFinished)
+                ?: AlterDictationSession(latinIME, latinIME.lifecycleScope, onFinished)
         } else {
-            pillSession.value?.close()
+            pillSession.value?.let { detachVoiceSession(it) }
             pillSession.value = null
         }
         pillMode.value = pill
@@ -700,10 +718,12 @@ class UixManager(private val latinIME: LatinIME) {
         closeActionWindow()
         inlineVoiceDisabled = latinIME.currentInputEditorInfo == null || latinIME.currentInputEditorInfo.isAlterSensitiveField()
         val fieldGeneration = voiceFieldGeneration
-        val session = AlterDictationSession(latinIME, latinIME.lifecycleScope) { text ->
+        val onFinished: (String) -> Unit = { text ->
             commitVoiceDraft(fieldGeneration, text)
             stopInlineVoice()
         }
+        val session = takeBackgroundVoiceSession(onFinished)
+            ?: AlterDictationSession(latinIME, latinIME.lifecycleScope, onFinished)
         inlineVoice.value = session
         if (startRecording && !inlineVoiceDisabled && !session.controller.paused.value) session.start()
     }
@@ -718,7 +738,7 @@ class UixManager(private val latinIME: LatinIME) {
     fun stopInlineVoice(preserve: Boolean = false) {
         val session = inlineVoice.value ?: return
         inlineVoice.value = null
-        session.close(discard = !preserve)
+        if (preserve) detachVoiceSession(session) else session.close(discard = true)
         latinIME.window.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
@@ -1775,13 +1795,13 @@ class UixManager(private val latinIME: LatinIME) {
 
     private fun pauseVoiceSessions() {
         voiceFieldGeneration++
-        pillSession.value?.close(); pillSession.value = null; pillMode.value = false
+        pillSession.value?.let { detachVoiceSession(it) }; pillSession.value = null; pillMode.value = false
         stopInlineVoice(preserve = true)
     }
 
     fun onInputFinishing() {
         closeActionWindow()
-        // Losing focus pauses capture and decoding. Reopening displays the private saved draft.
+        // Losing focus pauses capture; finished audio keeps processing to the clipboard.
         pauseVoiceSessions()
         languageSwitcherDialog?.dismiss()
         isShowingActionEditor.value = false
@@ -1830,6 +1850,8 @@ class UixManager(private val latinIME: LatinIME) {
 
     fun onDestroy() {
         onInputFinishing()
+        backgroundVoiceSession?.close(preserveProcessing = false)
+        backgroundVoiceSession = null
         closeActionWindow()
         persistentStates.values.filterNotNull().forEach {
             it.close()

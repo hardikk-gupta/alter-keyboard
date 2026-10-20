@@ -65,13 +65,15 @@ non-commercial use, shared only for free. The original AOSP code remains under A
 
 - **Recoverable dictation:** captures for Whisper/Moonshine append PCM to one private temporary draft before
   decoding. Pause/resume, keyboard hide, focus changes, process restart and microphone interruptions preserve that
-  draft. Reopening shows a paused pill; playback/recording and insertion require explicit interaction. The draft is
+  draft. Hiding the keyboard pauses capture, but finished audio keeps processing in the IME service scope and
+  automatically copies its final text to the clipboard, retaining the private draft. Reopening reuses active processing
+  or shows a paused pill; playback/recording and insertion require explicit interaction. The draft is
   excluded from Android backup, bounded to fifteen minutes, and deleted after accepted insertion or explicit discard.
   Android's recognizer provides no recoverable raw audio, so only its recognized text can be retained and continued.
 - **Voice processing design:** the original AICSS S1 orb choreography fills the pill's rectangle with round
   white/yellow dots. Reduced motion uses a still frame. Pause/resume sits outside the right-hand curve, opposite
-  the discard cross; both use matching 20dp icons, theme tint and 48dp-wide touch areas. Play/Pause uses full-size
-  paths with explicitly curved corners and 2-unit strokes.
+  the discard cross; both use matching 20dp icons, theme tint and 48dp-wide touch areas. Like the cross, Play/Pause
+  uses simple 2-unit strokes with round caps/joins; Pause is two vertical lines. Paused status is a still white line.
 
 ## What was not changed
 

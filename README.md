@@ -27,12 +27,15 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
 - Tap the ALTER flat-eye icon in the action bar: the suggestion row turns into ALTER's voice strip (a ✕ and the
   pill), with no extra layer above the keys. The pill shows a live yellow wave driven by the real microphone level; tap it to finish.
 - Pause/resume sits outside the right edge of the pill, opposite the discard cross. Both use toolbar-sized rounded,
-  theme-colored icons with large touch areas. While paused, tap the pill centre to
+  theme-colored icons with large touch areas. Pause uses two simple round-ended lines, matching the cross stroke.
+  A still white line marks the paused pill; tap its centre to
   process what is already recorded, or tap Play to keep recording.
 - The original AICSS orb motion fills the rectangle with round white/yellow dots during transcription and cleanup;
   tapping the pill or its external Pause button pauses processing.
   With animations off the cells show a still frame. Text is inserted at the cursor and is never sent.
-- If a call interrupts the microphone, or the keyboard hides/loses focus, the draft is saved. Reopening a normal
+- Closing the keyboard during processing lets transcription and cleanup finish in the background while the keyboard
+  service remains alive. The final text is automatically copied to the clipboard and kept in the private draft.
+- If a call interrupts the microphone, or the keyboard hides/loses focus during recording, the draft is saved. Reopening a normal
   text field shows a paused pill; it never records or inserts recovered text automatically. Opening the notification
   shade alone does not request a stop; if Android actually hides the keyboard or interrupts capture, the draft pauses.
 - One temporary draft is kept in the app's private, excluded-from-backup storage: raw PCM for Whisper/Moonshine,
@@ -47,7 +50,7 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
 **Pill mode:** a 56 dp bar with only the mic pill, a globe (switch input method) and a keyboard button. Choose
 the start mode in Settings → ALTER voice (Full keyboard by default), or tap **Minimize** (chevron-down, pinned in the
 action bar) at any time. Password and no-personalized-learning fields always open the full keyboard with voice and
-recovery disabled. Switching keyboard surfaces pauses pending dictation and shows it ready to resume.
+recovery disabled. Switching keyboard surfaces pauses recording; finished audio keeps processing to the clipboard.
 
 **ALTER design:** the default keyboard skin is the ALTER theme (black, dark grey keys, yellow accent; the other themes
 stay in the picker), the app's own screens follow the ALTER app's settings design, and the launcher icon is a light

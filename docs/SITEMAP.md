@@ -51,7 +51,9 @@ Text field focused
 Password / no-personalized-learning field → full keyboard, voice and recovered draft hidden
 ```
 
-Voice controls use the toolbar's 20dp icon size, with rounded Play/Pause shapes and 48dp-wide touch areas.
+Voice controls use the toolbar's 20dp icon size and simple round-ended strokes like the cross, with 48dp-wide touch
+areas. A paused pill shows a still white line. Hiding the keyboard pauses recording; already-finished audio keeps
+processing in the keyboard service and copies final text to the clipboard while retaining the private draft.
 
 ## User flows
 
@@ -85,7 +87,10 @@ flowchart TD
     P -- tap centre --> D
     C -- explicit discard cross --> X[Draft deleted; suggestions return]
     P -- explicit discard cross --> X
-    D -- tap / keyboard hides --> P
+    D -- tap / Pause --> P
+    D -- keyboard hides --> BG[Continue processing in keyboard service]
+    BG --> CL[Copy final text to clipboard; keep private draft]
+    BG -- service destroyed --> P
     D --> E[Editor accepts text; draft deleted; suggestions return]
     D -- failure / insertion refused --> P
 ```
@@ -94,7 +99,8 @@ Audio for Whisper/Moonshine is journaled before decoding and is recoverable afte
 maximum fifteen minutes, private storage excluded from Android backup). Android on-device recognition can only save
 recognized text, not source audio. Reopening never starts the microphone or inserts text automatically. Pause/resume
 sits outside the right-hand curve, opposite the external discard cross; the paused centre processes saved dictation. Opening notifications alone does
-not request a stop. Switching between full keyboard and pill mode preserves the draft in a paused state.
+not request a stop. Switching between full keyboard and pill mode pauses capture and preserves the draft; finished
+audio continues processing to the clipboard.
 
 ### Pill mode
 

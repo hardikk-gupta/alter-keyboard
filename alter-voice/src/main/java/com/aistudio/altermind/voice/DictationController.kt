@@ -37,6 +37,7 @@ class DictationController internal constructor(private val context: Context, pri
     private val mutableStatus = MutableStateFlow<String?>(null)
     val status = mutableStatus.asStateFlow()
     private var job: Job? = null
+    @Volatile private var captureRequested = false
     private var deviceSession: DeviceSpeechSession? = null
     private var draftId: String? = null
     private var unreadableDraft = false
@@ -71,6 +72,7 @@ class DictationController internal constructor(private val context: Context, pri
         val previous = job
         val generation = ++epoch
         stopRequested = false
+        captureRequested = capture
         mutablePaused.value = false; mutableCompletedText.value = null
         mutableError.value = null; mutableText.value = ""; mutableProcessing.value = true
         mutableStatus.value = if (capture) "Starting microphone…" else "Processing saved recording…"
@@ -105,7 +107,7 @@ class DictationController internal constructor(private val context: Context, pri
                                 }
                             } },
                             { if (generation == epoch) mutableLevel.value = it },
-                            { active -> if (generation == epoch) { mutableRecording.value = active; mutableStatus.value = if (active) "Listening…" else "Finishing on device…" } })
+                            { active -> if (generation == epoch) { captureRequested = active; mutableRecording.value = active; mutableStatus.value = if (active) "Listening…" else "Finishing on device…" } })
                     } ?: error("Device dictation reached the fifteen-minute limit. Resume the saved text to continue.")
                     synchronized(this@DictationController) { if (generation == epoch) drafts.partial(draft.id, result) }
                     finishTranscript(generation, draft.id, listOf(draft.prefix, result).filter { it.isNotBlank() }.joinToString(" "))
@@ -153,9 +155,9 @@ class DictationController internal constructor(private val context: Context, pri
                             }
                         } finally {
                             chunks.close(); runCatching { record.stop() }
-                            if (generation == epoch) { mutableRecording.value = false; mutableLevel.value = 0f; mutableStatus.value = "Transcribing on device…" }
+                            if (generation == epoch) { captureRequested = false; mutableRecording.value = false; mutableLevel.value = 0f; mutableStatus.value = "Transcribing on device…" }
                         }
-                    } else { chunks.close(); null }
+                    } else { if (generation == epoch) captureRequested = false; chunks.close(); null }
                     // Capture starts independently of model loading. Every captured chunk is durable before decoding.
                     speech.ensureReady()
                     if (generation == epoch) mutableStatus.value = if (mutableRecording.value) "Listening…" else "Transcribing on device…"
@@ -203,6 +205,13 @@ class DictationController internal constructor(private val context: Context, pri
         if (generation == epoch) { mutableRecording.value = false; mutableLevel.value = 0f; mutableStatus.value = null; mutableProcessing.value = false }
     }
     fun stop() { stopRequested = true; deviceSession?.stop() }
+
+    /** Keep finished audio processing off-screen, but never let pending/live capture open a hidden microphone. */
+    @Synchronized fun continueProcessingWhenHidden(): Boolean {
+        if (mutableCompletedText.value != null || (mutableProcessing.value && !mutableRecording.value && !captureRequested)) return true
+        pause()
+        return false
+    }
 
     /** Freeze both capture and decoding; the next controller restores this draft without recording or inserting. */
     @Synchronized fun pause() {

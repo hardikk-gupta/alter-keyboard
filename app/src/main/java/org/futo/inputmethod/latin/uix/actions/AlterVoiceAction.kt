@@ -1,6 +1,8 @@
 package org.futo.inputmethod.latin.uix.actions
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.compose.runtime.Composable
@@ -58,13 +60,23 @@ const val AlterVoiceNavPath = "alterVoice"
 class AlterDictationSession(
     private val context: Context,
     private val scope: CoroutineScope,
-    private val onFinished: (String) -> Unit
+    private var onFinished: (String) -> Unit
 ) {
     val controller = DictationController(context, scope)
+    private var copyOnCompletion = false
     private val watcher: Job = scope.launch(Dispatchers.Main) {
         controller.completedText.collect { text ->
             if (text != null) {
-                try { onFinished(text); controller.acknowledgeInsertion() }
+                try {
+                    if (copyOnCompletion) {
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.app_name), text))
+                        controller.pause() // Keep the completed draft until insertion or explicit discard.
+                    } else {
+                        onFinished(text)
+                        controller.acknowledgeInsertion()
+                    }
+                }
                 catch (e: CancellationException) { throw e }
                 catch (_: Exception) { controller.insertionFailed() }
             }
@@ -80,13 +92,18 @@ class AlterDictationSession(
         return false
     }
 
+    fun attach(onFinished: (String) -> Unit) { this.onFinished = onFinished }
+
     fun start() {
-        if (!readyOrOpenSettings()) return
+        if (controller.processing.value || !readyOrOpenSettings()) return
+        copyOnCompletion = false
         controller.start(endAfterSilence = context.getSetting(ALTER_END_ON_SILENCE))
     }
 
     /** Idle: record. Paused: process saved audio. Listening: finish. Thinking: pause. Error: retry. */
     fun tap() {
+        // An explicit retry/resume belongs to the current editor, even after a background copy.
+        if (!controller.processing.value) copyOnCompletion = false
         when {
             controller.paused.value -> controller.retrySavedAudio()
             controller.recording.value -> controller.stop()
@@ -96,10 +113,13 @@ class AlterDictationSession(
         }
     }
 
-    /** Detach before pausing so a late result cannot enter another app or field. Only the explicit cross discards. */
-    fun close(discard: Boolean = false) {
+    /** Returns true while detached processing still needs its clipboard watcher. */
+    fun close(discard: Boolean = false, preserveProcessing: Boolean = true): Boolean {
+        copyOnCompletion = true
+        if (!discard && preserveProcessing && controller.continueProcessingWhenHidden()) return true
         watcher.cancel()
         if (discard) controller.cancel() else controller.pause()
+        return false
     }
 
     @Composable

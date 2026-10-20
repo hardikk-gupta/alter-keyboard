@@ -189,3 +189,21 @@ Checks run: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebu
 All 20 tests passed, with no failures, errors or skips; app compilation, resources and dexing completed. APK assembly
 failed only at signing validation because the shared keystore is unavailable. `git diff --check` passed.
 APK signature verification and real-phone visual/accessibility checks were not run.
+
+## Simple voice controls and background clipboard completion (Oct 21, 2026)
+
+Pause now uses two single round-ended strokes, matching the discard cross's 2-unit line style. Play is a simple
+triangle outline with round joins. Both remain 20dp, outside the pill. A paused pill shows a still white line instead
+of another Pause icon; the live wave stays yellow and processing keeps the existing full-width orb motion.
+
+Closing the keyboard pauses pending/live microphone capture, but lets finished audio continue transcription and
+cleanup in the IME service scope. The detached session copies its final text to the system clipboard and preserves
+the completed private draft. Reopening reuses the active session, preventing competing controllers over the same
+draft; background results never enter a new editor automatically. Explicit Pause still stops processing. Service
+teardown stops work and leaves the draft recoverable. Agent, user, design and flow documentation is updated.
+
+Checks run: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 23 tests passed, with no failures, errors or skips, including new cases for pending/live capture on hide,
+background cleanup completion, and durable completed-text recovery. App compilation, resources and dexing completed.
+APK assembly failed only at signing validation because the shared keystore is unavailable. `git diff --check` passed.
+Real-phone visual, clipboard, lifecycle and accessibility checks and APK signature verification were not run.
