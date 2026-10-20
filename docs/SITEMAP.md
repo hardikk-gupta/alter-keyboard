@@ -51,6 +51,8 @@ Text field focused
 Password / no-personalized-learning field → full keyboard, voice and recovered draft hidden
 ```
 
+Voice controls use the toolbar's 20dp icon size, with rounded Play/Pause shapes and 48dp-wide touch areas.
+
 ## User flows
 
 ### First run

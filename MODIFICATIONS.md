@@ -70,7 +70,8 @@ non-commercial use, shared only for free. The original AOSP code remains under A
   Android's recognizer provides no recoverable raw audio, so only its recognized text can be retained and continued.
 - **Voice processing design:** the original AICSS S1 orb choreography fills the pill's rectangle with round
   white/yellow dots. Reduced motion uses a still frame. Pause/resume sits outside the right-hand curve, opposite
-  the discard cross; both use matching 18dp icons, rounded 2-unit strokes, theme tint and 48dp-wide touch areas.
+  the discard cross; both use matching 20dp icons, theme tint and 48dp-wide touch areas. Play/Pause uses full-size
+  paths with explicitly curved corners and 2-unit strokes.
 
 ## What was not changed
 

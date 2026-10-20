@@ -49,9 +49,10 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 - Idle: the flat-eyes ALTER mark (`ic_alter_ai_doodle_closed`) tinted `#F5F5F5`, plus the Lucide mic.
 - Listening: one AlterYellow line driven by the real microphone RMS, flat in silence (ALTER's `voiceWavePoints`).
 - Listening/paused/thinking: Pause/Play is outside the right-hand curve; the discard cross is outside the left.
-  Both controls use the same 18dp icons, rounded 2-unit strokes, 12dp ripple corners and keyboard-theme tint (light
-  ink on the fixed black pill-mode bar). The 48dp-wide hit areas use the full available bar height. Only the bounded
-  status surface has vertical padding, so the controls align. Paused shows an 18dp yellow pause marker in the centre;
+  Both controls use 20dp icons to match the toolbar, with 2-unit strokes, 12dp ripple corners and keyboard-theme tint
+  (light ink on the fixed black pill-mode bar). Play/Pause fills the viewport like the neighboring toolbar symbols; the
+  pause bars have 2-unit corner radii and the play triangle uses curved corners. The 48dp-wide hit areas use the full
+  available bar height. Only the bounded status surface has vertical padding, so the controls align. Paused shows an 18dp yellow pause marker in the centre;
   tapping the centre processes saved dictation, Play continues capture, and Pause can also suspend processing.
 - Thinking: the original AICSS S1 orb choreography (1.7-second cycle, 700ms radial delay per cell, 180ms centre lead,
   eased swelling and fading) is reused across a three-row rectangular lattice. Round dots move from white to yellow

@@ -67,8 +67,14 @@ object LucidePill {
                 strokeLineCap = StrokeCap.Round, strokeLineJoin = StrokeJoin.Round)
         }
     }.build()
-    val Pause = icon("Pause", "M8 6v12", "M16 6v12", strokeWidth = 2f)
-    val Play = icon("Play", "M8 6l10 6-10 6Z", strokeWidth = 2f)
+    // Use the toolbar's full viewport and explicit curves so rounding survives at small sizes.
+    val Pause = icon("Pause",
+        "M7 3h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z",
+        "M16 3h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z",
+        strokeWidth = 2f)
+    val Play = icon("Play",
+        "M7 3.5Q5 2.3 5 4.6v14.8q0 2.3 2 1.1l13-7.3q2-1.2 0-2.4Z",
+        strokeWidth = 2f)
     val Mic = icon("Mic", "M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z", "M19 10v2a7 7 0 0 1-14 0v-2", "M12 19v3")
     val MicOff = icon("MicOff", "M2 2l20 20", "M18.89 13.23A7.12 7.12 0 0 0 19 12v-2", "M5 10v2a7 7 0 0 0 12 5",
         "M15 9.34V5a3 3 0 0 0-5.68-1.33", "M9 9v3a3 3 0 0 0 5.12 2.12", "M12 19v3")
