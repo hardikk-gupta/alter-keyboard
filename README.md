@@ -120,3 +120,9 @@ ALTER Keyboard is a modified version of FUTO Keyboard by FUTO Holdings, Inc., us
 [FUTO Source First License 1.1](LICENSE.md): personal, non-commercial use, shared only for free. The original AOSP code
 remains Apache 2.0 ([NOTICE](NOTICE)). Changes from upstream are listed in [MODIFICATIONS.md](MODIFICATIONS.md); the
 upstream README is kept as [docs/FUTO_README.md](docs/FUTO_README.md).
+
+Whisper live scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
+or download), targets its first preview after two seconds of captured audio, and spaces later previews according
+to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.
+This reduces redundant work but does not guarantee real-time Medium inference. Native CPU binaries and model
+weights are unchanged; on-phone speed and thermal behavior still require measurement.

@@ -93,3 +93,9 @@ Each keeps its own license under [`licenses/`](licenses):
 | LFM2.5 350M INT8 cleanup model (downloaded on demand, never bundled) | LFM Open License v1.0 |
 | Lucide icon paths | ISC |
 | AICSS "Orbs" S1 thinking lattice (native re-implementation) | MIT |
+
+Whisper live scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
+or download), targets its first preview after two seconds of captured audio, and spaces later previews according
+to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.
+This reduces redundant work but does not guarantee real-time Medium inference. Native CPU binaries and model
+weights are unchanged; on-phone speed and thermal behavior still require measurement.

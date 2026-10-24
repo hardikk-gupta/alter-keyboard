@@ -772,6 +772,8 @@ class UixManager(private val latinIME: LatinIME) {
             pauseVoiceSessions()
             return
         }
+        // Warm only the selected downloaded model; never open a microphone or download weights here.
+        com.aistudio.altermind.voice.SpeechModels.get(latinIME).preload()
         if (!restarting || (pillSession.value == null && inlineVoice.value == null)) {
             setPillMode(latinIME.getSettingBlocking(ALTER_START_MODE) == ALTER_START_MODE_PILL)
         }
