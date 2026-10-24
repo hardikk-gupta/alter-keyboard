@@ -256,3 +256,13 @@ All 24 tests passed, including a simulated slow decoder checking early first out
 complete final-tail processing. Compilation/resources/dexing completed; APK assembly failed only for the absent shared
 signing keystore. `git diff --check` passed. No phone latency, Medium real-time throughput, RAM/thermal behavior or
 APK signature was measured; this change does not promise real-time Medium performance.
+
+## Replacement for PR #16 on current main (Oct 24, 2026)
+
+Resolved overlap with merged PR #17 by retaining both shared-agent cleanup and live Whisper regression coverage,
+along with both documentation updates. Replacement PR carries the existing shared core/instructions without
+removing main's adaptive preview scheduling or preload integration.
+
+Validation: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 26 tests passed (no failures, errors or skips); compilation/resources/dexing completed. Assembly failed only at
+signing validation for the missing shared keystore. `git diff --check` passed. Phone/signature checks were not run.
