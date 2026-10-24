@@ -104,3 +104,9 @@ They forbid answering/executing spoken requests or inventing context/preferences
 not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
 semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
 limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.
+
+Whisper live scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
+or download), targets its first preview after two seconds of captured audio, and spaces later previews according
+to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.
+This reduces redundant work but does not guarantee real-time Medium inference. Native CPU binaries and model
+weights are unchanged; on-phone speed and thermal behavior still require measurement.
