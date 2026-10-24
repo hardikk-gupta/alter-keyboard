@@ -11,6 +11,18 @@ import java.io.File
 
 /** Ported from ALTER's VoicePackRegressionTest: the parts that run on the JVM without a phone. */
 class VoicePackRegressionTest {
+    @Test fun agentResolvesExplicitWeekdayCorrectionsWithoutPermittingOtherFactChanges() = runTest {
+        val input = "we are aiming for Friday actually Monday sorry afternoon"
+        var supplied = ""
+        val output = AlterDictationAgent.process(input) { supplied = it; it }
+        assertFalse(supplied.contains("Friday"))
+        assertTrue(output.contains("Monday afternoon"))
+        assertEquals("Friday or Monday", resolveSpokenCorrections("Friday or Monday"))
+        assertFalse(safeDictationEdit("Meet Monday at 5", "Meet Tuesday at 6"))
+        val fallback = AlterDictationAgent.process(input) { error("Model unavailable") }
+        assertTrue(fallback.contains("Friday"))
+    }
+
     @Test fun toneDecidesQuestionMarksFullStopsAndCapitals() {
         assertEquals("How is everything going?", formatDictation("how is everything going"))
         assertEquals("What time does the pharmacy close today?", formatDictation("what time does the pharmacy close today"))

@@ -10,9 +10,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
-/** A cleanup request: the transcript plus worked examples sent as earlier turns. No memory, history or tools. */
-internal data class CleanupRequest(val message: String, val examples: List<Pair<String, String>>, val instruction: String)
-
 /**
  * ALTER's LiteRT runtime, reduced to the dictation editor. One LiteRT engine at a time; LiteRT 0.18 has a reported
  * recurrent-state reuse issue for LFM2, so every cleanup chunk gets a fresh engine that is released afterwards.

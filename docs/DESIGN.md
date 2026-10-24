@@ -88,3 +88,12 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 - Password fields (`TYPE_TEXT_VARIATION_PASSWORD` and the other password variations) and
   `IME_FLAG_NO_PERSONALIZED_LEARNING` always open the full keyboard with voice disabled and no recovered draft shown.
 - If the microphone permission or a speech model is missing, tapping the mic opens Settings → ALTER voice.
+
+### Shared ALTER dictation core
+
+The voice pipeline is audio → transcription → `alter-agent` dictation policy → optional local cleanup model →
+validated text output. The reusable core owns instructions/examples, explicit weekday correction handling,
+formatting, edit validation, bounded processing and full-transcript fallback. The keyboard supplies model inference
+and handles insertion/clipboard delivery. No main-app installation, chat history, memories, tools or cloud fallback
+is required. Cleanup remains opt-in and Hindi mode retains its existing bypass. This is a dictation-specific core,
+not the main app's full chat/action agent; the main app has not yet migrated to this module.

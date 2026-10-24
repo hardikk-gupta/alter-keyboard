@@ -207,3 +207,22 @@ All 23 tests passed, with no failures, errors or skips, including new cases for 
 background cleanup completion, and durable completed-text recovery. App compilation, resources and dexing completed.
 APK assembly failed only at signing validation because the shared keystore is unavailable. `git diff --check` passed.
 Real-phone visual, clipboard, lifecycle and accessibility checks and APK signature verification were not run.
+
+## Reusable ALTER dictation core (Oct 24, 2026)
+
+Extracted transcript instructions/examples, formatting, model request data, validation and bounded cleanup orchestration
+into `alter-agent`. The keyboard's voice adapter now calls `AlterDictationAgent.process`, supplying local inference;
+the core has no app/UI/model-engine dependency and needs no main-app installation. Reviewed the main ALTER repo's
+agent and dictation architecture as provenance; this is its restricted dictation policy pattern, not the full chat/tool
+agent. The main app has not yet migrated to this shared module. Existing opt-in/model/Hindi behavior remains.
+
+Explicit weekday replacements such as “Friday actually Monday sorry” are resolved before model editing. Ambiguous
+alternatives remain intact; other content, numbers and negations retain validation. Exceptions retain the original
+transcript. No broader semantic-correction/model-quality claim is made. Updated user/design/flow documentation and
+module integration/provenance notes.
+
+Checks: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 24 tests passed, including correction, ambiguity, fact-change rejection and fallback regressions. Compilation,
+resources and dexing completed; assembly failed only because the shared signing keystore is unavailable. The first
+build found a new-module JVM-target mismatch, corrected before the final run. `git diff --check` passed. Phone model
+quality, APK signature and main-app integration were not tested.

@@ -93,3 +93,12 @@ Each keeps its own license under [`licenses/`](licenses):
 | LFM2.5 350M INT8 cleanup model (downloaded on demand, never bundled) | LFM Open License v1.0 |
 | Lucide icon paths | ISC |
 | AICSS "Orbs" S1 thinking lattice (native re-implementation) | MIT |
+
+### Shared ALTER dictation core
+
+The voice pipeline is audio → transcription → `alter-agent` dictation policy → optional local cleanup model →
+validated text output. The reusable core owns instructions/examples, explicit weekday correction handling,
+formatting, edit validation, bounded processing and full-transcript fallback. The keyboard supplies model inference
+and handles insertion/clipboard delivery. No main-app installation, chat history, memories, tools or cloud fallback
+is required. Cleanup remains opt-in and Hindi mode retains its existing bypass. This is a dictation-specific core,
+not the main app's full chat/action agent; the main app has not yet migrated to this module.

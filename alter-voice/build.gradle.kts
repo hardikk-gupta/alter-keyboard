@@ -32,6 +32,7 @@ kotlin {
 }
 
 dependencies {
+  api(project(":alter-agent"))
   implementation("androidx.core:core-ktx:1.13.1")
   implementation(platform("androidx.compose:compose-bom:2025.06.00"))
   implementation("androidx.compose.ui:ui")

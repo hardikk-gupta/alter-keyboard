@@ -125,3 +125,12 @@ flowchart LR
 | Multi-step progress | Numbered step badges that turn yellow with a check when done |
 | Touch targets 48 dp, 8 dp spacing | Rows, buttons and pill bar buttons; the voice strip's ✕ is 48 dp wide and the full 40 dp action-bar height |
 | Don't send users to wrong destinations | FUTO's "check for updates" item removed from the home (ALTER builds come from Releases) |
+
+### Shared ALTER dictation core
+
+The voice pipeline is audio → transcription → `alter-agent` dictation policy → optional local cleanup model →
+validated text output. The reusable core owns instructions/examples, explicit weekday correction handling,
+formatting, edit validation, bounded processing and full-transcript fallback. The keyboard supplies model inference
+and handles insertion/clipboard delivery. No main-app installation, chat history, memories, tools or cloud fallback
+is required. Cleanup remains opt-in and Hindi mode retains its existing bypass. This is a dictation-specific core,
+not the main app's full chat/action agent; the main app has not yet migrated to this module.
