@@ -126,6 +126,22 @@ flowchart LR
 | Touch targets 48 dp, 8 dp spacing | Rows, buttons and pill bar buttons; the voice strip's ✕ is 48 dp wide and the full 40 dp action-bar height |
 | Don't send users to wrong destinations | FUTO's "check for updates" item removed from the home (ALTER builds come from Releases) |
 
+### Shared ALTER dictation core
+
+The voice pipeline is audio → transcription → `alter-agent` dictation policy → optional local cleanup model →
+validated text output. The reusable core owns instructions/examples, explicit weekday correction handling,
+formatting, edit validation, bounded processing and full-transcript fallback. The keyboard supplies model inference
+and handles insertion/clipboard delivery. No main-app installation, chat history, memories, tools or cloud fallback
+is required. Cleanup remains opt-in and Hindi mode retains its existing bypass. This is a dictation-specific core,
+not the main app's full chat/action agent; the main app has not yet migrated to this module.
+
+Dictation instructions now explicitly cover fillers, false starts, repetition, latest explicit corrections,
+faithful grammar/formatting, Hindi/Hinglish language preservation, and protection of names, code and numbers.
+They forbid answering/executing spoken requests or inventing context/preferences. This is an instruction update,
+not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
+semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
+limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.
+
 Whisper live scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
 or download), targets its first preview after two seconds of captured audio, and spaces later previews according
 to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.

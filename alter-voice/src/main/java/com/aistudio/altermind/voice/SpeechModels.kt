@@ -189,8 +189,6 @@ internal suspend fun copySpeechComponent(store: ModelStore, spec: ModelSpec, tar
         check(partial.renameTo(target)) { "Could not install private speech component." }
     } finally { partial.delete() }
 }
-internal fun cleanDictation(text: String): String = text.replace(Regex("(?i)(?<![\\p{L}\\p{M}])(u+m+|u+h+|e+r+m+|a+h+|h+m+|o+h{2,}|(?-i:a{3,}))(?![\\p{L}\\p{M}])[, ]*"), "")
-    .replace(Regex(" {2,}"), " ").trim(' ', ',')
 internal fun wavSamples(wav: ByteArray): FloatArray {
     require(wav.size >= 44 && String(wav, 0, 4) == "RIFF" && String(wav, 36, 4) == "data") { "Expected decoded mono PCM16 WAV." }
     val shorts = java.nio.ByteBuffer.wrap(wav, 44, wav.size - 44).order(java.nio.ByteOrder.LITTLE_ENDIAN).asShortBuffer()

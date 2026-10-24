@@ -29,3 +29,5 @@ rootProject.name = "ALTER Keyboard"
 include(":app")
 include(":alter-voice")
 include(":voiceinput-shared")
+
+include(":alter-agent")

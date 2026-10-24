@@ -208,6 +208,40 @@ background cleanup completion, and durable completed-text recovery. App compilat
 APK assembly failed only at signing validation because the shared keystore is unavailable. `git diff --check` passed.
 Real-phone visual, clipboard, lifecycle and accessibility checks and APK signature verification were not run.
 
+## Reusable ALTER dictation core (Oct 24, 2026)
+
+Extracted transcript instructions/examples, formatting, model request data, validation and bounded cleanup orchestration
+into `alter-agent`. The keyboard's voice adapter now calls `AlterDictationAgent.process`, supplying local inference;
+the core has no app/UI/model-engine dependency and needs no main-app installation. Reviewed the main ALTER repo's
+agent and dictation architecture as provenance; this is its restricted dictation policy pattern, not the full chat/tool
+agent. The main app has not yet migrated to this shared module. Existing opt-in/model/Hindi behavior remains.
+
+Explicit weekday replacements such as “Friday actually Monday sorry” are resolved before model editing. Ambiguous
+alternatives remain intact; other content, numbers and negations retain validation. Exceptions retain the original
+transcript. No broader semantic-correction/model-quality claim is made. Updated user/design/flow documentation and
+module integration/provenance notes.
+
+Checks: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 24 tests passed, including correction, ambiguity, fact-change rejection and fallback regressions. Compilation,
+resources and dexing completed; assembly failed only because the shared signing keystore is unavailable. The first
+build found a new-module JVM-target mismatch, corrected before the final run. `git diff --check` passed. Phone model
+quality, APK signature and main-app integration were not tested.
+
+## Intent-preserving ALTER dictation instructions (Oct 24, 2026)
+
+Expanded shared-agent dictation instructions using the designer's supplied cleanup requirements: fillers, false
+starts, explicit latest corrections, faithful grammar/formatting, language/tone preservation including Hinglish,
+and protection of names, code, numbers and meaning. Forbid invented context, translation, extra information,
+answers and action execution. Added weekday-correction, Hinglish and instruction-isolation worked examples.
+This updates policy instructions; conservative validation, model selection, Hindi bypass and formatter limits
+remain. Broader semantic corrections are still rejected rather than silently relaxing meaning checks. No context
+collection, cleanup levels or claim of reproducing Wispr's proprietary implementation was added.
+
+Validation: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 25 tests passed, including language-preserving repetition cleanup and rejection/fallback for changed names,
+amounts, facts and unsupported semantic deletions. Compilation/resources/dexing completed; APK assembly failed only
+for the missing shared signing keystore. `git diff --check` passed. Phone model-quality/signature checks were not run.
+
 ## Adaptive live Whisper previews and model warm-up (Oct 24, 2026)
 
 Normal text-field entry now calls the existing selected-model preloader, avoiding an otherwise unused warm-up path.
@@ -222,3 +256,13 @@ All 24 tests passed, including a simulated slow decoder checking early first out
 complete final-tail processing. Compilation/resources/dexing completed; APK assembly failed only for the absent shared
 signing keystore. `git diff --check` passed. No phone latency, Medium real-time throughput, RAM/thermal behavior or
 APK signature was measured; this change does not promise real-time Medium performance.
+
+## Replacement for PR #16 on current main (Oct 24, 2026)
+
+Resolved overlap with merged PR #17 by retaining both shared-agent cleanup and live Whisper regression coverage,
+along with both documentation updates. Replacement PR carries the existing shared core/instructions without
+removing main's adaptive preview scheduling or preload integration.
+
+Validation: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 26 tests passed (no failures, errors or skips); compilation/resources/dexing completed. Assembly failed only at
+signing validation for the missing shared keystore. `git diff --check` passed. Phone/signature checks were not run.
