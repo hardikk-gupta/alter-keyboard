@@ -125,3 +125,9 @@ flowchart LR
 | Multi-step progress | Numbered step badges that turn yellow with a check when done |
 | Touch targets 48 dp, 8 dp spacing | Rows, buttons and pill bar buttons; the voice strip's ✕ is 48 dp wide and the full 40 dp action-bar height |
 | Don't send users to wrong destinations | FUTO's "check for updates" item removed from the home (ALTER builds come from Releases) |
+
+Whisper live scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
+or download), targets its first preview after two seconds of captured audio, and spaces later previews according
+to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.
+This reduces redundant work but does not guarantee real-time Medium inference. Native CPU binaries and model
+weights are unchanged; on-phone speed and thermal behavior still require measurement.

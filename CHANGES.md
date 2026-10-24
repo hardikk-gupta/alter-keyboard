@@ -207,3 +207,18 @@ All 23 tests passed, with no failures, errors or skips, including new cases for 
 background cleanup completion, and durable completed-text recovery. App compilation, resources and dexing completed.
 APK assembly failed only at signing validation because the shared keystore is unavailable. `git diff --check` passed.
 Real-phone visual, clipboard, lifecycle and accessibility checks and APK signature verification were not run.
+
+## Adaptive live Whisper previews and model warm-up (Oct 24, 2026)
+
+Normal text-field entry now calls the existing selected-model preloader, avoiding an otherwise unused warm-up path.
+It does not capture audio or download weights, and sensitive fields bypass it. Whisper requests its first preview
+after two seconds of captured audio instead of four. Later preview intervals adapt to twice the observed decode
+cost (minimum four seconds, capped by the bounded window), reducing repeated prefix decoding on slow devices.
+Every full window and final tail still runs; queued PCM is never dropped to catch up. Text is still inserted only
+when finished. Native CPU binaries, model weights and translation behavior are unchanged.
+
+Checks: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 24 tests passed, including a simulated slow decoder checking early first output, skipped redundant previews and
+complete final-tail processing. Compilation/resources/dexing completed; APK assembly failed only for the absent shared
+signing keystore. `git diff --check` passed. No phone latency, Medium real-time throughput, RAM/thermal behavior or
+APK signature was measured; this change does not promise real-time Medium performance.

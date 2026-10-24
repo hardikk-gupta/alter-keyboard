@@ -11,6 +11,27 @@ import java.io.File
 
 /** Ported from ALTER's VoicePackRegressionTest: the parts that run on the JVM without a phone. */
 class VoicePackRegressionTest {
+    @Test fun whisperStartsAtTwoSecondsAndSkipsExpensiveRepeatedPreviewsWithoutLosingAudio() = runTest {
+        val chunks = kotlinx.coroutines.channels.Channel<FloatArray>(kotlinx.coroutines.channels.Channel.UNLIMITED)
+        val sizes = mutableListOf<Int>()
+        val updates = mutableListOf<String>()
+        var clock = 0L
+        val job = launch {
+            transcribeWhisperLive(chunks, { audio ->
+                sizes += audio.size
+                clock += 10_000_000_000L // Simulate a slow Medium decode without wall-clock waiting.
+                "words${audio.size}"
+            }, { updates += it }, sampleRate = 10, nowNanos = { clock })
+        }
+        chunks.send(FloatArray(20) { it.toFloat() }); testScheduler.runCurrent()
+        assertEquals(listOf(20), sizes) // First preview after two seconds.
+        chunks.send(FloatArray(40)); testScheduler.runCurrent()
+        assertEquals(listOf(20), sizes) // No redundant six-second decode on the slow device.
+        chunks.close(); job.join()
+        assertEquals(listOf(20, 60), sizes) // Finish always processes the complete remaining tail.
+        assertEquals("words60", updates.last())
+    }
+
     @Test fun toneDecidesQuestionMarksFullStopsAndCapitals() {
         assertEquals("How is everything going?", formatDictation("how is everything going"))
         assertEquals("What time does the pharmacy close today?", formatDictation("what time does the pharmacy close today"))

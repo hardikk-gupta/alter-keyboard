@@ -28,19 +28,25 @@ internal suspend fun transcribeSpeechWindows(
 /** Decode short previews while capture continues; commit bounded segments and finish only the tail. */
 internal suspend fun transcribeWhisperLive(
     chunks: ReceiveChannel<FloatArray>, decode: suspend (FloatArray) -> String, update: (String) -> Unit,
-    sampleRate: Int = 16000
+    sampleRate: Int = 16000, nowNanos: () -> Long = System::nanoTime
 ) {
     val window = FloatArray(20 * sampleRate)
     val overlap = sampleRate
     var used = 0
     var carried = 0
-    var nextPreview = 4 * sampleRate
+    var previewInterval = 4 * sampleRate
+    var nextPreview = 2 * sampleRate
     var committed = ""
     var cachedSamples = -1
     var cachedText = ""
     suspend fun recognize(): String {
         if (used != cachedSamples) {
+            val started = nowNanos()
             cachedText = decode(window.copyOf(used)).takeUnless { it.contains("[NO_SPEECH_DETECTED]", true) }.orEmpty().trim()
+            // Slow devices spend their time catching up, rather than repeatedly decoding the same prefix.
+            val elapsed = (nowNanos() - started).coerceAtLeast(0L)
+            previewInterval = maxOf(4L * sampleRate, elapsed.coerceAtMost(20_000_000_000L) * sampleRate / 500_000_000L)
+                .coerceAtMost((window.size - overlap).toLong()).toInt()
             cachedSamples = used
         }
         return cachedText
@@ -55,7 +61,7 @@ internal suspend fun transcribeWhisperLive(
                 committed = joinWhisperOverlap(committed, recognize())
                 update(committed)
                 window.copyInto(window, 0, used - overlap, used)
-                used = overlap; carried = overlap; cachedSamples = -1; nextPreview = used + 4 * sampleRate
+                used = overlap; carried = overlap; cachedSamples = -1; nextPreview = used + previewInterval
             }
         }
     }
@@ -66,7 +72,7 @@ internal suspend fun transcribeWhisperLive(
         while (true) append(chunks.tryReceive().getOrNull() ?: break)
         if (used >= nextPreview) {
             update(joinWhisperOverlap(committed, recognize()))
-            nextPreview = used + 4 * sampleRate
+            nextPreview = used + previewInterval
         }
     }
     if (used > carried) update(joinWhisperOverlap(committed, recognize())) else update(committed)

@@ -88,3 +88,9 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 - Password fields (`TYPE_TEXT_VARIATION_PASSWORD` and the other password variations) and
   `IME_FLAG_NO_PERSONALIZED_LEARNING` always open the full keyboard with voice disabled and no recovered draft shown.
 - If the microphone permission or a speech model is missing, tapping the mic opens Settings → ALTER voice.
+
+Whisper live scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
+or download), targets its first preview after two seconds of captured audio, and spaces later previews according
+to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.
+This reduces redundant work but does not guarantee real-time Medium inference. Native CPU binaries and model
+weights are unchanged; on-phone speed and thermal behavior still require measurement.
