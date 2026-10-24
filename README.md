@@ -129,3 +129,10 @@ formatting, edit validation, bounded processing and full-transcript fallback. Th
 and handles insertion/clipboard delivery. No main-app installation, chat history, memories, tools or cloud fallback
 is required. Cleanup remains opt-in and Hindi mode retains its existing bypass. This is a dictation-specific core,
 not the main app's full chat/action agent; the main app has not yet migrated to this module.
+
+Dictation instructions now explicitly cover fillers, false starts, repetition, latest explicit corrections,
+faithful grammar/formatting, Hindi/Hinglish language preservation, and protection of names, code and numbers.
+They forbid answering/executing spoken requests or inventing context/preferences. This is an instruction update,
+not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
+semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
+limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.

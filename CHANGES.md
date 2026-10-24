@@ -226,3 +226,18 @@ All 24 tests passed, including correction, ambiguity, fact-change rejection and 
 resources and dexing completed; assembly failed only because the shared signing keystore is unavailable. The first
 build found a new-module JVM-target mismatch, corrected before the final run. `git diff --check` passed. Phone model
 quality, APK signature and main-app integration were not tested.
+
+## Intent-preserving ALTER dictation instructions (Oct 24, 2026)
+
+Expanded shared-agent dictation instructions using the designer's supplied cleanup requirements: fillers, false
+starts, explicit latest corrections, faithful grammar/formatting, language/tone preservation including Hinglish,
+and protection of names, code, numbers and meaning. Forbid invented context, translation, extra information,
+answers and action execution. Added weekday-correction, Hinglish and instruction-isolation worked examples.
+This updates policy instructions; conservative validation, model selection, Hindi bypass and formatter limits
+remain. Broader semantic corrections are still rejected rather than silently relaxing meaning checks. No context
+collection, cleanup levels or claim of reproducing Wispr's proprietary implementation was added.
+
+Validation: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 25 tests passed, including language-preserving repetition cleanup and rejection/fallback for changed names,
+amounts, facts and unsupported semantic deletions. Compilation/resources/dexing completed; APK assembly failed only
+for the missing shared signing keystore. `git diff --check` passed. Phone model-quality/signature checks were not run.

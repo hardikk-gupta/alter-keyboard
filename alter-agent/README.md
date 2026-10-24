@@ -14,3 +14,10 @@ before both products consume this same module; do not claim they already do.
 Explicit weekday replacements are normalized before model editing; ambiguous alternatives stay intact. All other
 content/number/negation checks remain. This does not establish broader self-correction or phone model quality.
 No weights, credentials, extra model downloads or cross-app API are included.
+
+Dictation instructions now explicitly cover fillers, false starts, repetition, latest explicit corrections,
+faithful grammar/formatting, Hindi/Hinglish language preservation, and protection of names, code and numbers.
+They forbid answering/executing spoken requests or inventing context/preferences. This is an instruction update,
+not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
+semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
+limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.
