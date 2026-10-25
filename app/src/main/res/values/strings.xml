@@ -278,4 +278,9 @@ mobile devices. [CHAR LIMIT=25] -->
     <!-- This resource is corresponding to msgid="5433275485499039199" -->
     <string name="user_dict_fast_scroll_alphabet">\u0020ABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
     <string name="alter_pill_starting">Starting microphone. Tap to stop.</string>
+    <string name="alter_corrections_title">Learned words</string>
+    <string name="alter_corrections_help">Save only corrections you confirm. Applied to whole words in future dictation, including literal uses. Stored only on this device; delete a rule to stop using it. This personalizes text, without retraining the speech model.</string>
+    <string name="alter_corrections_heard">Heard word, e.g. loadbook</string>
+    <string name="alter_corrections_intended">Intended word, e.g. notebook</string>
+    <string name="alter_corrections_remember">Remember this correction</string>
 </resources>

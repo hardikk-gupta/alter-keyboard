@@ -288,6 +288,35 @@ fun AlterVoiceScreen(navController: NavHostController) {
             )
         }
 
+        AlterSettingsGroup(stringResource(R.string.alter_corrections_title)) {
+            val corrections = remember { com.aistudio.altermind.voice.VoiceCorrections(context) }
+            var entries by remember { mutableStateOf(runCatching { corrections.read() }.getOrDefault(emptyMap())) }
+            var from by remember { mutableStateOf("") }
+            var to by remember { mutableStateOf("") }
+            var failure by remember { mutableStateOf<String?>(null) }
+            Text(stringResource(R.string.alter_corrections_help), modifier = Modifier.padding(16.dp))
+            androidx.compose.material3.OutlinedTextField(from, { from = it },
+                label = { Text(stringResource(R.string.alter_corrections_heard)) }, singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            androidx.compose.material3.OutlinedTextField(to, { to = it },
+                label = { Text(stringResource(R.string.alter_corrections_intended)) }, singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            OutlinedButton(onClick = {
+                try { corrections.save(from.trim(), to.trim()); entries = corrections.read(); from = ""; to = ""; failure = null }
+                catch (e: Exception) { failure = e.message }
+            }, enabled = com.aistudio.altermind.voice.validVoiceCorrection(from.trim(), to.trim()),
+                modifier = Modifier.padding(horizontal = 16.dp)) { Text(stringResource(R.string.alter_corrections_remember)) }
+            failure?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp)) }
+            entries.forEach { (heard, intended) ->
+                SettingItem(title = "$heard → $intended", subtitle = "", onClick = null) {
+                    OutlinedButton(onClick = {
+                        try { corrections.delete(heard); entries = corrections.read(); failure = null }
+                        catch (e: Exception) { failure = e.message }
+                    }) { Text(stringResource(R.string.alter_model_delete)) }
+                }
+            }
+        }
+
         // 4. Optional cleanup editor.
         AlterSettingsGroup(stringResource(R.string.alter_cleanup_title)) {
             val cleanupInstalled = remember(refresh) { models.store.installed(cleanup) }

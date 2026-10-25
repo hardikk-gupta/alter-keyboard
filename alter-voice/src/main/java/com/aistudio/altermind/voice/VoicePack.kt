@@ -14,7 +14,8 @@ object VoicePack {
     fun cleanupEnabled(context: Context) = voicePrefs(context).getBoolean(ENABLED, false)
     fun setCleanupEnabled(context: Context, enabled: Boolean) { voicePrefs(context).edit().putBoolean(ENABLED, enabled).apply() }
 
-    suspend fun polish(context: Context, transcript: String): String {
+    suspend fun polish(context: Context, rawTranscript: String): String {
+        val transcript = applyVoiceCorrections(rawTranscript, VoiceCorrections(context).read())
         // No catalog reads, model verification, engine loading or inference for simple short dictation.
         if (dictationCleanupLevel(transcript) == DictationCleanupLevel.BASIC)
             return formatDictation(cleanDictation(transcript))
