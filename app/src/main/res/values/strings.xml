@@ -277,4 +277,5 @@ mobile devices. [CHAR LIMIT=25] -->
          This resource is copied from packages/apps/Settings/res/values/strings.xml -->
     <!-- This resource is corresponding to msgid="5433275485499039199" -->
     <string name="user_dict_fast_scroll_alphabet">\u0020ABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+    <string name="alter_pill_starting">Starting microphone. Tap to stop.</string>
 </resources>

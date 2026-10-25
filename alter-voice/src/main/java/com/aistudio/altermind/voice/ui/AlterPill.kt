@@ -57,7 +57,19 @@ object AlterColors {
     val OrbInk = Color(0xFFF5F5F5)
 }
 
-enum class PillState { Idle, Listening, Paused, Thinking, Error, Disabled }
+enum class PillState { Idle, Starting, Listening, Paused, Thinking, Error, Disabled }
+
+/** Errors must stay visible even when a recoverable draft is also paused. */
+fun voicePillState(disabled: Boolean, starting: Boolean, recording: Boolean, paused: Boolean,
+    processing: Boolean, error: String?): PillState = when {
+    disabled -> PillState.Disabled
+    error != null -> PillState.Error
+    starting -> PillState.Starting
+    paused -> PillState.Paused
+    recording -> PillState.Listening
+    processing -> PillState.Thinking
+    else -> PillState.Idle
+}
 
 /** Lucide icons (ISC license) used on the pill bar, from the same path data as ALTER's ui/LucideIcons.kt set. */
 object LucidePill {
@@ -128,7 +140,7 @@ internal fun voiceWavePoints(level: Float, phase: Float, strand: Int): List<Offs
                 Icon(if (state == PillState.Disabled) LucidePill.MicOff else LucidePill.Mic, null, Modifier.size(20.dp), tint = ink)
             }
             PillState.Listening -> VoiceWave(level, Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 6.dp))
-            PillState.Paused -> Canvas(Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 6.dp)) {
+            PillState.Starting, PillState.Paused -> Canvas(Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 6.dp)) {
                 drawLine(AlterColors.LightText, Offset(0f, size.height / 2), Offset(size.width, size.height / 2),
                     strokeWidth = 2.dp.toPx(), cap = StrokeCap.Round)
             }

@@ -745,8 +745,10 @@ class UixManager(private val latinIME: LatinIME) {
     @Composable
     private fun RowScope.AlterVoiceStrip(session: AlterDictationSession) {
         val processing by session.controller.processing.collectAsState()
-        LaunchedEffect(session, processing) {
-            if (processing) latinIME.window.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        val recording by session.controller.recording.collectAsState()
+        val starting by session.controller.starting.collectAsState()
+        LaunchedEffect(session, processing, recording, starting) {
+            if (processing || recording || starting) latinIME.window.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             else latinIME.window.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         Row(Modifier.weight(1f).fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {

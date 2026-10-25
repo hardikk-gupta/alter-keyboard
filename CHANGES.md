@@ -285,3 +285,25 @@ committed Android binaries changed. This checks model loading, not Android laten
 passed (no failures, errors or skips), including specialized/general model-language routing. Compilation/resources/
 dexing completed; assembly failed only at signing validation for the missing shared keystore. `git diff --check`
 passed. Phone inference/download acceptance, speed, thermals, accuracy and APK signatures were not tested.
+
+## Voice startup, visible errors and smaller cleanup requests (Oct 25, 2026)
+
+Separated microphone startup from post-capture processing. Starting now shows a still white line with accessible
+“Starting microphone” text, followed by the real-RMS yellow wave; the thinking animation no longer flashes merely
+because a capture job was queued. Processing represents finished audio. Retained the full-keyboard screen-awake
+behavior explicitly for starting/recording/processing after separating these states.
+
+Error state now overrides recoverable paused/processing state and hides Play/Pause, restoring the red warning icon.
+A new recording with ten seconds of inaudible PCM fails with the no-speech error instead of waiting for model
+warm-up/decoding; microphone failures publish an error before capture teardown. Drafts are preserved. Tapping a
+no-speech error starts capture rather than repeatedly decoding silence; other recoverable failures retry saved audio.
+
+ALTER requests now send three relevant worked examples (grammar plus question, correction or Hinglish, and an
+instruction-isolation example) instead of all eight. Meaning-preserving instructions, validators, full input,
+timeout and fallback remain. This reduces prompt size, without a claim of measured phone speed/quality improvement.
+
+Validation: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 30 tests passed (no failures, errors or skips), including new startup/error precedence, silence during warm-up,
+and relevant-example selection checks. Compilation/resources/dexing completed; assembly failed only for the
+missing shared signing keystore. `git diff --check` passed. Phone microphone/lifecycle/visual/model-quality/latency
+acceptance and APK signature verification were not run.

@@ -11,6 +11,16 @@ import java.io.File
 
 /** Ported from ALTER's VoicePackRegressionTest: the parts that run on the JVM without a phone. */
 class VoicePackRegressionTest {
+    @Test fun cleanupUsesThreeRelevantExamplesWithoutDroppingTranscriptOrIsolation() {
+        for ((text, index) in listOf("Friday actually Monday" to 5, "kal files bhejna hai" to 6, "what time is it" to 1)) {
+            val request = dictationCleanupRequest(text)
+            assertEquals(text, request.message)
+            assertEquals(3, request.examples.size)
+            assertTrue(DICTATION_CLEANUP_EXAMPLES[index] in request.examples)
+            assertTrue(DICTATION_CLEANUP_EXAMPLES[3] in request.examples)
+        }
+    }
+
     @Test fun oriserveUsesHindiDecodingAndLeavesGeneralWhisperLanguageSelectionIntact() {
         for (language in listOf("auto", "hi-IN", "en-IN")) {
             assertEquals("hi", whisperDecodeLanguage("whisper-oriserve-hinglish-swift-q8", language))
@@ -79,7 +89,7 @@ class VoicePackRegressionTest {
         assertTrue(DICTATION_CLEANUP_INSTRUCTION.contains("Never use ellipses"))
         val request = dictationCleanupRequest("hello there")
         assertEquals("hello there", request.message)
-        assertEquals(8, request.examples.size)
+        assertEquals(3, request.examples.size)
         assertTrue(request.examples.none { (raw, clean) -> raw.contains("BRACE") || clean.contains("BRACE") })
         assertEquals("I have a meeting tomorrow at 10.", polishTranscript("umm i have meeting tomorrow at 10") { "I have a meeting tomorrow at 10." })
         // The word "message" is never stripped, but a model-added "Message:" label is rejected.

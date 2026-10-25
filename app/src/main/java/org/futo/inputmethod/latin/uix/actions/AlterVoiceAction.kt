@@ -36,6 +36,7 @@ import com.aistudio.altermind.voice.DictationController
 import com.aistudio.altermind.voice.SpeechModels
 import com.aistudio.altermind.voice.ui.AlterVoicePill
 import com.aistudio.altermind.voice.ui.PillState
+import com.aistudio.altermind.voice.ui.voicePillState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -95,7 +96,7 @@ class AlterDictationSession(
     fun attach(onFinished: (String) -> Unit) { this.onFinished = onFinished }
 
     fun start() {
-        if (controller.processing.value || !readyOrOpenSettings()) return
+        if (controller.starting.value || controller.recording.value || controller.processing.value || !readyOrOpenSettings()) return
         copyOnCompletion = false
         controller.start(endAfterSilence = context.getSetting(ALTER_END_ON_SILENCE))
     }
@@ -105,10 +106,13 @@ class AlterDictationSession(
         // An explicit retry/resume belongs to the current editor, even after a background copy.
         if (!controller.processing.value) copyOnCompletion = false
         when {
+            controller.error.value != null -> {
+                if (controller.hasRetryRecording && !controller.noSpeechError) controller.retrySavedAudio() else start()
+            }
+            controller.starting.value -> controller.stop()
             controller.paused.value -> controller.retrySavedAudio()
             controller.recording.value -> controller.stop()
             controller.processing.value -> controller.pause()
-            controller.error.value != null && controller.hasRetryRecording -> controller.retrySavedAudio()
             else -> start()
         }
     }
@@ -125,20 +129,15 @@ class AlterDictationSession(
     @Composable
     fun Pill(disabled: Boolean = false, modifier: Modifier = Modifier.height(48.dp).width(224.dp),
         pillModifier: Modifier = Modifier, controlTint: Color = LocalKeyboardScheme.current.onBackground) {
+        val starting by controller.starting.collectAsState()
         val recording by controller.recording.collectAsState()
         val paused by controller.paused.collectAsState()
         val processing by controller.processing.collectAsState()
         val error by controller.error.collectAsState()
         val level by controller.level.collectAsState()
-        val state = when {
-            disabled -> PillState.Disabled
-            paused -> PillState.Paused
-            recording -> PillState.Listening
-            processing -> PillState.Thinking
-            error != null -> PillState.Error
-            else -> PillState.Idle
-        }
+        val state = voicePillState(disabled, starting, recording, paused, processing, error)
         val description = when (state) {
+            PillState.Starting -> stringResource(R.string.alter_pill_starting)
             PillState.Idle -> stringResource(R.string.alter_pill_idle)
             PillState.Listening -> stringResource(R.string.alter_pill_listening)
             PillState.Paused -> stringResource(R.string.alter_pill_paused)
@@ -149,7 +148,7 @@ class AlterDictationSession(
         Row(modifier, verticalAlignment = Alignment.CenterVertically) {
             AlterVoicePill(state, level, onTap = { tap() }, modifier = Modifier.weight(1f).fillMaxHeight().then(pillModifier),
                 description = description)
-            if (!disabled && (recording || paused || processing)) {
+            if (!disabled && error == null && (starting || recording || paused || processing)) {
                 VoiceControlButton(rememberVectorPainter(if (paused) LucidePill.Play else LucidePill.Pause),
                     stringResource(when {
                         paused -> R.string.alter_voice_resume

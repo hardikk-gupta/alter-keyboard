@@ -154,3 +154,12 @@ by the third-party AirNote repository; it outputs romanized Hinglish and uses fi
 the general dictation-language selector. It reuses the existing Whisper runtime, live scheduling, recovery and
 ALTER cleanup pipeline. The catalog pins a commit, exact size and SHA-256; no weights are bundled and model
 selection is explicit. Apache-2.0 attribution is in licenses/. Accuracy and Android speed require phone testing.
+
+Voice startup shows a still white line while the microphone opens, then the real-RMS yellow wave; it does not
+show the processing animation. Processing is reserved for finished audio. Errors take precedence over saved-draft
+pause/processing state and hide the Play/Pause control. Ten seconds with no audible speech stops capture with the
+error icon, including while the model warms up; the draft remains private and saved. Tapping a no-speech error
+starts capture again instead of repeatedly decoding silence. Other recoverable errors can retry saved audio.
+ALTER cleanup sends three relevant worked examples instead of all eight (with an instruction-isolation example
+always included); editing instructions, validation, full transcript and timeout/fallback rules remain unchanged.
+Reduced prompt size is not a measured phone latency improvement.
