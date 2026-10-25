@@ -14,7 +14,7 @@ import java.util.UUID
  */
 internal class RecordingDraftStore(private val directory: File) {
     data class Draft(val id: String, val model: String, val prefix: String, val partial: String,
-        val completed: String?, val samples: Int) {
+        val completed: String?, val samples: Int, val raw: String? = null) {
         val hasContent get() = samples > 0 || prefix.isNotBlank() || partial.isNotBlank() || !completed.isNullOrBlank()
         val deviceText get() = listOf(prefix, partial).filter { it.isNotBlank() }.joinToString(" ")
     }
@@ -28,7 +28,7 @@ internal class RecordingDraftStore(private val directory: File) {
         check(audio.length() <= MAX_SAMPLES * 2L + 1) { "Saved recording exceeds the fifteen-minute limit." }
         Draft(checkNotNull(p.getProperty("id")), checkNotNull(p.getProperty("model")),
             p.getProperty("prefix", ""), p.getProperty("partial", ""), p.getProperty("completed"),
-            (audio.length() / 2).toInt())
+            (audio.length() / 2).toInt(), p.getProperty("raw"))
     }
 
     fun begin(model: String): Draft = synchronized(lock) {
@@ -77,6 +77,7 @@ internal class RecordingDraftStore(private val directory: File) {
     }
 
     fun partial(id: String, text: String) = update(id) { it.copy(partial = text) }
+    fun raw(id: String, text: String) = update(id) { it.copy(raw = text) }
     fun complete(id: String, text: String) = update(id) { it.copy(completed = text) }
     private fun update(id: String, change: (Draft) -> Draft) = synchronized(lock) {
         load()?.takeIf { it.id == id }?.let { write(change(it)) }
@@ -103,6 +104,7 @@ internal class RecordingDraftStore(private val directory: File) {
                 setProperty("id", draft.id); setProperty("model", draft.model)
                 setProperty("prefix", draft.prefix); setProperty("partial", draft.partial)
                 draft.completed?.let { setProperty("completed", it) }
+                draft.raw?.let { setProperty("raw", it) }
             }.store(stream, null)
             check(stream.channel.size() <= 1_048_576) { "Saved transcript exceeds the temporary draft limit." }
             stream.fd.sync()

@@ -22,6 +22,21 @@ class VoicePackRegressionTest {
         assertEquals("loadbook", applyVoiceCorrections("loadbook", emptyMap()))
     }
 
+    @Test fun explicitWeekdayRetractionsPassWithoutPermittingOtherFactChanges() = runTest {
+        val raw = "the meeting is Friday actually make it Monday"
+        assertEquals("the meeting is Monday", resolveSpokenCorrections(raw))
+        val literal = "`Friday actually make it Monday`"
+        assertEquals(literal, resolveSpokenCorrections(literal))
+        assertEquals("The meeting is Monday.", AlterDictationAgent.process(raw) { "The meeting is Monday." })
+        assertEquals("The meeting is Monday.", acceptedDictationEdit(raw, "The meeting is Monday."))
+        assertNull(acceptedDictationEdit(raw, "The meeting is Tuesday."))
+        assertNull(acceptedDictationEdit("kal Rahul ko call karna hai nahi nahi parso karna hai",
+            "Kal Rahul ko call karna hai nahi parso karna hai"))
+        assertEquals("Meet Monday", resolveSpokenCorrections("Meet Friday. Actually, make it Monday"))
+        assertEquals("Meet Monday", resolveSpokenCorrections("Meet Friday, no wait, Monday"))
+        assertEquals("We do not meet Friday actually Monday", resolveSpokenCorrections("We do not meet Friday actually Monday"))
+    }
+
     @Test fun cleanupEffortScalesWithoutSendingSimpleGreetingsToTheModel() = runTest {
         assertEquals(DictationCleanupLevel.BASIC, dictationCleanupLevel("hi how are you"))
         assertEquals("Hi, how are you?", AlterDictationAgent.process("hi how are you") { error("Must not load a model") })
@@ -66,7 +81,8 @@ class VoicePackRegressionTest {
         assertEquals("Friday or Monday", resolveSpokenCorrections("Friday or Monday"))
         assertFalse(safeDictationEdit("Meet Monday at 5", "Meet Tuesday at 6"))
         val fallback = AlterDictationAgent.process(input) { error("Model unavailable") }
-        assertTrue(fallback.contains("Friday"))
+        assertFalse(fallback.contains("Friday"))
+        assertTrue(fallback.contains("Monday"))
     }
 
     @Test fun whisperStartsAtTwoSecondsAndSkipsExpensiveRepeatedPreviewsWithoutLosingAudio() = runTest {
@@ -196,7 +212,7 @@ class VoicePackRegressionTest {
         val json = File("src/main/assets/alter_voice_models.json").readText()
         val ids = Regex("\"id\": \"([^\"]+)\"").findAll(json).map { it.groupValues[1] }.toList()
         assertTrue("lfm25-350m-cleanup" in ids)
-        assertTrue(ids.all { it == "lfm25-350m-cleanup" || it.startsWith("whisper-") || it.startsWith("moonshine-en") })
+        assertTrue(ids.all { it == "handy-350m-cleanup" || it == "lfm25-350m-cleanup" || it.startsWith("whisper-") || it.startsWith("moonshine-en") })
         assertEquals(ids.size, Regex("\"sha256\": \"[a-f0-9]{64}\"").findAll(json).count())
         assertEquals(ids.size, Regex("\"downloadUrl\": \"https://").findAll(json).count())
         assertTrue(json.contains("6a78c7a2746386f8919476a34ef0ca40d596a5c44e979520fae8318da5cfb1f6"))

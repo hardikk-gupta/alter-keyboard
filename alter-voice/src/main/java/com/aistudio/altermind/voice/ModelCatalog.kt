@@ -36,6 +36,7 @@ class ModelCatalog(val models: List<ModelSpec>) {
                         require(uri.scheme == "https" && !uri.host.isNullOrBlank() && uri.userInfo == null) { "Model source must use HTTPS" }
                         require(spec.downloadBytes in 1..20_000_000_000L)
                         require(if (spec.modelType == ModelType.SPEECH) spec.filename.substringAfterLast('.') in setOf("bin", "ort", "json") && "SPEECH_TRANSCRIPTION" in spec.capabilities
+                            else if (spec.modelType == ModelType.TEXT_CLEANUP && spec.family == "Handy") spec.filename.endsWith(".gguf")
                             else spec.filename.endsWith(".litertlm"))
                         require(Regex("[a-f0-9]{64}").matches(spec.sha256)) { "Model checksum is required" }
                         require(spec.backend in setOf("CPU", "GPU") && spec.contextTokens > 0)

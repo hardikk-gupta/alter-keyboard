@@ -45,7 +45,7 @@
     <string name="alter_model_delete">Delete</string>
     <string name="alter_model_verifying">Verifying…</string>
     <string name="alter_cleanup_title">Dictation cleanup</string>
-    <string name="alter_cleanup_subtitle">LFM2.5 350M adds punctuation and capitals and removes fillers. It never answers the text.</string>
+    <string name="alter_cleanup_subtitle">The selected local editor handles punctuation, fillers and supported corrections. Spoken requests remain text.</string>
     <string name="alter_cleanup_toggle">Clean up dictation</string>
     <string name="alter_voice_language_title">Dictation language</string>
     <string name="alter_voice_language_auto">Automatic</string>

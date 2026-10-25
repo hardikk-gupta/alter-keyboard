@@ -184,7 +184,8 @@ fun AlterVoiceScreen(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     val models = remember { SpeechModels.get(context) }
     val choices = remember { speechChoices(models.catalog) }
-    val cleanup = remember { VoiceSettings.cleanupSpec(context) }
+    var cleanupId by remember { mutableStateOf(VoicePack.cleanupModel(context)) }
+    val cleanup = remember(cleanupId) { models.catalog.find(cleanupId) }
     val downloads by ModelDownloads.states.collectAsState()
 
     // Re-read installed state and storage after downloads finish or models change.
@@ -319,16 +320,25 @@ fun AlterVoiceScreen(navController: NavHostController) {
 
         // 4. Optional cleanup editor.
         AlterSettingsGroup(stringResource(R.string.alter_cleanup_title)) {
-            val cleanupInstalled = remember(refresh) { models.store.installed(cleanup) }
+            DropDownPickerSettingItem(stringResource(R.string.alter_cleanup_engine),
+                listOf(VoicePack.CLEANUP_MODEL, VoicePack.HANDY_MODEL), cleanupId,
+                { cleanupId = it; VoicePack.selectCleanupModel(context, it)
+                    if (it != VoicePack.HANDY_MODEL) scope.launch { VoicePack.releaseHandy() }
+                },
+                { models.catalog.find(it).displayName })
+            Text(stringResource(R.string.alter_cleanup_live_note), modifier = Modifier.padding(16.dp))
+            val cleanupInstalled = remember(refresh, cleanupId) { models.store.installed(cleanup) }
             var cleanupOn by remember(refresh) { mutableStateOf(VoicePack.cleanupEnabled(context)) }
             SettingItem(title = stringResource(R.string.alter_cleanup_toggle), subtitle = stringResource(R.string.alter_cleanup_subtitle),
                 disabled = !cleanupInstalled,
                 onClick = { cleanupOn = !cleanupOn; VoicePack.setCleanupEnabled(context, cleanupOn) }) {
                 Switch(checked = cleanupOn && cleanupInstalled, onCheckedChange = null, enabled = cleanupInstalled)
             }
-            ModelRow(cleanup.displayName, "", cleanup.id, listOf(cleanup), cleanupInstalled, inUse = false, onUse = null,
+            ModelRow(cleanup.displayName, cleanup.description, cleanup.id, listOf(cleanup), cleanupInstalled, inUse = false, onUse = null,
                 onDelete = { scope.launch {
+                    if (com.aistudio.altermind.voice.DictationController.isActive()) { error = "Pause dictation before deleting a cleanup model."; return@launch }
                     VoicePack.setCleanupEnabled(context, false)
+                    com.aistudio.altermind.voice.VoicePack.releaseHandy()
                     ModelDownloads.delete(context, listOf(cleanup))
                     refresh++
                 } })

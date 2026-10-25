@@ -283,4 +283,6 @@ mobile devices. [CHAR LIMIT=25] -->
     <string name="alter_corrections_heard">Heard word, e.g. loadbook</string>
     <string name="alter_corrections_intended">Intended word, e.g. notebook</string>
     <string name="alter_corrections_remember">Remember this correction</string>
+    <string name="alter_cleanup_engine">Cleanup editor</string>
+    <string name="alter_cleanup_live_note">Cleanup can run provisionally while you speak. Later corrections revise earlier wording; text is inserted only when finished. Handy is experimental and trained for English; Hinglish quality and phone speed are unverified.</string>
 </resources>

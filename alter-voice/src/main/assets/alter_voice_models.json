@@ -767,6 +767,29 @@
       "backend": "CPU",
       "cpuFallback": false,
       "contextTokens": 2048
+    },
+    {
+      "id": "handy-350m-cleanup",
+      "displayName": "Handy Editor 350M \u00b7 Q4_K_M \u00b7 experimental",
+      "tier": "Voice pack",
+      "description": "English-trained dictation editor via llama.cpp CPU. Experimental for Hinglish; corrections are validated and raw text is retained. Phone speed and accuracy are unverified.",
+      "family": "Handy",
+      "version": "f1f01e16ab10143f51ffb0fb180ac715dcef964e",
+      "repository": "MagicNoThief/handy-editor-lfm2.5-350m",
+      "filename": "handy-editor-350m-Q4_K_M.gguf",
+      "downloadUrl": "https://huggingface.co/MagicNoThief/handy-editor-lfm2.5-350m/resolve/f1f01e16ab10143f51ffb0fb180ac715dcef964e/handy-editor-350m-Q4_K_M.gguf",
+      "downloadBytes": 229315072,
+      "sha256": "eace6ae31325690abe7a731b02b6d6b92ca9ca8b479b94fe1a6f6bfbefb41356",
+      "license": "LFM Open License v1.0",
+      "modelType": "TEXT_CLEANUP",
+      "capabilities": [
+        "TEXT_CHAT"
+      ],
+      "minimumRamBytes": 3221225472,
+      "recommendedRamBytes": 6442450944,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 2048
     }
   ]
 }

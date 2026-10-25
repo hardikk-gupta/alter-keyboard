@@ -1,0 +1,4 @@
+
+# Preserve pinned third-party source byte-for-byte; validate ALTER-owned code normally.
+alter-voice/native-handy/llama/** -whitespace
+licenses/Handy-Editor-LFM-Open-License-v1.0.txt -whitespace

@@ -178,3 +178,24 @@ confirmed pairs are stored atomically in private no-backup storage and applied i
 optional cleanup, including when cleanup is disabled. Numbers/negations are protected; URLs, email addresses and
 identifiers are not rewritten. Rules apply globally, including legitimate uses of the source word; delete a rule
 when inappropriate. This is visible correction memory, not model training, editor monitoring or native ASR biasing.
+
+### Experimental live Handy cleanup
+
+ALTER voice → Cleanup editor offers Handy Editor 350M Q4_K_M (229 MB) alongside the existing LiteRT editor.
+Download, select and enable it explicitly. Oriserve Hinglish Swift FP16 remains the user's ASR choice; no Tiny
+model is substituted. Handy runs with a pinned CPU-only llama.cpp JNI library, an explicit empty system turn,
+greedy decoding and fresh contexts; its trained input format replaces the generic editor instructions. It is
+English-trained; Hinglish quality and Android latency remain unverified. License/provenance are under licenses/.
+
+Enabled cleanup can run during recording after a 1.2-second ASR update debounce. Each provisional edit sees the
+current whole transcript (up to 4,000 characters), so later words can revise earlier wording; obsolete work is
+cancelled, no PCM is dropped, and no text is inserted during recording. Finalization reuses a cleaned snapshot
+only if the final normalized ASR text matches exactly; otherwise it runs final cleanup. Errors preserve raw text.
+Raw final ASR text is stored separately from polished text in the existing private no-backup draft until accepted
+insertion/discard; older drafts remain readable. Explicit Pause/hide cancels capture/provisional work as before.
+
+The validator now accepts narrowly resolved weekday changes such as “Friday. Actually, make it Monday” and
+“Friday, no wait, Monday”, while rejecting unrelated dates/numbers and protecting English/Roman-Hindi negation.
+This is not general semantic deletion permission. Handy's real host test did not resolve the tested Hinglish
+kal/parso correction; unsafe negation removal falls back to the source. The existing agent rules continue for
+the stock editor. Future app context/memory/tool access is not granted by dictated text.
