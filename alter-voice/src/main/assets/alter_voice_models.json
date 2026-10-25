@@ -74,6 +74,30 @@
       "contextTokens": 480000
     },
     {
+      "id": "whisper-oriserve-hinglish-swift-fp16",
+      "displayName": "Oriserve Hinglish Swift \u00b7 FP16",
+      "tier": "Speech",
+      "description": "Original-precision GGML conversion of Oriserve Whisper Base for romanized Hinglish. Recommended by the conversion uploader for fidelity; larger than Q8. Uses Hindi decoding. Compare recognition on your phone.",
+      "family": "Whisper",
+      "version": "d4f718b3eb4f3f8026a54c315bcfc54277225b02",
+      "repository": "anish2305/airnote-hinglish-stt-ggml",
+      "filename": "ggml-oriserve-hinglish-fp16.bin",
+      "downloadUrl": "https://huggingface.co/anish2305/airnote-hinglish-stt-ggml/resolve/d4f718b3eb4f3f8026a54c315bcfc54277225b02/ggml-oriserve-hinglish-fp16.bin",
+      "downloadBytes": 147951465,
+      "sha256": "4e9caa5f4b0416824d7cbeec22a37ef78a05e4b0189864eed65cd56d81c6b0a8",
+      "license": "Apache-2.0",
+      "modelType": "SPEECH",
+      "capabilities": [
+        "SPEECH_TRANSCRIPTION",
+        "HINGLISH_ROMANIZED"
+      ],
+      "minimumRamBytes": 1073741824,
+      "recommendedRamBytes": 3221225472,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
       "id": "whisper-small",
       "displayName": "Whisper Small \u00b7 multilingual",
       "tier": "Speech",

@@ -15,6 +15,9 @@ object VoicePack {
     fun setCleanupEnabled(context: Context, enabled: Boolean) { voicePrefs(context).edit().putBoolean(ENABLED, enabled).apply() }
 
     suspend fun polish(context: Context, transcript: String): String {
+        // No catalog reads, model verification, engine loading or inference for simple short dictation.
+        if (dictationCleanupLevel(transcript) == DictationCleanupLevel.BASIC)
+            return formatDictation(cleanDictation(transcript))
         val prefs = voicePrefs(context)
         if (!prefs.getBoolean(ENABLED, false) || prefs.getString("voice_language", "auto") == "hi-IN") return formatDictation(cleanDictation(transcript))
         val catalog = ModelCatalog.load(context)

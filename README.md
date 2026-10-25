@@ -158,3 +158,17 @@ starts capture again instead of repeatedly decoding silence. Other recoverable e
 ALTER cleanup sends three relevant worked examples instead of all eight (with an instruction-isolation example
 always included); editing instructions, validation, full transcript and timeout/fallback rules remain unchanged.
 Reduced prompt size is not a measured phone latency improvement.
+
+Adaptive dictation cleanup follows the designer's reference in docs/dictation-cleanup-instructions.md. Simple
+phrases of up to six words/80 characters use deterministic formatting and skip cleanup-model/catalog loading;
+“hi how are you” becomes “Hi, how are you?” without inference. Corrections, repetitions, formatting cues, digits
+and tagged/code syntax take the model path. Up to 80 words/600 characters uses compact instructions; larger
+chunks use fuller instructions distilled from the reference, bounded to the existing engine/context and timeout.
+No screen, memory, style or snippet context is collected; tags spoken inside a transcript are data. Opt-in/model
+availability and Hindi bypass still apply. Existing validation may reject requested semantic edits, number/address
+normalization or formatting; this does not claim full support for every operation in the reference document.
+
+Oriserve Hinglish Swift · FP16 (148 MB) is also available for explicit comparison with Q8. It uses the same pinned
+conversion source and Hindi decoding. The uploader recommends FP16 for fidelity, but recognition errors such as
+“notebook”/“loadbook” are not proven to come from quantization. Existing selections are preserved; no blind word
+substitution or automatic learning is enabled. Phone comparisons are still required.

@@ -197,5 +197,5 @@ internal fun wavSamples(wav: ByteArray): FloatArray {
 
 /** Oriserve's model card specifies Hindi decoding for romanized Hindi/Hinglish output. */
 internal fun whisperDecodeLanguage(model: String?, language: String?): String =
-    if (model == "whisper-oriserve-hinglish-swift-q8") "hi"
+    if (model in setOf("whisper-oriserve-hinglish-swift-q8", "whisper-oriserve-hinglish-swift-fp16")) "hi"
     else when (language) { "en-IN" -> "en"; "hi-IN" -> "hi"; else -> "auto" }
