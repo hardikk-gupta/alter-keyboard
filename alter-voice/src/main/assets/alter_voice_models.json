@@ -50,6 +50,30 @@
       "contextTokens": 480000
     },
     {
+      "id": "whisper-oriserve-hinglish-swift-q8",
+      "displayName": "Oriserve Hinglish Swift \u00b7 Q8",
+      "tier": "Speech",
+      "description": "Experimental Whisper Base fine-tune for Hindi/Hinglish to Latin-script Hinglish. Q8 GGML conversion by AirNote; uses Hindi decoding. Test accuracy and speed on your phone.",
+      "family": "Whisper",
+      "version": "d4f718b3eb4f3f8026a54c315bcfc54277225b02",
+      "repository": "anish2305/airnote-hinglish-stt-ggml",
+      "filename": "ggml-oriserve-hinglish-q8_0.bin",
+      "downloadUrl": "https://huggingface.co/anish2305/airnote-hinglish-stt-ggml/resolve/d4f718b3eb4f3f8026a54c315bcfc54277225b02/ggml-oriserve-hinglish-q8_0.bin",
+      "downloadBytes": 81768585,
+      "sha256": "8550803dc10fa9f0b3db5cb884f8580c61067b062a67ee169d5789bcd0faec90",
+      "license": "Apache-2.0",
+      "modelType": "SPEECH",
+      "capabilities": [
+        "SPEECH_TRANSCRIPTION",
+        "HINGLISH_ROMANIZED"
+      ],
+      "minimumRamBytes": 1073741824,
+      "recommendedRamBytes": 3221225472,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
       "id": "whisper-small",
       "displayName": "Whisper Small \u00b7 multilingual",
       "tier": "Speech",

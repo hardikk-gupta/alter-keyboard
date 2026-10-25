@@ -266,3 +266,22 @@ removing main's adaptive preview scheduling or preload integration.
 Validation: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
 All 26 tests passed (no failures, errors or skips); compilation/resources/dexing completed. Assembly failed only at
 signing validation for the missing shared keystore. `git diff --check` passed. Phone/signature checks were not run.
+
+## Oriserve Hindi2Hinglish Swift Q8 test option (Oct 25, 2026)
+
+Added “Oriserve Hinglish Swift · Q8” to All speech models using the existing explicit download/select/delete flow.
+This is Oriserve's Whisper Base Hindi2Hinglish fine-tune, distributed as an AirNote community GGML Q8 conversion.
+The 81,768,585-byte artifact is pinned to revision d4f718b3eb4f3f8026a54c315bcfc54277225b02 and its exact SHA-256.
+The original and conversion cards declare Apache-2.0; full license and source/conversion provenance are included.
+No weights are bundled. It uses the existing Whisper runtime, streaming schedule, recovery and ALTER cleanup.
+Hindi decoding is fixed for this specialized model as documented upstream; descriptions disclose Latin-script
+Hinglish output and this override. Other Whisper choices retain the selected language. Updated user/design/flow docs.
+
+Validation: downloaded the entire Q8 artifact outside the checkout and verified its size and SHA-256 against both
+the catalog and Hugging Face LFS metadata. Built a temporary host-only loader from the bundled whisper.cpp source;
+it successfully loaded the model as multilingual Whisper Base (6 audio layers, 512 state). No native source or
+committed Android binaries changed. This checks model loading, not Android latency or recognition quality.
+`./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`: all 27 tests
+passed (no failures, errors or skips), including specialized/general model-language routing. Compilation/resources/
+dexing completed; assembly failed only at signing validation for the missing shared keystore. `git diff --check`
+passed. Phone inference/download acceptance, speed, thermals, accuracy and APK signatures were not tested.

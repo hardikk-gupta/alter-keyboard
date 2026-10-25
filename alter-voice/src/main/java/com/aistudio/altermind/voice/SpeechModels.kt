@@ -153,7 +153,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
             finally { engine.removeListener(listener); runCatching { engine.stopStream(stream) }; engine.freeStream(stream); activeOwner = null }
         }
     }
-    private fun whisperLanguage() = when (prefs.getString("voice_language", "auto")) { "en-IN" -> "en"; "hi-IN" -> "hi"; else -> "auto" }
+    private fun whisperLanguage() = whisperDecodeLanguage(loaded, prefs.getString("voice_language", "auto"))
     @Synchronized private fun closeLocked() {
         if (whisper != 0L) { WhisperNative.close(whisper); whisper = 0 }
         moonshine?.close(); moonshine = null; loaded = null
@@ -194,3 +194,8 @@ internal fun wavSamples(wav: ByteArray): FloatArray {
     val shorts = java.nio.ByteBuffer.wrap(wav, 44, wav.size - 44).order(java.nio.ByteOrder.LITTLE_ENDIAN).asShortBuffer()
     return FloatArray(shorts.remaining()) { shorts.get() / 32768f }
 }
+
+/** Oriserve's model card specifies Hindi decoding for romanized Hindi/Hinglish output. */
+internal fun whisperDecodeLanguage(model: String?, language: String?): String =
+    if (model == "whisper-oriserve-hinglish-swift-q8") "hi"
+    else when (language) { "en-IN" -> "en"; "hi-IN" -> "hi"; else -> "auto" }

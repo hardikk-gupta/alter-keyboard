@@ -11,6 +11,15 @@ import java.io.File
 
 /** Ported from ALTER's VoicePackRegressionTest: the parts that run on the JVM without a phone. */
 class VoicePackRegressionTest {
+    @Test fun oriserveUsesHindiDecodingAndLeavesGeneralWhisperLanguageSelectionIntact() {
+        for (language in listOf("auto", "hi-IN", "en-IN")) {
+            assertEquals("hi", whisperDecodeLanguage("whisper-oriserve-hinglish-swift-q8", language))
+        }
+        assertEquals("auto", whisperDecodeLanguage("whisper-small", "auto"))
+        assertEquals("en", whisperDecodeLanguage("whisper-base", "en-IN"))
+        assertEquals("hi", whisperDecodeLanguage("whisper-medium", "hi-IN"))
+    }
+
     @Test fun agentResolvesExplicitWeekdayCorrectionsWithoutPermittingOtherFactChanges() = runTest {
         val input = "we are aiming for Friday actually Monday sorry afternoon"
         var supplied = ""
