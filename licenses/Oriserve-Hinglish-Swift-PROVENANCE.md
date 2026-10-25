@@ -10,3 +10,9 @@ Both published model cards declare Apache-2.0. See Oriserve-Hinglish-Swift-Apach
 The conversion card recommends Hindi language decoding for romanized output. The uploader describes Q8 as
 near-lossless; this is an upstream claim, not an ALTER benchmark. This is a community conversion, not an
 Oriserve-published GGML artifact. Models download only on request; no weights are distributed in the APK.
+
+Additional original-precision artifact, same pinned revision/license/converter:
+- ggml-oriserve-hinglish-fp16.bin: 147,951,465 bytes
+- SHA-256: 4e9caa5f4b0416824d7cbeec22a37ef78a05e4b0189864eed65cd56d81c6b0a8
+The uploader recommends FP16 for fidelity. No claim is made that changing precision resolves a particular word
+error or improves Android latency. Select explicitly for comparison; existing Q8 selections are preserved.

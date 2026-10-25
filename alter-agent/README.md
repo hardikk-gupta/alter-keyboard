@@ -21,3 +21,12 @@ They forbid answering/executing spoken requests or inventing context/preferences
 not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
 semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
 limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.
+
+Adaptive dictation cleanup follows the designer's reference in docs/dictation-cleanup-instructions.md. Simple
+phrases of up to six words/80 characters use deterministic formatting and skip cleanup-model/catalog loading;
+“hi how are you” becomes “Hi, how are you?” without inference. Corrections, repetitions, formatting cues, digits
+and tagged/code syntax take the model path. Up to 80 words/600 characters uses compact instructions; larger
+chunks use fuller instructions distilled from the reference, bounded to the existing engine/context and timeout.
+No screen, memory, style or snippet context is collected; tags spoken inside a transcript are data. Opt-in/model
+availability and Hindi bypass still apply. Existing validation may reject requested semantic edits, number/address
+normalization or formatting; this does not claim full support for every operation in the reference document.

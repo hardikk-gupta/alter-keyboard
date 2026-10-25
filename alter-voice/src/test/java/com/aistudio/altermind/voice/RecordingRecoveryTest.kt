@@ -289,6 +289,38 @@ class RecordingRecoveryTest {
         current.cancel()
     }
 
+    @Test fun startupIsNotProcessingAndErrorsOverrideRecoverablePause() = runTest {
+        val current = controller(store(), Speech().apply { warmingUp = true }, Microphone())
+        current.start(false)
+        assertTrue(current.starting.value)
+        assertFalse(current.processing.value)
+        assertEquals(com.aistudio.altermind.voice.ui.PillState.Starting,
+            com.aistudio.altermind.voice.ui.voicePillState(false, true, false, false, false, null))
+        current.pause(); advanceUntilIdle()
+        assertFalse(current.starting.value)
+        assertEquals(com.aistudio.altermind.voice.ui.PillState.Error,
+            com.aistudio.altermind.voice.ui.voicePillState(false, false, false, true, true, NO_SPEECH_MESSAGE))
+    }
+
+    @Test fun silenceDuringWarmupStopsWithNoSpeechErrorInsteadOfWaitingForDecoder() = runTest {
+        val saved = store()
+        val mic = Microphone(ArrayDeque(List(100) { ShortArray(1600) }))
+        var polished = false
+        val current = controller(saved, Speech().apply { warmingUp = true }, mic) { polished = true; it }
+        current.start(false); advanceUntilIdle()
+        assertEquals(NO_SPEECH_MESSAGE, current.error.value)
+        assertTrue(current.noSpeechError)
+        assertFalse(current.starting.value)
+        assertFalse(current.recording.value)
+        assertFalse(current.processing.value)
+        assertNull(current.completedText.value)
+        assertFalse(polished)
+        assertTrue(mic.closed)
+        assertFalse(DictationController.isActive())
+        assertNotNull(saved.load()) // An error never discards a private draft.
+        current.cancel()
+    }
+
     @Test fun thinkingFieldFillsWideRectanglesWithTheOriginalOrbChoreography() {
         val wide = processingFieldFrame(24, 3, 600f)
         assertEquals(72, wide.size)

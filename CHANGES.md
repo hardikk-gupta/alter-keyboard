@@ -285,3 +285,50 @@ committed Android binaries changed. This checks model loading, not Android laten
 passed (no failures, errors or skips), including specialized/general model-language routing. Compilation/resources/
 dexing completed; assembly failed only at signing validation for the missing shared keystore. `git diff --check`
 passed. Phone inference/download acceptance, speed, thermals, accuracy and APK signatures were not tested.
+
+## Voice startup, visible errors and smaller cleanup requests (Oct 25, 2026)
+
+Separated microphone startup from post-capture processing. Starting now shows a still white line with accessible
+“Starting microphone” text, followed by the real-RMS yellow wave; the thinking animation no longer flashes merely
+because a capture job was queued. Processing represents finished audio. Retained the full-keyboard screen-awake
+behavior explicitly for starting/recording/processing after separating these states.
+
+Error state now overrides recoverable paused/processing state and hides Play/Pause, restoring the red warning icon.
+A new recording with ten seconds of inaudible PCM fails with the no-speech error instead of waiting for model
+warm-up/decoding; microphone failures publish an error before capture teardown. Drafts are preserved. Tapping a
+no-speech error starts capture rather than repeatedly decoding silence; other recoverable failures retry saved audio.
+
+ALTER requests now send three relevant worked examples (grammar plus question, correction or Hinglish, and an
+instruction-isolation example) instead of all eight. Meaning-preserving instructions, validators, full input,
+timeout and fallback remain. This reduces prompt size, without a claim of measured phone speed/quality improvement.
+
+Validation: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`.
+All 30 tests passed (no failures, errors or skips), including new startup/error precedence, silence during warm-up,
+and relevant-example selection checks. Compilation/resources/dexing completed; assembly failed only for the
+missing shared signing keystore. `git diff --check` passed. Phone microphone/lifecycle/visual/model-quality/latency
+acceptance and APK signature verification were not run.
+
+## Adaptive cleanup instructions and original-precision ASR comparison (Oct 25, 2026)
+
+Saved the designer's supplied cleanup document as docs/dictation-cleanup-instructions.md, a reference rather than
+instructions to execute transcript content. Simple inputs up to six words/80 characters skip cleanup-model/catalog
+loading and use deterministic formatting; the greeting “hi how are you” becomes “Hi, how are you?” without inference.
+Corrections, repetition, formatting cues, digits and tagged/code syntax keep short text on the model path. Ordinary
+inputs up to 80 words/600 characters use compact instructions; larger chunks use fuller instructions distilled from
+the supplied reference. Context is absent: transcript tags cannot supply app/screen/style/vocabulary instructions.
+Full input, validator, timeout/fallback, opt-in/model availability and Hindi bypass are retained. This does not
+implement every requested semantic normalization/formatting operation; existing validation remains conservative.
+
+For reported word recognition errors, added an explicitly selectable Oriserve Hinglish Swift FP16 option (147,951,465
+bytes), pinned to the same conversion revision/license and verified SHA-256. The conversion uploader recommends FP16
+for fidelity. Both Oriserve variants use Hindi decoding; Q8 selections remain unchanged. No claim is made that
+quantization caused a particular recognition error. No blind replacements, correction-memory feature, model training
+or automatic learning were added.
+
+Validation: downloaded and hashed the full FP16 artifact outside the repository; a host-only loader built from the
+bundled whisper.cpp source loaded it as multilingual Whisper Base. `./gradlew --no-daemon --max-workers=4 --continue
+assembleStableDebug :alter-voice:testDebugUnitTest`: all 31 tests passed with no failures, errors or skips, including
+short-text inference bypass, complexity routing, compact/detailed instruction selection, and both variants' language
+routing. Existing cancellation coverage uses a nontrivial input to exercise real model-path cancellation. App
+compilation/resources/dexing completed; assembly failed only for the missing shared signing key. `git diff --check`
+passed. Phone latency, recognition/cleanup quality, FP16-vs-Q8 comparisons and APK signatures were not tested.
