@@ -110,3 +110,10 @@ or download), targets its first preview after two seconds of captured audio, and
 to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.
 This reduces redundant work but does not guarantee real-time Medium inference. Native CPU binaries and model
 weights are unchanged; on-phone speed and thermal behavior still require measurement.
+
+Oriserve Hinglish Swift · Q8 is available under Settings → ALTER voice → All speech models. Download its 82 MB
+artifact, then select it to test locally. This is Oriserve's Whisper Base Hindi2Hinglish fine-tune, converted to GGML
+by the third-party AirNote repository; it outputs romanized Hinglish and uses fixed Hindi decoding regardless of
+the general dictation-language selector. It reuses the existing Whisper runtime, live scheduling, recovery and
+ALTER cleanup pipeline. The catalog pins a commit, exact size and SHA-256; no weights are bundled and model
+selection is explicit. Apache-2.0 attribution is in licenses/. Accuracy and Android speed require phone testing.
