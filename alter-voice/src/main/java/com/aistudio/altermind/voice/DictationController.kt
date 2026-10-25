@@ -13,10 +13,12 @@ import java.io.File
 class DictationController internal constructor(private val context: Context, private val scope: CoroutineScope,
     private val speech: DictationSpeech, private val openMicrophone: () -> DictationMicrophone,
     private val polish: suspend (String) -> String, private val drafts: RecordingDraftStore,
-    private val canRecord: () -> Boolean, private val dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    private val canRecord: () -> Boolean, private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val liveCleanup: () -> Boolean = { false }) {
     constructor(context: Context, scope: CoroutineScope) : this(context, scope, SpeechModels.get(context),
         { AndroidDictationMicrophone(context) }, { VoicePack.polish(context, it) }, draftStore(context),
-        { ContextCompat.checkSelfPermission(context, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED })
+        { ContextCompat.checkSelfPermission(context, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED },
+        liveCleanup = { VoicePack.cleanupEnabled(context) })
 
     private val mutableStarting = MutableStateFlow(false)
     val starting = mutableStarting.asStateFlow()
@@ -82,6 +84,7 @@ class DictationController internal constructor(private val context: Context, pri
         val sessionClaim = Any()
         val task = scope.launch(dispatcher, start = CoroutineStart.LAZY) {
             var microphone: DictationMicrophone? = null
+            val preview = if (capture && liveCleanup()) LiveDictationCleanup(this, text, recording, polish) else null
             try {
                 // Pause/resume can be tapped quickly; wait for the previous decoder to release the shared engine.
                 previous?.join(); ensureActive()
@@ -95,7 +98,7 @@ class DictationController internal constructor(private val context: Context, pri
                 }
                 mutableBackend.value = draft.model
                 if (draft.model == DEVICE_SPEECH) {
-                    if (!capture) { finishTranscript(generation, draft.id, draft.deviceText); return@launch }
+                    if (!capture) { finishTranscript(generation, draft.id, draft.deviceText, preview); return@launch }
                     val session = DeviceSpeechSession(context)
                     synchronized(this@DictationController) {
                         if (generation != epoch) throw CancellationException("Dictation paused")
@@ -113,7 +116,7 @@ class DictationController internal constructor(private val context: Context, pri
                             { active -> if (generation == epoch) { captureRequested = active; mutableStarting.value = false; mutableProcessing.value = !active; mutableRecording.value = active; mutableStatus.value = if (active) "Listening…" else "Finishing on device…" } })
                     } ?: error("Device dictation reached the fifteen-minute limit. Resume the saved text to continue.")
                     synchronized(this@DictationController) { if (generation == epoch) drafts.partial(draft.id, result) }
-                    finishTranscript(generation, draft.id, listOf(draft.prefix, result).filter { it.isNotBlank() }.joinToString(" "))
+                    finishTranscript(generation, draft.id, listOf(draft.prefix, result).filter { it.isNotBlank() }.joinToString(" "), preview)
                     return@launch
                 }
                 coroutineScope {
@@ -179,7 +182,7 @@ class DictationController internal constructor(private val context: Context, pri
                     }
                     producer?.join()
                 }
-                finishTranscript(generation, draft.id, mutableText.value)
+                finishTranscript(generation, draft.id, mutableText.value, preview)
             } catch (e: CancellationException) { throw e }
             catch (e: Throwable) {
                 currentCoroutineContext().ensureActive()
@@ -190,6 +193,7 @@ class DictationController internal constructor(private val context: Context, pri
                     }
                 }
             } finally {
+                preview?.cancel()
                 runCatching { microphone?.stop() }; microphone?.close()
                 finishSession(generation, sessionClaim)
             }
@@ -199,11 +203,13 @@ class DictationController internal constructor(private val context: Context, pri
         task.start()
     }
 
-    private suspend fun finishTranscript(generation: Int, id: String, raw: String) {
+    private suspend fun finishTranscript(generation: Int, id: String, raw: String, preview: LiveDictationCleanup? = null) {
         currentCoroutineContext().ensureActive()
         if (generation != epoch) return
         mutableStarting.value = false; mutableProcessing.value = true; mutableRecording.value = false; mutableLevel.value = 0f; mutableStatus.value = "Finishing text…"
-        val result = requireDictationSpeech(polish(requireDictationSpeech(raw)))
+        synchronized(this) { if (generation == epoch) drafts.raw(id, raw) }
+        val transcript = requireDictationSpeech(raw)
+        val result = requireDictationSpeech(preview?.finish(transcript) ?: polish(transcript))
         currentCoroutineContext().ensureActive()
         synchronized(this) {
             if (generation == epoch) { drafts.complete(id, result); publishCompleted(generation, result) }

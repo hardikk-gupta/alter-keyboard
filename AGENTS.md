@@ -19,6 +19,8 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
   (`app/build.gradle.kts`, standard `app/src/main` and `app/src/stable`), plus the `alter-voice` and
   `voiceinput-shared` modules. Do not remove `metadata.json` or its `MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API`;
   `app_name` must equal its `name` ("ALTER Keyboard").
+- Handy native changes (`alter-voice/native-handy`) require rebuilding both committed ABIs with
+  `scripts/build_handy_native.sh`; never bundle model weights or add runtime downloads to Gradle.
 - **No NDK or CMake in Gradle.** AI Studio's container has neither. C/C++ is built by `scripts/build_native_libs.sh`
   (Release, arm64-v8a and x86_64) and the `.so` files are committed to `app/src/main/jniLibs` and
   `alter-voice/src/main/jniLibs`. Change native sources (`app/native/jni`, `alter-voice/native`) only together with
@@ -57,7 +59,8 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 
 - PCM capture never waits for model warm-up.
 - No fake audio level.
-- One LiteRT engine at a time, with a fresh engine per cleanup chunk.
+- One LiteRT engine at a time, with a fresh engine per cleanup chunk. Handy is opt-in and uses its own pinned
+  CPU llama.cpp library; keep fresh contexts, empty-system ChatML framing, aborts and exact-final snapshot reuse.
 - Validate every edit, keep all tail text on timeout, and never strip the word "message".
 - Blank or filler-only results are rejected.
 - Models download into private no-backup storage on demand from the pinned catalog

@@ -35,3 +35,6 @@ for ABI in arm64-v8a x86_64; do
   build latinime "$ROOT/app/native/jni" libjni_latinime "$ROOT/app/src/main/jniLibs"
   build alter_whisper "$ROOT/alter-voice/native" libalter_whisper "$ROOT/alter-voice/src/main/jniLibs"
 done
+
+# Handy cleanup has its own pinned CPU runtime and isolated symbols.
+"$ROOT/scripts/build_handy_native.sh"

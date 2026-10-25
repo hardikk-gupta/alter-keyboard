@@ -348,3 +348,31 @@ all 32 tests passed without failures/errors/skips, including whole-word/punctuat
 protected edits and empty/deleted-rule behavior. Compilation/resources/dexing completed; assembly failed only at
 signing validation for the missing shared keystore. `git diff --check` passed. Phone persistence/settings/dictation
 acceptance, backup behavior and APK signature verification were not run.
+
+## Experimental Handy editor and cleanup during recording (Oct 25, 2026)
+
+Added explicitly selectable Handy Editor 350M Q4_K_M beside stock cleanup, pinned by revision/size/SHA-256 with LFM
+license and provenance. Added pinned CPU-only llama.cpp source subset, MIT/third-party notices, JNI bridge, repeatable
+native build script and rebuilt arm64-v8a/x86_64 prebuilts (16 KB aligned, isolated symbols). Gradle still does not
+build native code or bundle/download weights. Oriserve FP16 ASR selection is retained; no Tiny model was added.
+
+Enabled cleanup now processes debounced whole-transcript provisional updates during capture. Later ASR revisions can
+retract earlier wording. Finalization reuses or awaits an exact-source edit; changed final text cancels stale work.
+Nothing is inserted before Finish. Raw final ASR is saved separately from polished draft text. Old drafts remain
+readable; insertion/discard clears the existing private draft. Added narrow “Friday, actually make it Monday” and
+“Friday, no wait, Monday” resolution/acceptance without relaxing unrelated facts or negation checks. Updated the
+stock example; Handy follows its trained explicit-empty-system protocol instead of generic instructions. Preserve
+source on unsafe edits, protect Roman-Hindi negation, and distinguish local model timeouts from external cancellation.
+
+Validation: full 229,315,072-byte Handy download matched catalog/LFS SHA-256. Both Android native ABIs rebuilt from
+pinned source; ELF alignment and lack of exported llama/ggml symbols checked. A temporary host build of the same
+JNI bridge completed English self-corrections, kept a correct notebook sentence and treated a poem request as text;
+real native abort/reuse and token-truncation rejection passed. Hinglish kal/parso cleanup failed the desired semantic
+correction and dropped a repeated negation; the validator now rejects that edit. Handy remains experimental for
+Hinglish. Host latencies varied under build load; they are not phone benchmarks. `docs/HANDY_EXPERIMENT.md` records
+integration details, actual checks and remaining phone acceptance.
+
+`./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`: all 36 tests
+passed without failures/errors/skips. Compilation/resources/dexing completed; assembly failed only for the missing
+shared signing keystore. `git diff --check` passed (the pinned third-party subtree retains upstream whitespace via a narrow attribute rule). No Android hardware inference, phone lifecycle/typing/clipboard,
+model quality/latency/thermal acceptance or APK signature verification was performed.

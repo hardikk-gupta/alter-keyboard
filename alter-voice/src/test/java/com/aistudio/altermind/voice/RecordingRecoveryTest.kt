@@ -321,6 +321,58 @@ class RecordingRecoveryTest {
         current.cancel()
     }
 
+    @Test fun liveCleanupRevisesEarlierWordsAndReusesOnlyAnExactFinalSnapshot() = runTest {
+        val raw = kotlinx.coroutines.flow.MutableStateFlow("")
+        val active = kotlinx.coroutines.flow.MutableStateFlow(true)
+        val requests = mutableListOf<String>()
+        val live = LiveDictationCleanup(this, raw, active) {
+            requests += it
+            formatDictation(resolveSpokenCorrections(it))
+        }
+        raw.value = "the meeting is Friday"; advanceTimeBy(1300); runCurrent()
+        assertEquals(listOf("the meeting is Friday"), requests) // Edit ran before recording ended.
+        raw.value = "the meeting is Friday actually make it Monday"; advanceTimeBy(1300); runCurrent()
+        active.value = false
+        assertEquals("The meeting is Monday.", live.finish(raw.value))
+        assertEquals(2, requests.size) // Identical final ASR output does not run the model again.
+    }
+
+    @Test fun finalRevisionCancelsProvisionalWorkAndRawTextSurvivesCleanup() = runTest {
+        val raw = kotlinx.coroutines.flow.MutableStateFlow("the meeting is Friday")
+        val active = kotlinx.coroutines.flow.MutableStateFlow(true)
+        var cancelled = false
+        val live = LiveDictationCleanup(this, raw, active) {
+            if (it.endsWith("Friday")) try { awaitCancellation() } finally { cancelled = true }
+            else formatDictation(resolveSpokenCorrections(it))
+        }
+        advanceTimeBy(1300); runCurrent()
+        active.value = false
+        assertEquals("The meeting is Monday.", live.finish("the meeting is Friday actually make it Monday"))
+        assertTrue(cancelled)
+        val saved = store(); val draft = saved.begin("whisper-tiny")
+        saved.append(draft.id, shortArrayOf(1000), 1)
+        saved.raw(draft.id, "um Friday actually Monday")
+        saved.complete(draft.id, "Monday")
+        assertEquals("um Friday actually Monday", saved.load()!!.raw)
+        assertEquals("Monday", saved.load()!!.completed)
+        saved.clear(draft.id); assertNull(saved.load())
+    }
+
+    @Test fun finishWaitsForIdenticalInFlightCleanupWithoutRestartingIt() = runTest {
+        val raw = kotlinx.coroutines.flow.MutableStateFlow("the meeting is Friday actually make it Monday")
+        val active = kotlinx.coroutines.flow.MutableStateFlow(true)
+        val gate = CompletableDeferred<Unit>()
+        var calls = 0
+        val live = LiveDictationCleanup(this, raw, active) { calls++; gate.await(); "The meeting is Monday." }
+        advanceTimeBy(1300); runCurrent()
+        active.value = false
+        val final = async { live.finish(raw.value) }
+        runCurrent(); assertFalse(final.isCompleted); assertEquals(1, calls)
+        gate.complete(Unit)
+        assertEquals("The meeting is Monday.", final.await())
+        assertEquals(1, calls)
+    }
+
     @Test fun thinkingFieldFillsWideRectanglesWithTheOriginalOrbChoreography() {
         val wide = processingFieldFrame(24, 3, 600f)
         assertEquals(72, wide.size)
