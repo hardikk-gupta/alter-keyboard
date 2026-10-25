@@ -11,6 +11,17 @@ import java.io.File
 
 /** Ported from ALTER's VoicePackRegressionTest: the parts that run on the JVM without a phone. */
 class VoicePackRegressionTest {
+    @Test fun confirmedWordCorrectionsAreBoundedWholeWordAndNeverCascade() {
+        val rules = mapOf("loadbook" to "notebook", "notebook" to "journal")
+        assertEquals("my notebook", applyVoiceCorrections("my loadbook", rules))
+        assertEquals("My notebook.", applyVoiceCorrections("My loadbook.", rules))
+        assertEquals("loadbooks loadbook.com user@loadbook.com loadbook_id", applyVoiceCorrections("loadbooks loadbook.com user@loadbook.com loadbook_id", rules))
+        assertFalse(validVoiceCorrection("not", "yes"))
+        assertFalse(validVoiceCorrection("500", "50"))
+        assertFalse(validVoiceCorrection("two words", "word"))
+        assertEquals("loadbook", applyVoiceCorrections("loadbook", emptyMap()))
+    }
+
     @Test fun cleanupEffortScalesWithoutSendingSimpleGreetingsToTheModel() = runTest {
         assertEquals(DictationCleanupLevel.BASIC, dictationCleanupLevel("hi how are you"))
         assertEquals("Hi, how are you?", AlterDictationAgent.process("hi how are you") { error("Must not load a model") })

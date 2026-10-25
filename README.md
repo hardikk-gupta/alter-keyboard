@@ -172,3 +172,9 @@ Oriserve Hinglish Swift · FP16 (148 MB) is also available for explicit comparis
 conversion source and Hindi decoding. The uploader recommends FP16 for fidelity, but recognition errors such as
 “notebook”/“loadbook” are not proven to come from quantization. Existing selections are preserved; no blind word
 substitution or automatic learning is enabled. Phone comparisons are still required.
+
+Settings → ALTER voice → Learned words lets users explicitly save/delete single-word corrections. Up to 100
+confirmed pairs are stored atomically in private no-backup storage and applied in one whole-word pass before
+optional cleanup, including when cleanup is disabled. Numbers/negations are protected; URLs, email addresses and
+identifiers are not rewritten. Rules apply globally, including legitimate uses of the source word; delete a rule
+when inappropriate. This is visible correction memory, not model training, editor monitoring or native ASR biasing.

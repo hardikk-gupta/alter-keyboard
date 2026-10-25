@@ -332,3 +332,19 @@ short-text inference bypass, complexity routing, compact/detailed instruction se
 routing. Existing cancellation coverage uses a nontrivial input to exercise real model-path cancellation. App
 compilation/resources/dexing completed; assembly failed only for the missing shared signing key. `git diff --check`
 passed. Phone latency, recognition/cleanup quality, FP16-vs-Q8 comparisons and APK signatures were not tested.
+
+## Explicit local dictation correction memory (Oct 25, 2026)
+
+Added Settings → ALTER voice → Learned words: enter the heard/intended word, explicitly remember it, inspect saved
+pairs, and delete individual rules. Store up to 100 pairs atomically under private noBackupFilesDir, with a shared
+lock for settings/inference access. Apply approved replacements before optional cleanup (also when cleanup is off),
+in a single case-insensitive whole-word pass. Sentence punctuation is retained; URLs, emails and identifiers stay
+unchanged. Reject multi-word, numeric and listed negation edits. The UI warns that rules apply globally, including
+legitimate occurrences of the source word. This is manual correction memory, not automatic editor monitoring,
+context-aware disambiguation, native recognition hints, audio retention or model-weight training.
+
+Validation: `./gradlew --no-daemon --max-workers=4 --continue assembleStableDebug :alter-voice:testDebugUnitTest`:
+all 32 tests passed without failures/errors/skips, including whole-word/punctuation boundaries, no cascading,
+protected edits and empty/deleted-rule behavior. Compilation/resources/dexing completed; assembly failed only at
+signing validation for the missing shared keystore. `git diff --check` passed. Phone persistence/settings/dictation
+acceptance, backup behavior and APK signature verification were not run.
