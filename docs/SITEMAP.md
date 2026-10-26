@@ -17,9 +17,11 @@ Android launcher: ALTER Keyboard icon
     │       │   ├── 1 Allow the microphone ... [Allow]
     │       │   └── 2 Download <recommended> . [Download], progress, used as soon as it finishes
     │       ├── Speech ....................... model in use · Dictation language
-    │       │   └── All speech models (n) .... collapsed: Moonshine, Whisper, device recognition; download/use/delete
+    │       │   └── All speech models (n) .... collapsed: Moonshine, Whisper/Oriserve, experimental Nemotron, device recognition
     │       ├── Keyboard ..................... Start mode (Full / Pill) · End recording after silence
-    │       ├── Dictation cleanup ............ switch · LFM2.5 model download/delete
+    │       ├── Dictation cleanup ............ switch · Cleanup editor (stock LFM2.5 / experimental Handy)
+    │       │   └── Editor models ............ download/select/delete
+    │       ├── Learned words ................ explicitly save/delete correction pairs
     │       └── Storage used
     ├── Typing
     │   ├── Languages
@@ -95,12 +97,20 @@ flowchart TD
     D -- failure / insertion refused --> P
 ```
 
-Audio for Whisper/Moonshine is journaled before decoding and is recoverable after process restart (one draft,
+Audio for Whisper/Moonshine/Nemotron is journaled before decoding and is recoverable after process restart (one draft,
 maximum fifteen minutes, private storage excluded from Android backup). Android on-device recognition can only save
 recognized text, not source audio. Reopening never starts the microphone or inserts text automatically. Pause/resume
 sits outside the right-hand curve, opposite the external discard cross; the paused centre processes saved dictation. Opening notifications alone does
 not request a stop. Switching between full keyboard and pill mode pauses capture and preserves the draft; finished
 audio continues processing to the clipboard.
+
+### Trying Nemotron
+
+Open ALTER voice → Speech → All speech models → Nemotron 3.5 Streaming · Q4 · experimental.
+Download the 496 MB model, then select it. An existing selection remains active during download.
+Record English/Hindi, compare with the previous model, and reselect the previous model at any time.
+Automatic language selection can produce mixed Hindi/Latin script; Romanized Hinglish is unverified.
+See [the experiment guide](NEMOTRON_EXPERIMENT.md) for test results and phone acceptance.
 
 ### Pill mode
 

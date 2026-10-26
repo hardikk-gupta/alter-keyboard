@@ -394,3 +394,12 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
 - `assembleStableDebug :alter-voice:testDebugUnitTest --continue` compiled/dexed successfully; only
   signing validation failed because the shared `debug.keystore` is unavailable. No substitute key
   was created; APK signature/install checks and phone speed/accuracy acceptance remain outstanding.
+
+## Documentation refresh after PR #23 (Oct 26, 2026)
+
+- Audited project Markdown and refreshed voice/model summaries, settings navigation, shared-agent boundaries,
+  recovery coverage, runtime rebuild guidance, model provenance and the Nemotron validation record.
+- Clarified local signing failure versus the existing CI one-off-key fallback; corrected the stale claim that
+  the keyboard contains no agent policy. Preserved upstream/vendor docs, license text and historical entries.
+- Validation: all 40 local links in 17 changed Markdown documents resolve; `git diff --check` passed. No code or binaries
+  changed and no additional Android test run. PR #23's 39 passing voice tests and signing limitation still apply.

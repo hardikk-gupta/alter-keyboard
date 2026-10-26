@@ -80,7 +80,7 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
   and retained in the private draft, without insertion into a different editor. Reopening reuses the running session
   until completion. Explicit Pause still suspends processing. One temporary draft in
   private `noBackupFilesDir/dictation-draft` survives controller/process recreation. Reopening after interruption shows
-  it paused; no automatic capture or insertion. Whisper/Moonshine retain PCM (maximum fifteen minutes); Android recognition only
+  it paused; no automatic capture or insertion. Whisper/Moonshine/Nemotron retain PCM (maximum fifteen minutes); Android recognition only
   retains text delivered by its callbacks. No stop is requested merely because a notification shade is opened.
 - Final text remains durable until the editor accepts insertion. Explicit discard removes metadata and audio;
   keyboard surface changes preserve them. Clipboard copying retains them too. If Android destroys the IME service,
@@ -176,3 +176,12 @@ a separate CPU runtime on Android 8+, with live revisions and a final flush; the
 selection stays unchanged. Hindi may appear in Devanagari or mixed script. The 320 ms
 streaming profile is a model setting, not measured phone latency. Speed and accuracy against
 Moonshine still require phone testing. See [Nemotron experiment](NEMOTRON_EXPERIMENT.md).
+
+#### Streaming state and cleanup contract
+
+Nemotron uses the same recording wave, external pause/resume, paused white line, error priority and full-width
+processing animation as the other downloaded recognizers. Loading its model must not show the processing
+animation during recording startup. Interim transcript updates can trigger enabled, debounced cleanup; they
+never insert text. Finish flushes the ASR stream before final cleanup/insertion. Native feed/finalization errors
+preserve the draft for retry. The model's language selector supports automatic, English and Hindi hints;
+there is no automatic conversion of Devanagari output into Romanized Hinglish.

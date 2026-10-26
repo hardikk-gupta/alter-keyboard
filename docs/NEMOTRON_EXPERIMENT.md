@@ -28,7 +28,24 @@ into private no-backup storage; no weights or network downloads are part of the 
 Run `scripts/build_nemotron_native.sh` with the configured Android SDK to rebuild both
 committed CPU-only libraries. Gradle consumes prebuilts and does not invoke CMake/NDK.
 Runtime symbols are hidden to avoid collisions with Whisper and Handy's ggml versions.
-See `alter-voice/native-nemotron/SOURCE.md` for source provenance and licenses.
+See [native provenance](../alter-voice/native-nemotron/SOURCE.md) and
+[model provenance](../licenses/Nemotron-3.5-PROVENANCE.md) for source pins and licenses.
+
+## Checks completed for PR #23
+
+- Both committed Android CPU libraries were rebuilt; ELF load segments use 16 KB alignment,
+  and only JNI bridge symbols are exported. All 400 vendored files match the upstream pin.
+- The production JNI bridge ran public English JFK and Oriserve Hindi audio on the host,
+  producing partial and final output; cancellation and a fresh subsequent session passed.
+  Hindi was tested with both `hi-IN` and automatic selection. Recognition was imperfect:
+  the Hindi-hinted result began “वस”, and automatic mode began “Vaz” before Devanagari text.
+  This is functional verification, not an accuracy benchmark.
+- The downloaded GGUF matched the catalog's exact size and SHA-256.
+- All 39 voice unit tests passed. Android compilation/dexing completed; APK signing failed
+  because this environment lacks the shared keystore. No signed install/signature check ran.
+
+Cleanup follows the selected editor's policy and remains opt-in. Explicit Hindi mode
+(`hi-IN`) bypasses model cleanup; automatic mode does not guarantee Romanized output.
 
 ## Phone acceptance still required
 

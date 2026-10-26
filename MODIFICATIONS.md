@@ -18,7 +18,8 @@ non-commercial use, shared only for free. The original AOSP code remains under A
 - **Kotlin:** the project builds with Kotlin 2.4.0 (was 2.1.0), required by LiteRT-LM 0.18. One type annotation in
   `BuggyBaseInputConnection.kt` was adjusted for the newer compiler.
 - **Voice input:** FUTO's built-in Whisper voice input is replaced by ALTER's voice pack in the new `alter-voice/`
-  module (Whisper via whisper.cpp, Moonshine, Android on-device recognition, and the optional LFM2.5 cleanup model).
+  module (Whisper/Oriserve via whisper.cpp, Moonshine, experimental Nemotron, Android on-device recognition,
+  and optional stock LFM2.5 or experimental Handy cleanup).
   FUTO's bundled 43 MB Whisper model is left out of the APK. The option to use another installed voice keyboard is kept.
   The `voiceinput-shared` module is still built because other FUTO code depends on it.
 - **Pill mode:** a minimized 56 dp bar with ALTER's mic pill, a keyboard button and FUTO's input-method globe, plus a
@@ -38,7 +39,8 @@ non-commercial use, shared only for free. The original AOSP code remains under A
 - **Google AI Studio build rules:** sources use the standard `app/src/main` / `app/src/stable` layout (FUTO's
   `java/src` and `common/src` merged into `app/src/main/java`, unchanged). AI Studio has no NDK or CMake, so FUTO's
   native typing engine (`libjni_latinime.so`) and ALTER's whisper.cpp bridge (`libalter_whisper.so`) are built from
-  their unchanged sources by `scripts/build_native_libs.sh` and committed as prebuilt libraries for arm64-v8a and
+  their sources by `scripts/build_native_libs.sh`, alongside the isolated Handy cleanup and Nemotron ASR
+  runtimes, and committed as prebuilt libraries for arm64-v8a and
   x86_64 only. The generated `KeyboardTextsTable.java` is committed so builds need no Python. minSdk is 26 (Android
   8.0). FUTO's committed test signing key, its Play Store icon, `.gitlab-ci.yml` and `.clang-tidy` were removed.
   Debug and release builds use AI Studio's signing structure; release builds are no longer minified.
@@ -63,7 +65,7 @@ non-commercial use, shared only for free. The original AOSP code remains under A
   FUTO's "check for updates" item is not shown, and the ALTER voice page follows the setup flow (see
   `docs/SITEMAP.md`). Every FUTO page is still reachable, including the payment page.
 
-- **Recoverable dictation:** captures for Whisper/Moonshine append PCM to one private temporary draft before
+- **Recoverable dictation:** captures for Whisper/Moonshine/Nemotron append PCM to one private temporary draft before
   decoding. Pause/resume, keyboard hide, focus changes, process restart and microphone interruptions preserve that
   draft. Hiding the keyboard pauses capture, but finished audio keeps processing in the IME service scope and
   automatically copies its final text to the clipboard, retaining the private draft. Reopening reuses active processing
@@ -91,6 +93,11 @@ Each keeps its own license under [`licenses/`](licenses):
 | Moonshine Voice 0.1.5 and Moonshine models | MIT |
 | LiteRT-LM 0.18.0 | Apache 2.0 |
 | LFM2.5 350M INT8 cleanup model (downloaded on demand, never bundled) | LFM Open License v1.0 |
+| Oriserve Hinglish Swift Q8/FP16 community conversions (downloaded on demand) | Apache-2.0; upstream Whisper MIT notices retained |
+| Handy Editor 350M Q4_K_M (downloaded on demand) | LFM Open License v1.0 |
+| llama.cpp CPU runtime for Handy | MIT; bundled dependency notices retained |
+| Nemotron 3.5 Streaming Q4_K_M (downloaded on demand) | OpenMDW-1.1; model NOTICE retained |
+| transcribe.cpp CPU runtime for Nemotron | MIT; bundled dependency notices retained |
 | Lucide icon paths | ISC |
 | AICSS "Orbs" S1 thinking lattice (native re-implementation) | MIT |
 

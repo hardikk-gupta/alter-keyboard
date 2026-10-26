@@ -25,7 +25,7 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
   `scripts/build_nemotron_native.sh`; keep runtime symbols isolated from Whisper and Handy.
 - **No NDK or CMake in Gradle.** AI Studio's container has neither. C/C++ is built by `scripts/build_native_libs.sh`
   (Release, arm64-v8a and x86_64) and the `.so` files are committed to `app/src/main/jniLibs` and
-  `alter-voice/src/main/jniLibs`. Change native sources (`app/native/jni`, `alter-voice/native`) only together with
+  `alter-voice/src/main/jniLibs`. Change native sources (`app/native/jni`, `alter-voice/native*`) only together with
   rebuilt libraries. Never add `externalNativeBuild` back.
 - **No Python in builds.** `KeyboardTextsTable.java` is committed; regenerate it with `./gradlew :app:updateLocales`
   after changing layout texts.
@@ -67,10 +67,13 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 - Blank or filler-only results are rejected.
 - Models download into private no-backup storage on demand from the pinned catalog
   (`alter-voice/src/main/assets/alter_voice_models.json`) with exact size and SHA-256 checks. Never bundle weights.
+- Nemotron is experimental and opt-in: preserve the existing selection, require successful finalization,
+  keep every PCM sample on retry, and never describe its 320 ms model profile as measured phone latency.
+  Mixed Hindi/Latin output and phone accuracy/speed remain unverified; no automatic transliteration.
 - Android on-device recognition only on API 31+, never a cloud fallback.
 - No recovery cards: interrupted recording/processing returns as a paused pill. Keep one private temporary draft
   in `noBackupFilesDir/dictation-draft`; delete it only after accepted text insertion or explicit discard.
-  Whisper/Moonshine journal raw PCM; Android on-device recognition can preserve only its recognized text.
+  Whisper/Moonshine/Nemotron journal raw PCM; Android on-device recognition can preserve only its recognized text.
 - Text goes in through the keyboard's input connection (`commitText`), never sent automatically. No accessibility
   service is used.
 - Losing focus or hiding the keyboard pauses capture and preserves the draft. Finished audio keeps processing in
