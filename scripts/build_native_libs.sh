@@ -38,3 +38,6 @@ done
 
 # Handy cleanup has its own pinned CPU runtime and isolated symbols.
 "$ROOT/scripts/build_handy_native.sh"
+
+# Nemotron streaming ASR has an isolated CPU runtime.
+"$ROOT/scripts/build_nemotron_native.sh"

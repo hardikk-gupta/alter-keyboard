@@ -21,7 +21,7 @@ data class SpeechChoice(val id: String, val name: String, val description: Strin
     fun installed(store: ModelStore) = files.all(store::installed)
 }
 fun speechChoices(catalog: ModelCatalog): List<SpeechChoice> {
-    val whisper = catalog.models.filter { it.modelType == ModelType.SPEECH && it.family == "Whisper" }
+    val standalone = catalog.models.filter { it.modelType == ModelType.SPEECH && it.family in setOf("Whisper", "Nemotron") }
         .map { SpeechChoice(it.id, it.displayName, it.description, listOf(it)) }
     val moonshine = listOf("tiny", "small", "medium").mapNotNull { size ->
         val files = catalog.models.filter { it.family == "Moonshine" && "MOONSHINE_${size.uppercase()}_STREAMING" in it.capabilities }
@@ -29,7 +29,7 @@ fun speechChoices(catalog: ModelCatalog): List<SpeechChoice> {
             "Moonshine ${size.replaceFirstChar(Char::uppercase)} Streaming · English",
             "Live English transcription. ${if (size == "tiny") "Lightest option." else "Larger model to test for improved accuracy; uses more RAM."} Hindi and Hinglish require Whisper multilingual.", files, size) }
     }
-    return whisper + moonshine
+    return standalone + moonshine
 }
 
 /** Downloaded ASR beside the brain, plus an explicit live-device selector. No cloud/Gemma speech fallback. */
@@ -39,6 +39,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     val catalog by lazy { ModelCatalog.load(context) }
     val store by lazy { ModelStore(context) }
     @Volatile private var whisper = 0L
+    @Volatile private var nemotron = 0L
     private var moonshine: ai.moonshine.voice.Transcriber? = null
     private var loaded: String? = null
     @Volatile private var activeOwner: Any? = null
@@ -77,15 +78,24 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         }
     }
     suspend fun release() = withContext(Dispatchers.IO) { mutex.withLock { closeLocked() } }
-    @Synchronized override fun cancel(owner: Any) { if (activeOwner === owner && whisper != 0L) WhisperNative.cancel(whisper) }
+    @Synchronized override fun cancel(owner: Any) {
+        if (activeOwner === owner) {
+            if (whisper != 0L) WhisperNative.cancel(whisper)
+            if (nemotron != 0L) NemotronNative.cancel(nemotron)
+        }
+    }
     private suspend fun load(choice: SpeechChoice = speechChoices(catalog).find { it.id == recordingSelected }
-        ?: error("Retrying a recording needs a downloaded Whisper or Moonshine model. Device recognition supports live dictation only.")) {
+        ?: error("Retrying a recording needs a downloaded speech model. Device recognition supports live dictation only.")) {
         require(choice.installed(store)) { "The selected speech model is missing. Download it again in Voice settings." }
         if (loaded == choice.id) { moonshine?.setKeyterms(keyterms()); return }
         closeLocked()
         choice.files.forEach { store.verify(it) }
         try {
-        if (choice.id.startsWith("whisper-")) {
+        if (choice.files.singleOrNull()?.family == "Nemotron") {
+            require(Build.VERSION.SDK_INT >= 26) { "Nemotron requires Android 8 or later." }
+            nemotron = NemotronNative.load(store.file(choice.files.single()).absolutePath)
+            check(nemotron != 0L) { "Nemotron could not load this verified model on your device." }
+        } else if (choice.id.startsWith("whisper-")) {
             whisper = WhisperNative.load(store.file(choice.files.single()).absolutePath)
             check(whisper != 0L) { "Whisper could not open this verified model on your device." }
         } else {
@@ -116,6 +126,17 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         mutex.withLock {
             load(); activeOwner = owner
             try {
+                if (nemotron != 0L) {
+                    var offset = 0
+                    var text = ""
+                    streamNemotron(read = {
+                        if (offset == audio.size) null else {
+                            val next = minOf(offset + 1600, audio.size)
+                            audio.copyOfRange(offset, next).also { offset = next }
+                        }
+                    }, update = { text = it })
+                    return@withLock text.ifBlank { "[NO_SPEECH_DETECTED]" }
+                }
                 val raw = transcribeSpeechWindows(audio, decode = { window ->
                     currentCoroutineContext().ensureActive()
                     if (whisper != 0L) {
@@ -129,10 +150,15 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         }
     }
     suspend fun transcribe(audio: FloatArray): String = transcribe(audio, Any())
-    /** Stream Moonshine while collecting from AudioRecord; return false for Whisper's bounded clip mode. */
+    /** Stream Moonshine or Nemotron while collecting from AudioRecord; return false for Whisper's bounded clip mode. */
     override suspend fun stream(owner: Any, read: suspend () -> FloatArray?, update: (String) -> Unit): Boolean = withContext(Dispatchers.IO) {
         mutex.withLock {
             load()
+            if (nemotron != 0L) {
+                activeOwner = owner
+                try { streamNemotron(read, update); return@withLock true }
+                finally { activeOwner = null }
+            }
             val engine = moonshine ?: return@withLock false
             activeOwner = owner
             val lines = linkedMapOf<Long, String>()
@@ -153,9 +179,22 @@ class SpeechModels(private val context: Context) : DictationSpeech {
             finally { engine.removeListener(listener); runCatching { engine.stopStream(stream) }; engine.freeStream(stream); activeOwner = null }
         }
     }
+    private suspend fun streamNemotron(read: suspend () -> FloatArray?, update: (String) -> Unit) {
+        currentCoroutineContext().ensureActive()
+        NemotronNative.prepare(nemotron)
+        try {
+            check(NemotronNative.begin(nemotron, nemotronLanguage(prefs.getString("voice_language", "auto")),
+                minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) {
+                "Nemotron could not start the selected streaming profile. Your recording is saved."
+            }
+            consumeNemotronStream(read, update, { NemotronNative.feed(nemotron, it) },
+                { NemotronNative.finish(nemotron) }, {})
+        } finally { NemotronNative.end(nemotron) }
+    }
     private fun whisperLanguage() = whisperDecodeLanguage(loaded, prefs.getString("voice_language", "auto"))
     @Synchronized private fun closeLocked() {
         if (whisper != 0L) { WhisperNative.close(whisper); whisper = 0 }
+        if (nemotron != 0L) { NemotronNative.close(nemotron); nemotron = 0L }
         moonshine?.close(); moonshine = null; loaded = null
         File(context.noBackupFilesDir, "speech-moonshine").deleteRecursively()
     }
