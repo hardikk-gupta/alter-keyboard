@@ -13,3 +13,8 @@ no ALTER system prompt, example history, memories or tools are attached to this 
 Training-data credit from the model card: MagicNoThief/handy-dictation-editing (CC-BY-4.0), with attribution to
 Google Research disfl_qa, nyralabs/disfluency_speech_english and amaai-lab/DisfluencySpeech.
 No training dataset or weights are bundled in the app. Weights download only on explicit user action.
+
+Handy is a text cleanup editor, independent of the selected ASR (Whisper/Oriserve, Moonshine
+or experimental Nemotron). Its license does not cover the separately licensed Nemotron
+model. See [native provenance](../alter-voice/native-handy/SOURCE.md) and
+[the experiment guide](../docs/HANDY_EXPERIMENT.md).

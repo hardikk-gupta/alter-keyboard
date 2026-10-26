@@ -16,3 +16,7 @@ Additional original-precision artifact, same pinned revision/license/converter:
 - SHA-256: 4e9caa5f4b0416824d7cbeec22a37ef78a05e4b0189864eed65cd56d81c6b0a8
 The uploader recommends FP16 for fidelity. No claim is made that changing precision resolves a particular word
 error or improves Android latency. Select explicitly for comparison; existing Q8 selections are preserved.
+
+Whisper/Oriserve remains an independent selectable ASR option alongside experimental Nemotron;
+adding Nemotron does not replace existing Oriserve selections or alter these artifact pins.
+Runtime provenance: [Whisper bridge](../alter-voice/native/SOURCE.md).

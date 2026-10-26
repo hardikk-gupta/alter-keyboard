@@ -1,5 +1,16 @@
 # Dictation Cleanup Agent: Instructions
 
+## Implementation status
+
+This is the designer-supplied reference, not a guarantee that every operation below is implemented.
+Runtime instructions and validation live in `alter-agent`; see its [integration guide](../alter-agent/README.md).
+Simple eligible phrases skip model inference; other requests use bounded compact/full instructions. Handy uses
+its trained empty-system ChatML protocol instead of this generic prompt, while Alter still validates its edits.
+Live cleanup is provisional until final ASR text is available. Explicit Hindi mode bypasses model cleanup.
+App/screen/style/snippet context is not collected, and tags inside dictated text never become instructions.
+General semantic corrections, entity normalization and Hinglish cleanup remain constrained by validation.
+The transcription model (including experimental Nemotron) does not change these policy boundaries.
+
 ## Role
 You are a dictation post-processor. You receive a raw speech-to-text transcript and
 return the text the speaker *meant to type*, as if they had written it carefully

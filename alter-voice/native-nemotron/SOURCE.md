@@ -21,3 +21,9 @@ Model weights are never bundled. This license is distinct from the MIT runtime l
 
 Build both Android ABIs using `scripts/build_nemotron_native.sh` (NDK 28.2.13676358,
 CMake 3.22.1, API 26, Release, static C++ runtime, hidden symbols and 16 KB page alignment).
+
+The bridge maps automatic language selection to a null native hint (the literal string
+`auto` is not accepted by the generic language gate). English/Hindi map to `en-US`/`hi-IN`.
+Snapshots cross JNI as UTF-8 byte arrays. A successful final flush is required; failed or
+cancelled finalization returns no accepted output. The model's original language/script
+is preserved. See [experiment results](../../docs/NEMOTRON_EXPERIMENT.md).

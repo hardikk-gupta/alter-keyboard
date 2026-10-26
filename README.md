@@ -11,7 +11,7 @@ SBI have nothing to flag), and all speech recognition runs on the phone.
 2. Open the file and allow installing from your browser when Android asks.
 3. Settings → System → Keyboard → On-screen keyboard → turn on **ALTER Keyboard**, then pick it in any text field.
 4. For voice: open ALTER Keyboard's settings → **ALTER voice** → allow the microphone and download a speech model
-   (Moonshine Tiny, 45 MB, is the smallest; Whisper models are multilingual).
+   (Moonshine Tiny, 45 MB, is the smallest; Oriserve FP16 supports romanized Hinglish; Nemotron is experimental).
 
 Updates install over the previous build only when both are signed with the same key. Until the repository secret
 `ALTER_SIGNING_KEYSTORE_B64` is set, each build gets a one-off key and the old app must be uninstalled first
@@ -38,14 +38,15 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
 - If a call interrupts the microphone, or the keyboard hides/loses focus during recording, the draft is saved. Reopening a normal
   text field shows a paused pill; it never records or inserts recovered text automatically. Opening the notification
   shade alone does not request a stop; if Android actually hides the keyboard or interrupts capture, the draft pauses.
-- One temporary draft is kept in the app's private, excluded-from-backup storage: raw PCM for Whisper/Moonshine,
+- One temporary draft is kept in the app's private, excluded-from-backup storage: raw PCM for Whisper/Moonshine/Nemotron,
   recognized text only for Android's recognizer (Android does not expose its source audio). It survives process restarts
   and is removed after accepted insertion or an explicit ✕ discard, with a fifteen-minute audio limit. Resume uses the
   same speech model; reselect it if changed. No recording history is kept. Errors preserve the draft for retry.
-- Speech models: Moonshine Tiny/Small/Medium Streaming (English) or Whisper Tiny/Base/Small/Medium (multilingual),
-  or Android's own on-device recognizer (Android 12+). Optional cleanup: the LFM2.5 350M editor adds punctuation and
-  capitals, removes fillers and never answers the text. Models download on demand into private storage from a
-  pinned list with exact size and SHA-256 checks; nothing is sent to the cloud.
+- Speech models: Moonshine Tiny/Small/Medium Streaming (English), Whisper Tiny/Base/Small/Medium (multilingual),
+  Oriserve Hinglish Swift Q8/FP16, experimental Nemotron 3.5 Streaming Q4, or Android's on-device recognizer
+  (Android 12+). Optional cleanup: the stock LiteRT LFM2.5 350M editor or experimental Handy Editor 350M Q4_K_M
+  edits dictation under Alter's validation; neither answers spoken requests. Models download on demand into private
+  storage from a pinned list with exact size and SHA-256 checks; nothing is sent to the cloud.
 
 **Pill mode:** a 56 dp bar with only the mic pill, a globe (switch input method) and a keyboard button. Choose
 the start mode in Settings → ALTER voice (Full keyboard by default), or tap **Minimize** (chevron-down, pinned in the
@@ -56,8 +57,8 @@ recovery disabled. Switching keyboard surfaces pauses recording; finished audio 
 stay in the picker), the app's own screens follow the ALTER app's settings design, and the launcher icon is a light
 keyboard with a yellow spacebar on ALTER's dark background. Details: [docs/DESIGN.md](docs/DESIGN.md).
 
-**Not included:** the ALTER agent (chat, memory, actions, Gemini). The keyboard holds only ALTER's voice pack and works
-without the ALTER app installed.
+**Shared agent:** the keyboard includes the `alter-agent` dictation policy for instructions, formatting and edit
+validation. It works without the ALTER app installed. The main app's chat, memory, actions and Gemini are not included.
 
 ## Settings
 
@@ -67,7 +68,7 @@ The full sitemap and user flows are in [docs/SITEMAP.md](docs/SITEMAP.md).
   top, and the ALTER voice row shows its status ("Ready · model" or the missing step).
 - **ALTER voice:** numbered setup steps while needed (allow the microphone, download the recommended model, which is
   used as soon as it finishes), then Speech (model in use, dictation language, all models collapsed), Keyboard (start
-  mode, end recording after silence), Dictation cleanup, and storage used.
+  mode, end recording after silence), Dictation cleanup (stock/Handy editor), Learned words, and storage used.
 - Languages, keyboard and typing, swipe, predictive text, actions, themes and help, plus the upstream payment page,
   which the license requires to stay.
 
@@ -89,7 +90,12 @@ Native code is prebuilt because Google AI Studio has no NDK or CMake. After chan
 28.2.13676358 and CMake 3.22.1 and run `scripts/build_native_libs.sh`, which rebuilds and replaces:
 
 - `app/src/main/jniLibs/<abi>/libjni_latinime.so`, the typing engine, from `app/native/jni`;
-- `alter-voice/src/main/jniLibs/<abi>/libalter_whisper.so`, ALTER's whisper.cpp bridge, from `alter-voice/native`.
+- `alter-voice/src/main/jniLibs/<abi>/libalter_whisper.so`, ALTER's Whisper/Oriserve bridge, from `alter-voice/native`;
+- `alter-voice/src/main/jniLibs/<abi>/libalter_handy.so`, Handy cleanup, from `alter-voice/native-handy`;
+- `alter-voice/src/main/jniLibs/<abi>/libalter_nemotron.so`, Nemotron streaming ASR, from `alter-voice/native-nemotron`.
+
+Handy and Nemotron also have individual rebuild scripts. Commit both ABI libraries with native source edits;
+all runtimes keep their symbols isolated. Downloaded weights are never included in the repository or APK.
 
 ## Repository layout
 
@@ -98,10 +104,11 @@ Native code is prebuilt because Google AI Studio has no NDK or CMake. After chan
 | `metadata.json`, `settings.gradle.kts`, `build.gradle.kts` | Google AI Studio project files |
 | `app/` | The keyboard: sources in `app/src/main/java` (upstream package `org.futo.inputmethod.latin`), resources, assets, translations, prebuilt AARs (`app/libs`), native sources (`app/native`), locale tools (`app/tools`) |
 | `alter-voice/` | ALTER's voice pack (`com.aistudio.altermind.voice`): dictation, speech models, cleanup, model catalog and downloads, temporary recording drafts, the pill, processing field and wave |
+| `alter-agent/` | Shared dictation instructions, adaptive cleanup, formatting and edit validation |
 | `voiceinput-shared/` | Upstream voice module, still needed by the keyboard code |
-| `docs/` | `DESIGN.md`, `SITEMAP.md` (sitemap and user flows), `SIGNING.md`, `FUTO_README.md` (upstream README) |
+| `docs/` | Design, sitemap, signing, [Handy](docs/HANDY_EXPERIMENT.md) and [Nemotron](docs/NEMOTRON_EXPERIMENT.md) experiments; preserved upstream README |
 | `licenses/` | Licenses of the added models and libraries |
-| `scripts/` | `build_native_libs.sh`, `check_apk_signature.py`, `signing_certificate.sha1` |
+| `scripts/` | Native rebuild scripts (typing/Whisper, Handy, Nemotron), APK signature verification and pinned certificate |
 | `.github/workflows/build-apk.yml` | Builds the phone APK and publishes it as a Release |
 
 ALTER's additions in `app/` are marked with "ALTER Keyboard" comments; the main ones are

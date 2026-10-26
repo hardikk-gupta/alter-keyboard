@@ -51,3 +51,15 @@ The validator now accepts narrowly resolved weekday changes such as “Friday. A
 This is not general semantic deletion permission. Handy's real host test did not resolve the tested Hinglish
 kal/parso correction; unsafe negation removal falls back to the source. The existing agent rules continue for
 the stock editor. Future app context/memory/tool access is not granted by dictated text.
+
+## Speech runtime boundary
+
+Whisper/Oriserve, Moonshine and experimental Nemotron provide transcripts in the host's `alter-voice` module.
+This module receives text, not microphone audio, and does not select or train the ASR model. Nemotron publishes
+whole-transcript streaming snapshots into the same debounced live-cleanup flow. Final output still requires a
+successful ASR flush and validation; a provisional snapshot never authorizes insertion by itself.
+
+Cleanup is opt-in. The host currently bypasses model cleanup when Dictation language is explicitly Hindi
+(`hi-IN`); automatic selection can produce mixed script, with no guaranteed transliteration or Hinglish quality.
+Learned-word rules are explicit local correction memory in the host, not continual model training.
+See [Nemotron](../docs/NEMOTRON_EXPERIMENT.md) and [Handy](../docs/HANDY_EXPERIMENT.md) for runtime limits.

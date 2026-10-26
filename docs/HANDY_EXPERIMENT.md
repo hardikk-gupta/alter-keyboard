@@ -1,6 +1,6 @@
 # Experimental Handy live cleanup
 
-ASR remains the user's selected model (including Oriserve Hinglish Swift FP16). Handy is a separate, explicitly
+ASR remains the user's selected model (including Oriserve Hinglish Swift FP16 or experimental Nemotron streaming). Handy is a separate, explicitly
 selected cleanup editor under ALTER voice → Dictation cleanup → Cleanup editor. Download its 229 MB GGUF and
 turn cleanup on. Existing LiteRT cleanup remains available. The runtime and model are CPU-only/offline; no cloud
 fallback or tools/memories are attached. The main ALTER application is not modified by this keyboard PR.
@@ -36,7 +36,8 @@ The stock editor still receives ALTER's instructions/examples; Handy uses its tr
 
 Normal Gradle builds consume committed arm64-v8a/x86_64 binaries and need no NDK/CMake. Native source edits require
 NDK 28.2.13676358, CMake 3.22.1 and `ANDROID_HOME=... scripts/build_handy_native.sh`. The regular
-`scripts/build_native_libs.sh` also rebuilds Handy. Source pin/license: native-handy/SOURCE.md and licenses/.
+`scripts/build_native_libs.sh` also rebuilds Handy. Source pin/license: [native source](../alter-voice/native-handy/SOURCE.md) and
+[model provenance](../licenses/Handy-Editor-PROVENANCE.md).
 Both ELF libraries use 16 KB load alignment; bundled llama/ggml symbols are not exported.
 
 ## Checks performed for this implementation
