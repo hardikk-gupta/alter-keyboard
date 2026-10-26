@@ -35,7 +35,7 @@ class ModelCatalog(val models: List<ModelSpec>) {
                         val uri = URI(spec.downloadUrl)
                         require(uri.scheme == "https" && !uri.host.isNullOrBlank() && uri.userInfo == null) { "Model source must use HTTPS" }
                         require(spec.downloadBytes in 1..20_000_000_000L)
-                        require(if (spec.modelType == ModelType.SPEECH) spec.filename.substringAfterLast('.') in setOf("bin", "ort", "json") && "SPEECH_TRANSCRIPTION" in spec.capabilities
+                        require(if (spec.modelType == ModelType.SPEECH) (if (spec.family == "Nemotron") spec.filename.endsWith(".gguf") && "STREAMING" in spec.capabilities else spec.filename.substringAfterLast('.') in setOf("bin", "ort", "json")) && "SPEECH_TRANSCRIPTION" in spec.capabilities
                             else if (spec.modelType == ModelType.TEXT_CLEANUP && spec.family == "Handy") spec.filename.endsWith(".gguf")
                             else spec.filename.endsWith(".litertlm"))
                         require(Regex("[a-f0-9]{64}").matches(spec.sha256)) { "Model checksum is required" }

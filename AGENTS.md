@@ -21,6 +21,8 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
   `app_name` must equal its `name` ("ALTER Keyboard").
 - Handy native changes (`alter-voice/native-handy`) require rebuilding both committed ABIs with
   `scripts/build_handy_native.sh`; never bundle model weights or add runtime downloads to Gradle.
+- Nemotron native changes (`alter-voice/native-nemotron`) require rebuilding both committed ABIs with
+  `scripts/build_nemotron_native.sh`; keep runtime symbols isolated from Whisper and Handy.
 - **No NDK or CMake in Gradle.** AI Studio's container has neither. C/C++ is built by `scripts/build_native_libs.sh`
   (Release, arm64-v8a and x86_64) and the `.so` files are committed to `app/src/main/jniLibs` and
   `alter-voice/src/main/jniLibs`. Change native sources (`app/native/jni`, `alter-voice/native`) only together with

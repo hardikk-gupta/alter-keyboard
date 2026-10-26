@@ -172,3 +172,12 @@ The validator now accepts narrowly resolved weekday changes such as “Friday. A
 This is not general semantic deletion permission. Handy's real host test did not resolve the tested Hinglish
 kal/parso correction; unsafe negation removal falls back to the source. The existing agent rules continue for
 the stock editor. Future app context/memory/tool access is not granted by dictated text.
+
+### Experimental Nemotron streaming speech
+
+Voice settings → All speech models includes **Nemotron 3.5 Streaming · Q4 · experimental**
+(496 MB download), alongside the existing Whisper, Oriserve and Moonshine choices. It uses
+a separate CPU runtime on Android 8+, with live revisions and a final flush; the current
+selection stays unchanged. Hindi may appear in Devanagari or mixed script. The 320 ms
+streaming profile is a model setting, not measured phone latency. Speed and accuracy against
+Moonshine still require phone testing. See [Nemotron experiment](docs/NEMOTRON_EXPERIMENT.md).

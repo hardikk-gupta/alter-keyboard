@@ -376,3 +376,21 @@ integration details, actual checks and remaining phone acceptance.
 passed without failures/errors/skips. Compilation/resources/dexing completed; assembly failed only for the missing
 shared signing keystore. `git diff --check` passed (the pinned third-party subtree retains upstream whitespace via a narrow attribute rule). No Android hardware inference, phone lifecycle/typing/clipboard,
 model quality/latency/thermal acceptance or APK signature verification was performed.
+
+## Experimental Nemotron 3.5 streaming ASR (Oct 26, 2026)
+
+- Added an opt-in, checksum-pinned Nemotron 3.5 0.6B Q4_K_M download (496 MB) in speech settings;
+  existing speech selection and cleanup preferences stay unchanged. Hindi can use mixed script.
+- Added an isolated, CPU-only transcribe.cpp JNI runtime with a 320 ms cache-aware model profile,
+  live transcript revisions, final-tail flushing, cancellation and fresh recording sessions. Retry
+  uses the same streaming decoder over saved audio. Model weights are never bundled.
+- Preserved upstream MIT notices and the model's separate OpenMDW-1.1 license/NOTICE. Rebuilt both
+  committed arm64-v8a and x86_64 libraries with 16 KB alignment and JNI-only exported symbols.
+- Validation: 39 voice unit tests passed, including sample continuity, UTF-8 final text, failed
+  finalization and cancellation. Actual production JNI bridge passed host inference on public JFK
+  English and Oriserve Hindi samples (Hindi hint and automatic selection), including partial/final
+  output, cancellation and session reuse. Download size/SHA-256 verified; all 400 vendored files
+  match the pinned upstream commit. Hindi sample output is imperfect; no accuracy advantage claimed.
+- `assembleStableDebug :alter-voice:testDebugUnitTest --continue` compiled/dexed successfully; only
+  signing validation failed because the shared `debug.keystore` is unavailable. No substitute key
+  was created; APK signature/install checks and phone speed/accuracy acceptance remain outstanding.

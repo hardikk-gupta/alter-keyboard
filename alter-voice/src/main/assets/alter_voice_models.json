@@ -2,6 +2,31 @@
   "schemaVersion": 1,
   "models": [
     {
+      "id": "nemotron-3.5-streaming-q4",
+      "displayName": "Nemotron 3.5 Streaming \u00b7 Q4 \u00b7 experimental",
+      "tier": "Speech",
+      "description": "Offline Hindi/English streaming with a 320 ms model profile. May output mixed Hindi/Latin script. Experimental: accuracy and speed versus Moonshine are unverified on your phone.",
+      "family": "Nemotron",
+      "version": "53ce288f69326b415aeef030cfcb02a08a8096dd",
+      "repository": "handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf",
+      "filename": "nemotron-3.5-asr-streaming-0.6b-Q4_K_M.gguf",
+      "downloadUrl": "https://huggingface.co/handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf/resolve/53ce288f69326b415aeef030cfcb02a08a8096dd/nemotron-3.5-asr-streaming-0.6b-Q4_K_M.gguf",
+      "downloadBytes": 495831520,
+      "sha256": "41c99fa5fb6f3d35f68e79adc3e755eca2232a8d921178bd647b71194792b8fd",
+      "license": "OpenMDW-1.1",
+      "modelType": "SPEECH",
+      "capabilities": [
+        "SPEECH_TRANSCRIPTION",
+        "MULTILINGUAL",
+        "STREAMING"
+      ],
+      "minimumRamBytes": 3221225472,
+      "recommendedRamBytes": 6442450944,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
       "id": "whisper-tiny",
       "displayName": "Whisper Tiny \u00b7 multilingual",
       "tier": "Speech",
