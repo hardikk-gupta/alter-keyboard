@@ -62,6 +62,8 @@ python scripts/export_indicxlit.py EXTRACTED_CHECKPOINT OUTPUT_DIRECTORY
 
 The exporter rejects an unexpected checkpoint before loading pickle, copies all learned FP32 weights,
 checks vocabulary sizes, and verifies ONNX/eager tensor parity for four words and three prefix lengths.
+The manual `Publish IndicXlit model assets` workflow reproduces the export, verifies exact catalog
+bytes, and uploads the dedicated model release using the repository token, independently of APK signing.
 It also emits `source.txt` and `target.txt` for the host probe; only the two graphs and `vocab.json` are
 app downloads. To probe the actual compiled Kotlin converter, compile/run `scripts/IndicXlitHostProbe.java`
 with the voice module's debug Kotlin classes, ONNX Runtime Java 1.23.2 host JAR, Kotlin stdlib 2.4.0,

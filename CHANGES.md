@@ -502,3 +502,7 @@ Checks: 66 voice unit tests passed; exported/eager FP32 parity and real Kotlin/O
 cancellation and word-boundary probes passed. Android compilation/dex/native merging passed; packaged
 ORT core/JNI bytes verified for arm64-v8a and x86_64. `assembleStableDebug` remains blocked solely by the
 missing shared signing keystore. No phone accuracy/latency, Moonshine coexistence or signed-APK claim.
+
+Model publishing also has a host-only GitHub Actions workflow: direct cloud uploads returned HTTP 401
+while code/PR access worked. The workflow re-exports the trusted checkpoint, checks exact catalog
+bytes, and publishes only the pinned MIT model assets independently of APK signing.
