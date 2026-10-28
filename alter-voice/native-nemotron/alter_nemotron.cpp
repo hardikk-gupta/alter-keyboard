@@ -36,13 +36,20 @@ extern "C" JNIEXPORT void JNICALL Java_com_aistudio_altermind_voice_NemotronNati
 extern "C" JNIEXPORT void JNICALL Java_com_aistudio_altermind_voice_NemotronNative_cancel(JNIEnv *, jobject, jlong handle) {
     if (handle) reinterpret_cast<SpeechEngine *>(handle)->cancelled.store(true);
 }
+// Preserve the native failure reason instead of returning a generic false/null to the pill.
+static bool nemotron_status(JNIEnv *env, const char *operation, transcribe_status status) {
+    if (status == TRANSCRIBE_OK) return true;
+    const std::string message = std::string("Nemotron could not ") + operation + ": " + transcribe_status_string(status);
+    env->ThrowNew(env->FindClass("java/lang/IllegalStateException"), message.c_str());
+    return false;
+}
 extern "C" JNIEXPORT jboolean JNICALL Java_com_aistudio_altermind_voice_NemotronNative_begin(JNIEnv *env, jobject, jlong handle, jstring language, jint threads) {
     try {
         auto *engine = reinterpret_cast<SpeechEngine *>(handle); if (!engine || engine->cancelled.load()) return false;
         transcribe_session_free(engine->session); engine->session = nullptr;
         transcribe_session_params params; transcribe_session_params_init(&params);
         params.n_threads = threads > 0 && threads <= 4 ? threads : 4;
-        if (transcribe_session_init(engine->model, &params, &engine->session) != TRANSCRIBE_OK) return false;
+        if (!nemotron_status(env, "create a speech session", transcribe_session_init(engine->model, &params, &engine->session))) return false;
         transcribe_set_abort_callback(engine->session, [](void *ctx) { return static_cast<SpeechEngine *>(ctx)->cancelled.load(); }, engine);
         const char *code = env->GetStringUTFChars(language, nullptr);
         std::string hint(code); env->ReleaseStringUTFChars(language, code);
@@ -53,13 +60,14 @@ extern "C" JNIEXPORT jboolean JNICALL Java_com_aistudio_altermind_voice_Nemotron
         transcribe_parakeet_stream_ext profile; transcribe_parakeet_stream_ext_init(&profile);
         profile.att_context_right = 3; // 320 ms cache-aware profile, validated by model metadata.
         stream.family = &profile.ext;
-        return !engine->cancelled.load() && transcribe_stream_begin(engine->session, &run, &stream) == TRANSCRIBE_OK;
+        return !engine->cancelled.load() && nemotron_status(env, (std::string("start with language ") + hint).c_str(),
+            transcribe_stream_begin(engine->session, &run, &stream));
     } catch (...) { return false; }
 }
 static jbyteArray snapshot(JNIEnv *env, SpeechEngine *engine) {
     if (engine->cancelled.load()) return nullptr;
     transcribe_stream_text text; transcribe_stream_text_init(&text);
-    if (transcribe_stream_get_text(engine->session, &text) != TRANSCRIBE_OK || text.full_text_bytes > 200000) return nullptr;
+    if (!nemotron_status(env, "read recognized text", transcribe_stream_get_text(engine->session, &text)) || text.full_text_bytes > 200000) return nullptr;
     auto out = env->NewByteArray(static_cast<jsize>(text.full_text_bytes));
     if (text.full_text_bytes) env->SetByteArrayRegion(out, 0, text.full_text_bytes, reinterpret_cast<const jbyte *>(text.full_text));
     return out;
@@ -69,14 +77,14 @@ extern "C" JNIEXPORT jbyteArray JNICALL Java_com_aistudio_altermind_voice_Nemotr
         auto *engine = reinterpret_cast<SpeechEngine *>(handle); if (!engine || !engine->session || engine->cancelled.load()) return nullptr;
         const int n = env->GetArrayLength(samples); if (n < 1 || n > 16000) return nullptr;
         std::vector<float> pcm(n); env->GetFloatArrayRegion(samples, 0, n, pcm.data());
-        if (transcribe_stream_feed(engine->session, pcm.data(), n, nullptr) != TRANSCRIBE_OK) return nullptr;
+        if (!nemotron_status(env, "accept audio", transcribe_stream_feed(engine->session, pcm.data(), n, nullptr))) return nullptr;
         return snapshot(env, engine);
     } catch (...) { return nullptr; }
 }
 extern "C" JNIEXPORT jbyteArray JNICALL Java_com_aistudio_altermind_voice_NemotronNative_finish(JNIEnv *env, jobject, jlong handle) {
     try {
         auto *engine = reinterpret_cast<SpeechEngine *>(handle); if (!engine || !engine->session || engine->cancelled.load()) return nullptr;
-        if (transcribe_stream_finalize(engine->session, nullptr) != TRANSCRIBE_OK) return nullptr;
+        if (!nemotron_status(env, "finish recognition", transcribe_stream_finalize(engine->session, nullptr))) return nullptr;
         return snapshot(env, engine);
     } catch (...) { return nullptr; }
 }

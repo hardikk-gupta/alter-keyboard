@@ -528,3 +528,24 @@ raw Hindi/English stream output and removed-model draft reprocessing without ope
 Android Kotlin/Java, resources, dex and native merging passed; both ABI merge directories exclude Handy,
 ALTER Whisper and ONNX Java JNI. Retained model artifact hashes/lengths are unchanged. `assembleStableDebug`
 stops only at the missing shared signing keystore; no signed APK, phone UI or silent-provider claim.
+
+## Check Moonshine streaming and expose recognizer failures (Oct 28, 2026)
+
+- Replace Moonshine's convenience transcriber with checked calls to the same 0.1.5 JNI runtime:
+  one fresh stream, full transcript snapshots, adaptive previews, one stop/final flush, and reliable
+  release on errors/cancellation. Avoid the extra default stream and ignored start/feed/stop statuses.
+- Show foreground failure text in a short Toast instead of only an error icon; keep saved recordings
+  and the compact settings UI. Nemotron JNI failures now carry operation, locale at start, and native
+  status reason. Do not force English or restore the removed Hindi helper layers.
+- Add a host probe for the actual Kotlin/JNI paths. Moonshine repeated streaming and saved decoding
+  pass. Nemotron produces results for English and Hindi clips in English/Automatic/Hindi; deliberate
+  unsupported-language errors retain their reason and subsequent sessions work. The user's phone-only
+  failure has not been reproduced or diagnosed as a specific native stage yet.
+
+Checks: 53 voice tests passed. Exact downloaded model hashes/sizes verified. Both Nemotron Android ABI
+libraries rebuilt; host JNI integration probe passed. Android compilation/resources/dex/native merging
+pass; final `assembleStableDebug` signing remains blocked by the missing shared key. No phone success,
+latency or accuracy claim, and no model weights committed.
+
+The shared Parakeet TDT host regression also passes sample decoding, input bounds, streaming-loader
+rejection, abort and session reuse after the native diagnostic change.
