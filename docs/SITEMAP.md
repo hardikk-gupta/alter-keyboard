@@ -17,7 +17,7 @@ Android launcher: ALTER Keyboard icon
     │       │   ├── 1 Allow the microphone ... [Allow]
     │       │   └── 2 Download <recommended> . [Download], progress, used as soon as it finishes
     │       ├── Speech ....................... model in use · Dictation language
-    │       │   └── All speech models (n) .... collapsed: Moonshine, Whisper/Oriserve, experimental Nemotron, device recognition
+    │       │   └── All speech models (n) .... collapsed: Moonshine, Whisper/Oriserve, experimental Nemotron, IndicConformer Hindi, device recognition
     │       ├── Keyboard ..................... Start mode (Full / Pill) · End recording after silence
     │       ├── Dictation cleanup ............ switch · Cleanup editor (stock LFM2.5 / experimental Handy)
     │       │   └── Editor models ............ download/select/delete
@@ -97,7 +97,7 @@ flowchart TD
     D -- failure / insertion refused --> P
 ```
 
-Audio for Whisper/Moonshine/Nemotron is journaled before decoding and is recoverable after process restart (one draft,
+Audio for downloaded recognizers is journaled before decoding and is recoverable after process restart (one draft,
 maximum fifteen minutes, private storage excluded from Android backup). Android on-device recognition can only save
 recognized text, not source audio. Reopening never starts the microphone or inserts text automatically. Pause/resume
 sits outside the right-hand curve, opposite the external discard cross; the paused centre processes saved dictation. Opening notifications alone does
@@ -236,3 +236,13 @@ periodic previews. They share the NVIDIA base checkpoint but use different decod
 the raw source checkpoint is recorded as provenance. Existing choices stay
 unchanged; Hindi/Hinglish still require a multilingual model. Phone speed/accuracy are unverified.
 See [the Parakeet guide](PARAKEET_EXPERIMENT.md) for configuration, recovery and validation limits.
+
+### Hindi engine for Parakeet and Nemotron
+
+Download IndicConformer Hindi INT8 (~138 MB) under ALTER voice → All speech models. Explicit
+Hindi mode uses it for either Parakeet variant or Nemotron, with Roman-letter output through
+the existing offline ICU rules. The actual Hindi engine is shown in settings; the base model is
+remembered for English/Automatic mode. Missing Hindi files require download, without a silent
+recognizer fallback. Parakeet itself remains English-only and Automatic adds no new Hindi detection.
+This is rule-based script conversion, not IndicXlit, fine-tuning or proven natural code-switching.
+See [Hindi pipeline](INDIC_HINDI_PIPELINE.md) for configuration, recovery and testing.

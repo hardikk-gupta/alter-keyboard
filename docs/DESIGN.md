@@ -80,7 +80,7 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
   and retained in the private draft, without insertion into a different editor. Reopening reuses the running session
   until completion. Explicit Pause still suspends processing. One temporary draft in
   private `noBackupFilesDir/dictation-draft` survives controller/process recreation. Reopening after interruption shows
-  it paused; no automatic capture or insertion. Whisper/Moonshine/Nemotron retain PCM (maximum fifteen minutes); Android recognition only
+  it paused; no automatic capture or insertion. downloaded recognizers retain PCM (maximum fifteen minutes); Android recognition only
   retains text delivered by its callbacks. No stop is requested merely because a notification shade is opened.
 - Final text remains durable until the editor accepts insertion. Explicit discard removes metadata and audio;
   keyboard surface changes preserve them. Clipboard copying retains them too. If Android destroys the IME service,
@@ -198,3 +198,13 @@ periodic previews. They share the NVIDIA base checkpoint but use different decod
 the raw source checkpoint is recorded as provenance. Existing choices stay
 unchanged; Hindi/Hinglish still require a multilingual model. Phone speed/accuracy are unverified.
 See [the Parakeet guide](PARAKEET_EXPERIMENT.md) for configuration, recovery and validation limits.
+
+### Hindi engine for Parakeet and Nemotron
+
+Download IndicConformer Hindi INT8 (~138 MB) under ALTER voice → All speech models. Explicit
+Hindi mode uses it for either Parakeet variant or Nemotron, with Roman-letter output through
+the existing offline ICU rules. The actual Hindi engine is shown in settings; the base model is
+remembered for English/Automatic mode. Missing Hindi files require download, without a silent
+recognizer fallback. Parakeet itself remains English-only and Automatic adds no new Hindi detection.
+This is rule-based script conversion, not IndicXlit, fine-tuning or proven natural code-switching.
+See [Hindi pipeline](INDIC_HINDI_PIPELINE.md) for configuration, recovery and testing.

@@ -68,12 +68,14 @@ class DictationController internal constructor(private val context: Context, pri
             catch (e: Exception) { mutableError.value = e.message; return }
         if (!capture && saved == null) { mutableError.value = "No saved recording is available. Record again."; return }
         if (capture && !canRecord()) { mutableError.value = "Allow microphone access for ALTER Keyboard, then try again."; return }
-        if (capture || (saved?.model != DEVICE_SPEECH && saved?.completed == null)) {
-            try {
+        fun validateSpeechSelection() {
+            if (capture || (saved?.model != DEVICE_SPEECH && saved?.completed == null)) {
                 if (saved != null) check(saved.model == speech.selected) { "Select ${saved.model} again to resume this recording, or discard it." }
                 speech.checkInstalled()
-            } catch (e: Exception) { mutableError.value = e.message; return }
+            }
         }
+        try { validateSpeechSelection() }
+        catch (e: Exception) { mutableError.value = e.message; return }
         val previous = job
         val generation = ++epoch
         stopRequested = false
@@ -89,6 +91,8 @@ class DictationController internal constructor(private val context: Context, pri
                 // Pause/resume can be tapped quickly; wait for the previous decoder to release the shared engine.
                 previous?.join(); ensureActive()
                 while (!owner.compareAndSet(null, sessionClaim)) { delay(25); ensureActive() }
+                // Model/language setup may have changed the effective engine while this session waited.
+                validateSpeechSelection()
                 val draft = if (saved == null) drafts.begin(checkNotNull(speech.selected))
                     else if (capture) drafts.resume(saved.id) else saved
                 synchronized(this@DictationController) { if (generation == epoch) draftId = draft.id }

@@ -27,9 +27,12 @@ fun speechChoices(catalog: ModelCatalog): List<SpeechChoice> {
         val files = catalog.models.filter { it.family == "Moonshine" && "MOONSHINE_${size.uppercase()}_STREAMING" in it.capabilities }
         files.takeIf { it.isNotEmpty() }?.let { SpeechChoice(if (size == "tiny") "moonshine-en" else "moonshine-en-$size",
             "Moonshine ${size.replaceFirstChar(Char::uppercase)} Streaming · English",
-            "Live English transcription. ${if (size == "tiny") "Lightest option." else "Larger model to test for improved accuracy; uses more RAM."} Hindi and Hinglish require Whisper multilingual.", files, size) }
+            "Live English transcription. ${if (size == "tiny") "Lightest option." else "Larger model to test for improved accuracy; uses more RAM."} Hindi and Hinglish require a Hindi or multilingual recognizer.", files, size) }
     }
-    return standalone + moonshine
+    val hindi = catalog.models.filter { it.family == "IndicConformer" && "INDIC_HI_CTC" in it.capabilities }
+    val indic = if (hindi.size == 2) listOf(SpeechChoice(INDIC_HINDI_MODEL, "IndicConformer Hindi · INT8",
+        "Offline Hindi speech with Roman-letter output. English code-switching is not guaranteed. Both files are required.", hindi)) else emptyList()
+    return standalone + indic + moonshine
 }
 
 /** Downloaded ASR beside the brain, plus an explicit live-device selector. No cloud/Gemma speech fallback. */
@@ -47,7 +50,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     @Volatile private var activeOwner: Any? = null
     fun clearSelection() { prefs.edit().remove("speech_model").apply() }
     val recordingSelected get() = prefs.getString("speech_model", null)
-    override val selected get() = if (prefs.getBoolean("device_speech", false)) DEVICE_SPEECH else recordingSelected
+    override val selected get() = if (prefs.getBoolean("device_speech", false)) DEVICE_SPEECH else effectiveSpeechModel(recordingSelected, prefs.getString("voice_language", "auto"))
     override fun checkInstalled() {
         if (selected == DEVICE_SPEECH) {
             check(deviceSpeechAvailable(context)) { "On-device recognition is unavailable. Install a system offline recognizer/language, or choose Whisper/Moonshine." }
@@ -55,7 +58,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         }
         val choice = speechChoices(catalog).find { it.id == selected }
             ?: error("Download and select a speech model in ALTER Keyboard settings → ALTER voice.")
-        check(choice.installed(store)) { "The selected speech model is missing. Download it again in Voice settings." }
+        check(choice.installed(store)) { if (choice.id == INDIC_HINDI_MODEL) "Hindi mode needs the IndicConformer Hindi download in Voice settings." else "The selected speech model is missing. Download it again in Voice settings." }
     }
     private var warmup: Job? = null
     fun preload() {
@@ -72,8 +75,9 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 closeLocked(); prefs.edit().putBoolean("device_speech", true).commit()
                 return@withLock
             }
-            val choice = speechChoices(catalog).single { it.id == id }
-            require(choice.installed(store)) { "Download every speech model component first." }
+            val effectiveId = effectiveSpeechModel(id, prefs.getString("voice_language", "auto"))
+            val choice = speechChoices(catalog).single { it.id == effectiveId }
+            require(choice.installed(store)) { if (choice.id == INDIC_HINDI_MODEL) "Download IndicConformer Hindi first to use Hindi mode." else "Download every speech model component first." }
             closeLocked(); load(choice)
             prefs.edit().putString("speech_model", id).putBoolean("device_speech", false).commit()
         }
@@ -87,14 +91,19 @@ class SpeechModels(private val context: Context) : DictationSpeech {
             if (parakeetTdt != 0L) NemotronNative.cancel(parakeetTdt)
         }
     }
-    private suspend fun load(choice: SpeechChoice = speechChoices(catalog).find { it.id == recordingSelected }
+    private suspend fun load(choice: SpeechChoice = speechChoices(catalog).find { it.id == selected }
         ?: error("Retrying a recording needs a downloaded speech model. Device recognition supports live dictation only.")) {
         require(choice.installed(store)) { "The selected speech model is missing. Download it again in Voice settings." }
         if (loaded == choice.id) { moonshine?.setKeyterms(keyterms()); return }
         closeLocked()
         choice.files.forEach { store.verify(it) }
         try {
-        if (choice.files.singleOrNull()?.family == "ParakeetTDT") {
+        if (choice.id == INDIC_HINDI_MODEL) {
+            val graph = choice.files.single { it.filename.endsWith(".onnx") }
+            val vocab = choice.files.single { it.filename.endsWith(".txt") }
+            val adapted = prepareIndicConformer(store, graph, File(context.noBackupFilesDir, "speech-indicconformer"))
+            parakeet = ParakeetSpeech.openFiles(adapted, store.file(vocab))
+        } else if (choice.files.singleOrNull()?.family == "ParakeetTDT") {
             parakeetTdt = ParakeetTdtNative.load(store.file(choice.files.single()).absolutePath)
             check(parakeetTdt != 0L) { "Parakeet TDT could not load this verified model on your device." }
         } else if (choice.files.singleOrNull()?.family == "ParakeetCTC") {
@@ -162,7 +171,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                     } else moonshine!!.transcribeWithoutStreaming(window, 16000).text()
                 })
                 currentCoroutineContext().ensureActive()
-                cleanDictation(raw).ifBlank { "[NO_SPEECH_DETECTED]" }
+                romanizeHindiText(cleanDictation(raw)).ifBlank { "[NO_SPEECH_DETECTED]" }
             } finally { activeOwner = null }
         }
     }
@@ -187,7 +196,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                     is ai.moonshine.voice.TranscriptEvent.LineCompleted -> event.line
                     else -> null
                 }
-                if (line != null) { lines[line.id] = line.text; update(cleanDictation(lines.values.joinToString(" "))) }
+                if (line != null) { lines[line.id] = line.text; update(romanizeHindiText(cleanDictation(lines.values.joinToString(" ")))) }
             }
             engine.addListener(listener)
             val stream = engine.createStream()
@@ -204,7 +213,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) {
                 "Nemotron could not start the selected streaming profile. Your recording is saved."
             }
-            consumeNemotronStream(read, { update(romanizeNemotronHindi(it)) }, { NemotronNative.feed(nemotron, it) },
+            consumeNemotronStream(read, { update(romanizeHindiText(it)) }, { NemotronNative.feed(nemotron, it) },
                 { NemotronNative.finish(nemotron) }, {})
         } finally { NemotronNative.end(nemotron) }
     }
@@ -217,6 +226,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         moonshine?.close(); moonshine = null; loaded = null
         File(context.noBackupFilesDir, "speech-moonshine").deleteRecursively()
         File(context.noBackupFilesDir, "speech-parakeet").deleteRecursively()
+        File(context.noBackupFilesDir, "speech-indicconformer").deleteRecursively()
     }
     companion object {
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

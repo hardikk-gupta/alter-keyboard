@@ -75,3 +75,10 @@ not on-device performance. Both committed Android ABI libraries were rebuilt. Al
 tests passed; Android compilation/dexing passed and signing failed only at the missing shared key.
 No alternate signing key was generated. Cancellation is checked natively and by the caller; failed
 or cancelled native runs return no output and preserve the private draft for retry.
+
+## Hindi mode
+
+Both Parakeet decoders remain English-only. With the IndicConformer Hindi download installed,
+explicit Hindi mode uses that separate recognizer and rule-based Romanization while remembering
+the Parakeet choice for English/Automatic mode. This does not add Hindi to Parakeet weights or
+automatically detect Hindi speech. See [Hindi pipeline](INDIC_HINDI_PIPELINE.md).

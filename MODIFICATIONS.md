@@ -65,7 +65,7 @@ non-commercial use, shared only for free. The original AOSP code remains under A
   FUTO's "check for updates" item is not shown, and the ALTER voice page follows the setup flow (see
   `docs/SITEMAP.md`). Every FUTO page is still reachable, including the payment page.
 
-- **Recoverable dictation:** captures for Whisper/Moonshine/Nemotron append PCM to one private temporary draft before
+- **Recoverable dictation:** captures for downloaded recognizers append PCM to one private temporary draft before
   decoding. Pause/resume, keyboard hide, focus changes, process restart and microphone interruptions preserve that
   draft. Hiding the keyboard pauses capture, but finished audio keeps processing in the IME service scope and
   automatically copies its final text to the clipboard, retaining the private draft. Reopening reuses active processing
@@ -201,3 +201,13 @@ periodic previews. They share the NVIDIA base checkpoint but use different decod
 the raw source checkpoint is recorded as provenance. Existing choices stay
 unchanged; Hindi/Hinglish still require a multilingual model. Phone speed/accuracy are unverified.
 See [the Parakeet guide](docs/PARAKEET_EXPERIMENT.md) for configuration, recovery and validation limits.
+
+### Hindi engine for Parakeet and Nemotron
+
+Download IndicConformer Hindi INT8 (~138 MB) under ALTER voice → All speech models. Explicit
+Hindi mode uses it for either Parakeet variant or Nemotron, with Roman-letter output through
+the existing offline ICU rules. The actual Hindi engine is shown in settings; the base model is
+remembered for English/Automatic mode. Missing Hindi files require download, without a silent
+recognizer fallback. Parakeet itself remains English-only and Automatic adds no new Hindi detection.
+This is rule-based script conversion, not IndicXlit, fine-tuning or proven natural code-switching.
+See [Hindi pipeline](docs/INDIC_HINDI_PIPELINE.md) for configuration, recovery and testing.

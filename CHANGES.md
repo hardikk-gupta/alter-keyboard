@@ -449,3 +449,21 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
 - Validation: all 48 combined voice tests passed; Android compilation/dexing passed. Assembly
   failed only at signing validation because the shared debug.keystore is unavailable. No
   replacement key generated. No conflict markers remain; whitespace checks passed.
+
+## IndicConformer Hindi routing and shared Romanization (Oct 28, 2026)
+
+- Added an explicit ~138 MB Hindi engine (AI4Bharat via a pinned OpenVoiceOS INT8 ONNX export),
+  with verified vocabulary and a staged/checksummed metadata-only graph adapter for sherpa-onnx.
+  Downloaded weights remain unchanged; no model weights or additional native runtimes bundled.
+- Explicit Hindi mode routes both Parakeet choices and Nemotron through this engine while
+  retaining the saved base choice for English/Automatic. Settings show the actual recognizer
+  and explain missing-download/routing behavior. Guard language changes during active dictation.
+- Reused offline ICU rules as a shared Hindi-to-English-letter stage before model-based output;
+  preserved Latin content and the existing Hindi cleanup-model bypass. No IndicXlit transformer
+  or Sanscript JavaScript runtime is included; code-switching accuracy remains unverified.
+- Host tests: exact metadata-adapted graph and vocabulary produced Hindi through sherpa-onnx
+  and the Android API JAR/matching host JNI; silence and repeated streams passed. All 52 voice
+  tests passed, including routing, failed adaptation cleanup/source-byte preservation and
+  revalidating saved-audio engine identity after waiting for atomic language/model setup.
+  Android compilation/dexing passed; signing alone failed due to the unavailable shared key.
+  No replacement key created. Phone Hindi/Hinglish accuracy/latency and install acceptance pending.

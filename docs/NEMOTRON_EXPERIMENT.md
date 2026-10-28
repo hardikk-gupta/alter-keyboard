@@ -60,3 +60,9 @@ Test short silence, one-word input, a long recording, pause/resume, hiding durin
 retry and cancellation. Include names, numbers and notebook/loadbook examples. Keep the
 existing preferred model unless this comparison demonstrates an improvement. Host inference
 and Android compilation cannot establish phone speed or competitive accuracy.
+
+## Explicit Hindi mode
+
+The Hindi-mode routing update uses the separately downloaded IndicConformer Hindi recognizer
+when Nemotron is the saved base choice and Dictation language is Hindi. Automatic mode keeps
+Nemotron's native multilingual decoder. See [the shared Hindi pipeline](INDIC_HINDI_PIPELINE.md).

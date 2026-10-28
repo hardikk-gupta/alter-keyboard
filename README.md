@@ -38,7 +38,7 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
 - If a call interrupts the microphone, or the keyboard hides/loses focus during recording, the draft is saved. Reopening a normal
   text field shows a paused pill; it never records or inserts recovered text automatically. Opening the notification
   shade alone does not request a stop; if Android actually hides the keyboard or interrupts capture, the draft pauses.
-- One temporary draft is kept in the app's private, excluded-from-backup storage: raw PCM for Whisper/Moonshine/Nemotron,
+- One temporary draft is kept in the app's private, excluded-from-backup storage: raw PCM for downloaded recognizers,
   recognized text only for Android's recognizer (Android does not expose its source audio). It survives process restarts
   and is removed after accepted insertion or an explicit ✕ discard, with a fifteen-minute audio limit. Resume uses the
   same speech model; reselect it if changed. No recording history is kept. Errors preserve the draft for retry.
@@ -228,3 +228,13 @@ periodic previews. They share the NVIDIA base checkpoint but use different decod
 the raw source checkpoint is recorded as provenance. Existing choices stay
 unchanged; Hindi/Hinglish still require a multilingual model. Phone speed/accuracy are unverified.
 See [the Parakeet guide](docs/PARAKEET_EXPERIMENT.md) for configuration, recovery and validation limits.
+
+### Hindi engine for Parakeet and Nemotron
+
+Download IndicConformer Hindi INT8 (~138 MB) under ALTER voice → All speech models. Explicit
+Hindi mode uses it for either Parakeet variant or Nemotron, with Roman-letter output through
+the existing offline ICU rules. The actual Hindi engine is shown in settings; the base model is
+remembered for English/Automatic mode. Missing Hindi files require download, without a silent
+recognizer fallback. Parakeet itself remains English-only and Automatic adds no new Hindi detection.
+This is rule-based script conversion, not IndicXlit, fine-tuning or proven natural code-switching.
+See [Hindi pipeline](docs/INDIC_HINDI_PIPELINE.md) for configuration, recovery and testing.
