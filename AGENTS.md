@@ -71,7 +71,8 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
   (`alter-voice/src/main/assets/alter_voice_models.json`) with exact size and SHA-256 checks. Never bundle weights.
 - Nemotron is experimental and opt-in: preserve the existing selection, require successful finalization,
   keep every PCM sample on retry, and never describe its 320 ms model profile as measured phone latency.
-  Native Hindi script is Romanized with ICU4J before live/final cleanup; preserve Latin text verbatim.
+  Native Hindi script uses downloaded IndicXlit before live/final cleanup, with ICU4J as the
+  basic path when the neural bundle is absent; preserve Latin text verbatim.
   This is script conversion, not model training or an accuracy improvement. Phone speed remains unverified.
 - Parakeet 110M uses the pinned sherpa-onnx static-ORT JAR/JNI pair; refresh them together with
   `scripts/import_sherpa_runtime.py`. Preserve archive and component hashes, whitelist extraction,
@@ -129,3 +130,14 @@ is kept. Do not rely on older releases existing.
 - Automatic drafts include the routing policy and base in sessionModelId. Do not equate them
   with explicit-English drafts or change an active session policy. Caches can stay across route
   switches but must release on explicit selection/deletion/release. Keep only one active ASR decoder.
+
+## IndicXlit transliteration
+
+- Use the official Indic-to-Roman checkpoint, not the reverse direction. Preserve pinned hashes and
+  licenses, no weights in Git/APK, no Fairseq/Python in Gradle. Export tooling is host-only.
+- Keep English/identifiers untouched, word-only conversion, finite decoding and cancellation checks.
+  Preserve every recognized word; do not guess missing English phrases from phonetic Hindi output.
+- Keep ORT Java/JNI/full core at 1.23.2 together with Moonshine 0.1.5. The artifact transform removes only
+  Moonshine's reduced duplicate core; do not use arbitrary pickFirst packaging. Verify both ABIs.
+- IndicXlit is automatically used after its complete download; deletion releases caches through
+  speechSetup. No claim of on-device speed or transcription accuracy from host transliteration tests.

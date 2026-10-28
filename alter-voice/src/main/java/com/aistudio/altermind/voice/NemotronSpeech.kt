@@ -22,7 +22,7 @@ internal fun nemotronLanguage(language: String?): String = when (language) {
 }
 
 /** Feed every PCM sample exactly once, publish revisions, and require a successful final flush. */
-internal suspend fun consumeNemotronStream(read: suspend () -> FloatArray?, update: (String) -> Unit,
+internal suspend fun consumeNemotronStream(read: suspend () -> FloatArray?, update: suspend (String) -> Unit,
     feed: (FloatArray) -> ByteArray?, finish: () -> ByteArray?, end: () -> Unit) {
     try {
         while (true) {

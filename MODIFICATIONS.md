@@ -189,9 +189,9 @@ selection stays unchanged. Hindi-script runs are now converted offline to Englis
 streaming profile is a model setting, not measured phone latency. Speed and accuracy against
 Moonshine still require phone testing. See [Nemotron experiment](docs/NEMOTRON_EXPERIMENT.md).
 
-Nemotron Romanization uses ICU4J 76.1 (Unicode License V3), with no additional model or cloud call.
-Only Devanagari runs are converted, preserving existing English text. It uses phonetic transliteration,
-not translation or fine-tuning; spelling can differ from casual Hinglish. Other ASR models are unchanged.
+Basic Romanization uses ICU4J 76.1 (Unicode License V3). Downloading IndicXlit enables neural
+Hindi word conversion instead, preserving existing English text. Both run offline before cleanup;
+neither changes the speech-recognition weights. See the neural Romanization section below.
 
 ### Parakeet 110M CTC and TDT (English)
 
@@ -206,11 +206,11 @@ See [the Parakeet guide](docs/PARAKEET_EXPERIMENT.md) for configuration, recover
 
 Download IndicConformer Hindi INT8 (~138 MB) under ALTER voice → All speech models. Explicit
 Hindi mode uses it for either Parakeet variant or Nemotron, with Roman-letter output through
-the existing offline ICU rules. The actual Hindi engine is shown in settings; the base model is
+downloaded IndicXlit, or basic ICU rules when it is absent. The actual Hindi engine is shown in settings; the base model is
 remembered for English/Automatic mode. Missing Hindi files require download, without a silent
 recognizer fallback. Parakeet itself remains English-only; the separate Automatic routing download now provides
 English/Hindi detection and engine selection for both variants.
-This is rule-based script conversion, not IndicXlit, fine-tuning or proven natural code-switching.
+Transliteration is independent of recognition and does not fine-tune Parakeet or prove natural code-switching.
 See [Hindi pipeline](docs/INDIC_HINDI_PIPELINE.md) for configuration, recovery and testing.
 
 ### Automatic English/Hindi with either Parakeet
@@ -222,3 +222,11 @@ Nemotron is the optional mixed/uncertain fallback. Missing mixed-language fallba
 the recording with an error. Sparse language detection is experimental and can miss short
 or mixed phrases; it is not Whisper Tiny transcription or guaranteed natural Hinglish.
 See [automatic routing](docs/AUTOMATIC_LANGUAGE_ROUTING.md) for setup, asset deletion and recovery behavior.
+
+### Neural Hindi Romanization
+
+Download **IndicXlit · Hindi to Roman** once in ALTER voice (about 47 MB). The official AI4Bharat
+Indic-to-Roman model then converts Nemotron's live/final Hindi words before Alter cleanup;
+English text stays unchanged. Other downloaded recognizers share this conversion. Without the
+complete download, basic ICU conversion remains available. This is pretrained word transliteration,
+not speech-model fine-tuning or a repair for wrongly recognized words. See [IndicXlit setup and limits](docs/INDICXLIT_TRANSLITERATION.md).

@@ -965,6 +965,75 @@
       "backend": "CPU",
       "cpuFallback": false,
       "contextTokens": 2048
+    },
+    {
+      "id": "indicxlit-hi-roman-encoder",
+      "displayName": "IndicXlit Hindi to Roman · encoder",
+      "tier": "optional",
+      "description": "AI4Bharat IndicXlit Indic-to-Roman v1.0. Offline Hindi word transliteration; no speech recognition or translation.",
+      "family": "IndicXlit",
+      "version": "v1.0-onnx-fp32-1",
+      "repository": "AI4Bharat/IndicXlit",
+      "filename": "encoder.onnx",
+      "downloadUrl": "https://github.com/hardikk-gupta/alter-keyboard/releases/download/indicxlit-v1.0-onnx-1/encoder.onnx",
+      "downloadBytes": 20879648,
+      "sha256": "07a5a3a970f2f04ce5b75e51eea5dd579f7794f176ff0b37455b60151eba1b6c",
+      "license": "MIT",
+      "modelType": "TRANSLITERATION",
+      "capabilities": [
+        "HINDI_TO_ROMAN"
+      ],
+      "minimumRamBytes": 1073741824,
+      "recommendedRamBytes": 2147483648,
+      "backend": "CPU",
+      "cpuFallback": true,
+      "contextTokens": 64
+    },
+    {
+      "id": "indicxlit-hi-roman-decoder",
+      "displayName": "IndicXlit Hindi to Roman · decoder",
+      "tier": "optional",
+      "description": "AI4Bharat IndicXlit Indic-to-Roman v1.0. Offline Hindi word transliteration; no speech recognition or translation.",
+      "family": "IndicXlit",
+      "version": "v1.0-onnx-fp32-1",
+      "repository": "AI4Bharat/IndicXlit",
+      "filename": "decoder.onnx",
+      "downloadUrl": "https://github.com/hardikk-gupta/alter-keyboard/releases/download/indicxlit-v1.0-onnx-1/decoder.onnx",
+      "downloadBytes": 26535207,
+      "sha256": "1c7dd0bac96aa2d2d752f2afb393a128c9ddc9e51d6119f7175b3bf244ff0e0e",
+      "license": "MIT",
+      "modelType": "TRANSLITERATION",
+      "capabilities": [
+        "HINDI_TO_ROMAN"
+      ],
+      "minimumRamBytes": 1073741824,
+      "recommendedRamBytes": 2147483648,
+      "backend": "CPU",
+      "cpuFallback": true,
+      "contextTokens": 64
+    },
+    {
+      "id": "indicxlit-hi-roman-vocab",
+      "displayName": "IndicXlit Hindi to Roman · vocab",
+      "tier": "optional",
+      "description": "AI4Bharat IndicXlit Indic-to-Roman v1.0. Offline Hindi word transliteration; no speech recognition or translation.",
+      "family": "IndicXlit",
+      "version": "v1.0-onnx-fp32-1",
+      "repository": "AI4Bharat/IndicXlit",
+      "filename": "vocab.json",
+      "downloadUrl": "https://github.com/hardikk-gupta/alter-keyboard/releases/download/indicxlit-v1.0-onnx-1/vocab.json",
+      "downloadBytes": 6179,
+      "sha256": "acd0707dd66508a5af047f8e3b9a62e6daf10aed1c5e3db824f2328efe075bf5",
+      "license": "MIT",
+      "modelType": "TRANSLITERATION",
+      "capabilities": [
+        "HINDI_TO_ROMAN"
+      ],
+      "minimumRamBytes": 1073741824,
+      "recommendedRamBytes": 2147483648,
+      "backend": "CPU",
+      "cpuFallback": true,
+      "contextTokens": 64
     }
   ]
 }

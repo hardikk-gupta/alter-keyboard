@@ -486,3 +486,19 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
   No alternate key created. Phone installation, accuracy/latency, short/mixed cases and thermals pending.
 - Routed-cache deletion is serialized with setup; warmup cannot reload an engine during deletion.
   Queued saved-audio recovery rechecks missing assets before capture and preserves the private draft.
+
+## IndicXlit Hindi-to-Roman integration (Oct 28, 2026)
+
+- Add the official AI4Bharat Indic-to-Roman v1.0 weights as a verified one-time 47 MB download;
+  use neural Hindi word conversion for Nemotron live/final output and other downloaded recognizers.
+  Preserve English and all recognized words; use narrow `ja`/`raha`/`hun` and user-requested
+  `baby`/`chahiye`/`call`/`you`/`ail`/`dena` spelling preferences after inference.
+- Add offline CPU ORT decoding with bounded beam search, cancellation, word caching and guarded deletion.
+  Preserve ICU as the clearly documented basic path without the complete neural download.
+- Resolve Moonshine's duplicate reduced ORT deterministically against the matching full 1.23.2 core.
+  Include MIT/third-party notices, source/output hashes and reproducible host-only export/probe tooling.
+
+Checks: 66 voice unit tests passed; exported/eager FP32 parity and real Kotlin/ORT sentence, cache,
+cancellation and word-boundary probes passed. Android compilation/dex/native merging passed; packaged
+ORT core/JNI bytes verified for arm64-v8a and x86_64. `assembleStableDebug` remains blocked solely by the
+missing shared signing keystore. No phone accuracy/latency, Moonshine coexistence or signed-APK claim.

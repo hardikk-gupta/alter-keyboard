@@ -3,7 +3,7 @@
 ## What runs
 
 Hindi audio → AI4Bharat IndicConformer Hindi (community INT8 ONNX export) → Devanagari transcript
-→ existing ICU rule-based transliteration → optional selected cleanup → text field.
+→ downloaded IndicXlit (basic ICU when absent) → optional selected cleanup → text field.
 
 This is an additional Hindi recognizer, not a fine-tune or Hindi capability inside Parakeet.
 Both Parakeet variants remain English-only. Explicit Hindi mode routes the selected Parakeet INT8
@@ -51,11 +51,10 @@ bypass; script conversion still runs. This changes the alphabet, not the meaning
 
 ## Transliteration choice and limits
 
-The user supplied Sanscript (rule-based) and AI4Bharat IndicXlit (neural) references. This first
-Android implementation reuses ICU4J's existing offline Devanagari-Latin/Latin-ASCII rules. It does
-not embed Sanscript JavaScript, add a JavaScript engine, or ship IndicXlit's transformer checkpoint.
-No rule-based converter is presented as a trained model. IndicXlit would require a separately
-validated Android export/runtime before being offered as a selectable neural editor.
+Download **IndicXlit · Hindi to Roman** (~47 MB) to use the official AI4Bharat neural converter.
+It is automatically shared by Nemotron and the other downloaded recognizers. See
+[IndicXlit configuration and validation](INDICXLIT_TRANSLITERATION.md). Without the complete download,
+ICU4J remains the basic offline path. Sanscript JavaScript is not embedded and no speech model is fine-tuned.
 
 ICU uses phonetic spellings, which can differ from conversational Hinglish (e.g. मैं → maim).
 Already-English strings, names and identifiers are preserved by the script converter, but the
