@@ -36,6 +36,8 @@ dependencies {
   implementation(files("libs/sherpa-onnx-2.0.1.jar"))
   implementation("org.apache.commons:commons-compress:1.27.1")
 
+  implementation("com.microsoft.onnxruntime:onnxruntime-android:1.23.2")
+
   // ICU provides the same offline script conversion on every supported Android version.
   implementation("com.ibm.icu:icu4j:76.1")
   implementation("androidx.core:core-ktx:1.13.1")

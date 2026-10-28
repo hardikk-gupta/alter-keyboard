@@ -28,6 +28,14 @@ object VoiceSettings {
         File(context.noBackupFilesDir, "models").walkTopDown().filter { it.isFile }.sumOf { it.length() }
     }
 
+    suspend fun deleteIndicXlit(context: Context) {
+        DictationController.speechSetup {
+            val models = SpeechModels.get(context)
+            models.release()
+            ModelDownloads.delete(context, indicXlitSpecs(models.catalog))
+        }
+    }
+
     /** Disable automatic detection without deleting the independent Hindi recognizer or base choice. */
     suspend fun deleteAutomaticRouting(context: Context) {
         DictationController.speechSetup {

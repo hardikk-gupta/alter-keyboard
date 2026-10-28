@@ -47,6 +47,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     private var parakeet: ParakeetSpeech? = null
     private var moonshine: ai.moonshine.voice.Transcriber? = null
     private var loaded: String? = null
+    private var indicXlit: IndicXlit? = null
     private var languageIdentifier: AutomaticLanguageIdentifier? = null
     private val mutableRoutingNotice = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
     val routingNotice: kotlinx.coroutines.flow.StateFlow<String?> = mutableRoutingNotice
@@ -174,7 +175,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                     decodeLoadedWindow(window)
                 })
                 currentCoroutineContext().ensureActive()
-                romanizeHindiText(cleanDictation(raw)).ifBlank { "[NO_SPEECH_DETECTED]" }
+                romanize(cleanDictation(raw)).ifBlank { "[NO_SPEECH_DETECTED]" }
             } finally { activeOwner = null }
         }
     }
@@ -204,7 +205,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) { "Whisper transcription failed." }
         } else moonshine!!.transcribeWithoutStreaming(audio, 16000).text()
         currentCoroutineContext().ensureActive()
-        return romanizeHindiText(cleanDictation(raw))
+        return romanize(cleanDictation(raw))
     }
     suspend fun transcribe(audio: FloatArray): String = transcribe(audio, Any())
     /** Stream Moonshine or Nemotron while collecting from AudioRecord; return false for Whisper's bounded clip mode. */
@@ -245,13 +246,22 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) {
                 "Nemotron could not start the selected streaming profile. Your recording is saved."
             }
-            consumeNemotronStream(read, { update(romanizeHindiText(it)) }, { NemotronNative.feed(nemotron, it) },
+            consumeNemotronStream(read, { update(romanize(it)) }, { NemotronNative.feed(nemotron, it) },
                 { NemotronNative.finish(nemotron) }, {})
         } finally { NemotronNative.end(nemotron) }
+    }
+    private suspend fun romanize(text: String): String {
+        if (text.none { it in '\u0900'..'\u097f' }) return text
+        val files = indicXlitSpecs(catalog)
+        if (indicXlit == null && files.size == 3 && files.all(store::installed)) {
+            indicXlit = IndicXlit.open(store, files)
+        }
+        return indicXlit?.convert(text) ?: romanizeHindiText(text)
     }
     private fun whisperLanguage() = whisperDecodeLanguage(loaded, prefs.getString("voice_language", "auto"))
     @Synchronized private fun closeLocked() {
         closeDecoderLocked()
+        indicXlit?.close(); indicXlit = null
         languageIdentifier?.close(); languageIdentifier = null
         mutableRoutingNotice.value = null
         File(context.noBackupFilesDir, "speech-moonshine").deleteRecursively()

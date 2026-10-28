@@ -208,11 +208,11 @@ class VoicePackRegressionTest {
         assertTrue(microphoneLevel(.1f) > microphoneLevel(.01f))
     }
 
-    @Test fun keyboardCatalogHoldsOnlyPinnedSpeechCleanupAndLanguageModels() {
+    @Test fun keyboardCatalogHoldsOnlyPinnedVoicePipelineModels() {
         val json = File("src/main/assets/alter_voice_models.json").readText()
         val ids = Regex("\"id\": \"([^\"]+)\"").findAll(json).map { it.groupValues[1] }.toList()
         assertTrue("lfm25-350m-cleanup" in ids)
-        assertTrue(ids.all { it.startsWith("indicconformer-hi-") || it == "parakeet-110m-tdt-fp16" || it == "parakeet-110m-ctc-int8" || it == "nemotron-3.5-streaming-q4" || it == "handy-350m-cleanup" || it == "lfm25-350m-cleanup" || it.startsWith("whisper-") || it.startsWith("moonshine-en") })
+        assertTrue(ids.all { it.startsWith("indicxlit-hi-roman-") || it.startsWith("indicconformer-hi-") || it == "parakeet-110m-tdt-fp16" || it == "parakeet-110m-ctc-int8" || it == "nemotron-3.5-streaming-q4" || it == "handy-350m-cleanup" || it == "lfm25-350m-cleanup" || it.startsWith("whisper-") || it.startsWith("moonshine-en") })
         assertEquals(ids.size, Regex("\"sha256\": \"[a-f0-9]{64}\"").findAll(json).count())
         assertEquals(ids.size, Regex("\"downloadUrl\": \"https://").findAll(json).count())
         assertTrue(json.contains("6a78c7a2746386f8919476a34ef0ca40d596a5c44e979520fae8318da5cfb1f6"))

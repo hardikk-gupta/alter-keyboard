@@ -187,6 +187,7 @@ fun AlterVoiceScreen(navController: NavHostController) {
     var cleanupId by remember { mutableStateOf(VoicePack.cleanupModel(context)) }
     val cleanup = remember(cleanupId) { models.catalog.find(cleanupId) }
     val downloads by ModelDownloads.states.collectAsState()
+    val xlitFiles = remember { com.aistudio.altermind.voice.indicXlitSpecs(models.catalog) }
     val routingFiles = remember { com.aistudio.altermind.voice.automaticRoutingSpecs(models.catalog) }
     val routingNotice by models.routingNotice.collectAsState()
 
@@ -288,6 +289,13 @@ fun AlterVoiceScreen(navController: NavHostController) {
                 }
                 routingNotice?.let { Tip(it) }
             }
+            ModelRow(stringResource(R.string.alter_indicxlit_name), stringResource(R.string.alter_indicxlit_hint),
+                com.aistudio.altermind.voice.INDIC_XLIT_DOWNLOAD, xlitFiles,
+                installed = xlitFiles.all(models.store::installed), inUse = true, onUse = null,
+                onDelete = { scope.launch {
+                    error = runCatching { VoiceSettings.deleteIndicXlit(context) }.exceptionOrNull()?.message
+                    refresh++
+                } })
             error?.let { Tip(it) }
             CollapsibleSection(stringResource(R.string.alter_speech_models_all, choices.size + if (VoiceSettings.deviceSpeechAvailable(context)) 1 else 0)) {
                 choices.forEach { choice ->

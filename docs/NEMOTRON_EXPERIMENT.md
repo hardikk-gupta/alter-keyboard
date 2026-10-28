@@ -19,11 +19,12 @@ Cancellation sets an atomic native abort flag; the owning coroutine releases the
 
 Hindi/English recognition is supported by the model; conversational Hinglish spelling and code switching
 quality are unverified. Native Hindi output can use Devanagari. Custom vocabulary biasing is
-not wired for this runtime. Hindi-script runs are now converted offline to Latin/ASCII by ICU4J 76.1 before Alter correction memory
-and cleanup. Already-Latin text is unchanged. This applies to live snapshots and saved-audio retries,
-including explicit Hindi mode. No new model is used and Nemotron weights remain unchanged.
-Spellings are phonetic, not guaranteed conversational Hinglish (for example मैं can become maim).
-This cannot recover words the recognizer misheard. License: `licenses/ICU4J-76.1-LICENSE.txt`.
+not wired for this runtime. Download **IndicXlit · Hindi to Roman** once for neural Hindi word
+conversion before Alter correction memory and cleanup, including native multilingual live revisions
+and saved-audio retries. Existing Latin text is unchanged. Basic ICU4J conversion remains available
+without that download; it can produce scholarly spellings such as `maim`. Nemotron weights are unchanged.
+See [IndicXlit setup and validation](INDICXLIT_TRANSLITERATION.md). Conversion cannot recover words
+that Nemotron misheard; phone performance remains unverified.
 
 ## Reproduce
 
