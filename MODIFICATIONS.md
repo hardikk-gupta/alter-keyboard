@@ -18,8 +18,8 @@ non-commercial use, shared only for free. The original AOSP code remains under A
 - **Kotlin:** the project builds with Kotlin 2.4.0 (was 2.1.0), required by LiteRT-LM 0.18. One type annotation in
   `BuggyBaseInputConnection.kt` was adjusted for the newer compiler.
 - **Voice input:** FUTO's built-in Whisper voice input is replaced by ALTER's voice pack in the new `alter-voice/`
-  module (Whisper/Oriserve via whisper.cpp, Moonshine, experimental Nemotron, Android on-device recognition,
-  and optional stock LFM2.5 or experimental Handy cleanup).
+  module (both Parakeets, Nemotron, Moonshine Medium, Android on-device recognition,
+  and optional LFM2.5 cleanup).
   FUTO's bundled 43 MB Whisper model is left out of the APK. The option to use another installed voice keyboard is kept.
   The `voiceinput-shared` module is still built because other FUTO code depends on it.
 - **Pill mode:** a minimized 56 dp bar with ALTER's mic pill, a keyboard button and FUTO's input-method globe, plus a
@@ -85,6 +85,10 @@ and the payment reminders) are kept and working.
 
 ## Third-party components added
 
+The table records component provenance, including retired experiments. The current catalog is documented
+in [Voice configuration](docs/VOICE_MODELS.md); retired speech/cleanup model weights are not downloadable
+from the app and the obsolete Handy/Whisper voice libraries are not packaged.
+
 Each keeps its own license under [`licenses/`](licenses):
 
 | Component | License |
@@ -117,18 +121,11 @@ not new cleanup levels, context collection or a new model. Existing conservative
 semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
 limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.
 
-Whisper live scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
+Bounded Parakeet preview scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
 or download), targets its first preview after two seconds of captured audio, and spaces later previews according
 to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.
-This reduces redundant work but does not guarantee real-time Medium inference. Native CPU binaries and model
+This reduces redundant work but does not guarantee real-time inference. Native CPU binaries and model
 weights are unchanged; on-phone speed and thermal behavior still require measurement.
-
-Oriserve Hinglish Swift · Q8 is available under Settings → ALTER voice → All speech models. Download its 82 MB
-artifact, then select it to test locally. This is Oriserve's Whisper Base Hindi2Hinglish fine-tune, converted to GGML
-by the third-party AirNote repository; it outputs romanized Hinglish and uses fixed Hindi decoding regardless of
-the general dictation-language selector. It reuses the existing Whisper runtime, live scheduling, recovery and
-ALTER cleanup pipeline. The catalog pins a commit, exact size and SHA-256; no weights are bundled and model
-selection is explicit. Apache-2.0 attribution is in licenses/. Accuracy and Android speed require phone testing.
 
 Voice startup shows a still white line while the microphone opens, then the real-RMS yellow wave; it does not
 show the processing animation. Processing is reserved for finished audio. Errors take precedence over saved-draft
@@ -148,85 +145,30 @@ No screen, memory, style or snippet context is collected; tags spoken inside a t
 availability and Hindi bypass still apply. Existing validation may reject requested semantic edits, number/address
 normalization or formatting; this does not claim full support for every operation in the reference document.
 
-Oriserve Hinglish Swift · FP16 (148 MB) is also available for explicit comparison with Q8. It uses the same pinned
-conversion source and Hindi decoding. The uploader recommends FP16 for fidelity, but recognition errors such as
-“notebook”/“loadbook” are not proven to come from quantization. Existing selections are preserved; no blind word
-substitution or automatic learning is enabled. Phone comparisons are still required.
-
 Settings → ALTER voice → Learned words lets users explicitly save/delete single-word corrections. Up to 100
 confirmed pairs are stored atomically in private no-backup storage and applied in one whole-word pass before
 optional cleanup, including when cleanup is disabled. Numbers/negations are protected; URLs, email addresses and
 identifiers are not rewritten. Rules apply globally, including legitimate uses of the source word; delete a rule
 when inappropriate. This is visible correction memory, not model training, editor monitoring or native ASR biasing.
 
-### Experimental live Handy cleanup
 
-ALTER voice → Cleanup editor offers Handy Editor 350M Q4_K_M (229 MB) alongside the existing LiteRT editor.
-Download, select and enable it explicitly. Oriserve Hinglish Swift FP16 remains the user's ASR choice; no Tiny
-model is substituted. Handy runs with a pinned CPU-only llama.cpp JNI library, an explicit empty system turn,
-greedy decoding and fresh contexts; its trained input format replaces the generic editor instructions. It is
-English-trained; Hinglish quality and Android latency remain unverified. License/provenance are under licenses/.
+## Current voice models
 
-Enabled cleanup can run during recording after a 1.2-second ASR update debounce. Each provisional edit sees the
-current whole transcript (up to 4,000 characters), so later words can revise earlier wording; obsolete work is
-cancelled, no PCM is dropped, and no text is inserted during recording. Finalization reuses a cleaned snapshot
-only if the final normalized ASR text matches exactly; otherwise it runs final cleanup. Errors preserve raw text.
-Raw final ASR text is stored separately from polished text in the existing private no-backup draft until accepted
-insertion/discard; older drafts remain readable. Explicit Pause/hide cancels capture/provisional work as before.
+Keep either Parakeet 110M CTC INT8 or TDT FP16 (English), Nemotron Q4 (multilingual),
+Moonshine Medium (English), or Android on-device recognition (Android 12+ when available).
+LFM2.5 350M is the only optional cleanup model. Models download on demand with pinned size/hash checks.
+There is no Hindi routing download, external language detector, IndicConformer, IndicXlit or ICU
+Romanization, and no Handy editor. Speech uses the selected engine and its native output script.
+Parakeet and Moonshine do not gain Hindi support from the language selector.
 
-The validator now accepts narrowly resolved weekday changes such as “Friday. Actually, make it Monday” and
-“Friday, no wait, Monday”, while rejecting unrelated dates/numbers and protecting English/Roman-Hindi negation.
-This is not general semantic deletion permission. Handy's real host test did not resolve the tested Hinglish
-kal/parso correction; unsafe negation removal falls back to the source. The existing agent rules continue for
-the stock editor. Future app context/memory/tool access is not granted by dictated text.
+Voice settings show one row per model: name, size/selection and download/delete, with progress or errors
+only when needed. Tap a downloaded row to select it. Language appears for Nemotron/device recognition;
+learned-word editing is collapsed. Rows without icons no longer reserve an empty icon column.
+Existing drafts stay saved. Retired downloads are removed when Voice settings can claim the idle speech
+setup owner; saved audio from a removed model can be explicitly reprocessed with a remaining downloaded model.
 
-### Experimental Nemotron streaming speech
+Android recognition no longer receives an extra cancel after successful results. Its provider may still
+play a recording tone: Android has no supported per-app mute switch for SpeechRecognizer. ALTER does not
+change global sound volume. Phone acceptance is still required.
 
-Voice settings → All speech models includes **Nemotron 3.5 Streaming · Q4 · experimental**
-(496 MB download), alongside the existing Whisper, Oriserve and Moonshine choices. It uses
-a separate CPU runtime on Android 8+, with live revisions and a final flush; the current
-selection stays unchanged. Hindi-script runs are now converted offline to English letters before cleanup. The 320 ms
-streaming profile is a model setting, not measured phone latency. Speed and accuracy against
-Moonshine still require phone testing. See [Nemotron experiment](docs/NEMOTRON_EXPERIMENT.md).
-
-Basic Romanization uses ICU4J 76.1 (Unicode License V3). Downloading IndicXlit enables neural
-Hindi word conversion instead, preserving existing English text. Both run offline before cleanup;
-neither changes the speech-recognition weights. See the neural Romanization section below.
-
-### Parakeet 110M CTC and TDT (English)
-
-ALTER voice → All speech models includes Parakeet 110M INT8 CTC (104 MB archive) and TDT FP16
-(229 MB GGUF). Both run offline with two CPU threads and greedy decoding, using bounded-window
-periodic previews. They share the NVIDIA base checkpoint but use different decoders and precision;
-the raw source checkpoint is recorded as provenance. Existing choices stay
-unchanged; Hindi/Hinglish still require a multilingual model. Phone speed/accuracy are unverified.
-See [the Parakeet guide](docs/PARAKEET_EXPERIMENT.md) for configuration, recovery and validation limits.
-
-### Hindi engine for Parakeet and Nemotron
-
-Download IndicConformer Hindi INT8 (~138 MB) under ALTER voice → All speech models. Explicit
-Hindi mode uses it for either Parakeet variant or Nemotron, with Roman-letter output through
-downloaded IndicXlit, or basic ICU rules when it is absent. The actual Hindi engine is shown in settings; the base model is
-remembered for English/Automatic mode. Missing Hindi files require download, without a silent
-recognizer fallback. Parakeet itself remains English-only; the separate Automatic routing download now provides
-English/Hindi detection and engine selection for both variants.
-Transliteration is independent of recognition and does not fine-tune Parakeet or prove natural code-switching.
-See [Hindi pipeline](docs/INDIC_HINDI_PIPELINE.md) for configuration, recovery and testing.
-
-### Automatic English/Hindi with either Parakeet
-
-Keep the selected Parakeet model and choose Automatic language. A one-time routing download
-(~240 MB total, or ~103 MB extra when Hindi is already installed) provides Whisper Tiny LID
-and IndicConformer Hindi. English uses the saved CTC/TDT model; Hindi uses IndicConformer.
-Nemotron is the optional mixed/uncertain fallback. Missing mixed-language fallback preserves
-the recording with an error. Sparse language detection is experimental and can miss short
-or mixed phrases; it is not Whisper Tiny transcription or guaranteed natural Hinglish.
-See [automatic routing](docs/AUTOMATIC_LANGUAGE_ROUTING.md) for setup, asset deletion and recovery behavior.
-
-### Neural Hindi Romanization
-
-Download **IndicXlit · Hindi to Roman** once in ALTER voice (about 47 MB). The official AI4Bharat
-Indic-to-Roman model then converts Nemotron's live/final Hindi words before Alter cleanup;
-English text stays unchanged. Other downloaded recognizers share this conversion. Without the
-complete download, basic ICU conversion remains available. This is pretrained word transliteration,
-not speech-model fine-tuning or a repair for wrongly recognized words. See [IndicXlit setup and limits](docs/INDICXLIT_TRANSLITERATION.md).
+See [current voice configuration](docs/VOICE_MODELS.md) for upgrade behavior and validation limits.

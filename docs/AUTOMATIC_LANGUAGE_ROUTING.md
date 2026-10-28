@@ -1,5 +1,9 @@
 # Automatic English/Hindi routing for both Parakeet models
 
+> Retired from the app on October 28, 2026. This document is historical; this model/helper is no longer
+> available or used. See [current voice configuration](VOICE_MODELS.md).
+
+
 ## Set up once
 
 1. Select **Parakeet 110M INT8 CTC** or **Parakeet 110M TDT FP16** as the English model.

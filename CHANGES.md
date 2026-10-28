@@ -506,3 +506,25 @@ missing shared signing keystore. No phone accuracy/latency, Moonshine coexistenc
 Model publishing also has a host-only GitHub Actions workflow: direct cloud uploads returned HTTP 401
 while code/PR access worked. The workflow re-exports the trusted checkpoint, checks exact catalog
 bytes, and publishes only the pinned MIT model assets independently of APK signing.
+
+## Simplify voice models and settings (Oct 28, 2026)
+
+- Keep both Parakeet 110M variants, Nemotron Q4, Moonshine Medium and Android on-device recognition;
+  keep LFM2.5 350M as the only optional editor. Remove Whisper/Oriserve, Moonshine Tiny/Small, Handy,
+  IndicConformer routing, Whisper LID, IndicXlit and ICU Romanization from the running app/catalog.
+- Remove the additional ICU/ONNX Java dependencies and obsolete model-publishing workflow. Exclude
+  unused Handy/ALTER Whisper JNI libraries from packaging; retain archived native sources and licenses.
+- Remove retired downloads under idle speech setup ownership without deleting drafts or retained files.
+  Explicitly reprocess removed-model PCM with a remaining recognizer; never append new capture to an
+  incompatible saved session. Ignore retired cleanup selections.
+- Model rows now show name, size/selection and one action, with progress/errors only as needed.
+  Remove duplicate setup/model summaries and explanation paragraphs; collapse learned-word editing.
+  Fix shared settings rows reserving a large empty icon column even when no icon is supplied.
+- Avoid an unnecessary Android recognizer cancel after successful results. The system provider may still
+  play a beep: Android offers no supported per-app mute control, and global phone volume is unchanged.
+
+Checks: 49 voice unit tests passed, including retained-catalog boundaries, private-file retirement,
+raw Hindi/English stream output and removed-model draft reprocessing without opening the microphone.
+Android Kotlin/Java, resources, dex and native merging passed; both ABI merge directories exclude Handy,
+ALTER Whisper and ONNX Java JNI. Retained model artifact hashes/lengths are unchanged. `assembleStableDebug`
+stops only at the missing shared signing keystore; no signed APK, phone UI or silent-provider claim.

@@ -1,5 +1,10 @@
 # Parakeet 110M English experiment
 
+> Current scope: both Parakeets remain available for English. The separate Hindi recognizer, external
+> language detector and Romanization experiments described historically are retired.
+> See [current voice configuration](VOICE_MODELS.md).
+
+
 The supplied reference describes NVIDIA's hybrid `parakeet-tdt_ctc-110m` checkpoint and its
 sherpa-onnx INT8 CTC conversion. ALTER now offers two runnable English variants from that base:
 

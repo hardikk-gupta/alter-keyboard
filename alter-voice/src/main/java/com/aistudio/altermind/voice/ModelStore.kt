@@ -49,6 +49,19 @@ class ModelStore(private val root: File) {
     }
     fun invalidate(spec: ModelSpec) { metadata(spec).delete() }
     fun delete(spec: ModelSpec) { check(directory(spec).parentFile!!.deleteRecursively()) { "Could not delete model" } }
+    /** Upgrade cleanup is restricted to retired voice model IDs, never recording drafts. */
+    suspend fun removeRetired(keepIds: Set<String>) {
+        for (type in listOf("speech", "text_cleanup", "language_detection", "transliteration")) {
+            val parent = File(root, type)
+            require(parent.canonicalFile.parentFile == root.canonicalFile) { "Unsafe model storage path" }
+            for (directory in parent.listFiles().orEmpty()) {
+                kotlinx.coroutines.currentCoroutineContext().ensureActive()
+                if (directory.name in keepIds || !directory.isDirectory || !ModelCatalog.safeSegment(directory.name)) continue
+                require(directory.canonicalFile.parentFile == parent.canonicalFile) { "Unsafe retired model path" }
+                check(directory.deleteRecursively()) { "Could not remove an old model download" }
+            }
+        }
+    }
     companion object {
         const val STORAGE_BUFFER = 1_073_741_824L
         fun requiredSpace(spec: ModelSpec, partialBytes: Long): Long =

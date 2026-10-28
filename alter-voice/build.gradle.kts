@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-// ALTER's voice pack: on-device speech (Whisper, Moonshine, Android on-device recognition) and the optional
+// ALTER's voice pack: on-device speech (Parakeet, Nemotron, Moonshine, Android on-device recognition) and the optional
 // LFM2.5 cleanup editor. Model weights are never bundled; they download on demand from the pinned catalog.
 plugins {
   id("com.android.library")
@@ -12,8 +12,7 @@ android {
   namespace = "com.aistudio.altermind.voice"
   compileSdk = 35
 
-  // libalter_whisper.so is prebuilt into src/main/jniLibs from native/ (scripts/build_native_libs.sh):
-  // Google AI Studio has no NDK or CMake.
+  // Native runtimes are prebuilt; Google AI Studio has no NDK or CMake.
   defaultConfig {
     minSdk = 26
     consumerProguardFiles("consumer-rules.pro")
@@ -23,6 +22,7 @@ android {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
   }
+  packaging { jniLibs.excludes += setOf("**/libalter_handy.so", "**/libalter_whisper.so") }
   buildFeatures { compose = true }
   testOptions { unitTests.isReturnDefaultValues = true }
 }
@@ -36,10 +36,6 @@ dependencies {
   implementation(files("libs/sherpa-onnx-2.0.1.jar"))
   implementation("org.apache.commons:commons-compress:1.27.1")
 
-  implementation("com.microsoft.onnxruntime:onnxruntime-android:1.23.2")
-
-  // ICU provides the same offline script conversion on every supported Android version.
-  implementation("com.ibm.icu:icu4j:76.1")
   implementation("androidx.core:core-ktx:1.13.1")
   implementation(platform("androidx.compose:compose-bom:2025.06.00"))
   implementation("androidx.compose.ui:ui")

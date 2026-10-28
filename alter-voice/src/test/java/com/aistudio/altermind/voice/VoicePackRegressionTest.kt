@@ -62,16 +62,6 @@ class VoicePackRegressionTest {
         }
     }
 
-    @Test fun oriserveUsesHindiDecodingAndLeavesGeneralWhisperLanguageSelectionIntact() {
-        for (language in listOf("auto", "hi-IN", "en-IN")) {
-            assertEquals("hi", whisperDecodeLanguage("whisper-oriserve-hinglish-swift-q8", language))
-            assertEquals("hi", whisperDecodeLanguage("whisper-oriserve-hinglish-swift-fp16", language))
-        }
-        assertEquals("auto", whisperDecodeLanguage("whisper-small", "auto"))
-        assertEquals("en", whisperDecodeLanguage("whisper-base", "en-IN"))
-        assertEquals("hi", whisperDecodeLanguage("whisper-medium", "hi-IN"))
-    }
-
     @Test fun agentResolvesExplicitWeekdayCorrectionsWithoutPermittingOtherFactChanges() = runTest {
         val input = "we are aiming for Friday actually Monday sorry afternoon"
         var supplied = ""
@@ -212,9 +202,12 @@ class VoicePackRegressionTest {
         val json = File("src/main/assets/alter_voice_models.json").readText()
         val ids = Regex("\"id\": \"([^\"]+)\"").findAll(json).map { it.groupValues[1] }.toList()
         assertTrue("lfm25-350m-cleanup" in ids)
-        assertTrue(ids.all { it.startsWith("indicxlit-hi-roman-") || it.startsWith("indicconformer-hi-") || it == "parakeet-110m-tdt-fp16" || it == "parakeet-110m-ctc-int8" || it == "nemotron-3.5-streaming-q4" || it == "handy-350m-cleanup" || it == "lfm25-350m-cleanup" || it.startsWith("whisper-") || it.startsWith("moonshine-en") })
+        assertEquals(12, ids.size)
+        assertTrue(ids.all { it in retainedSpeechIds || it == VoicePack.CLEANUP_MODEL || it.startsWith("moonshine-en-medium-") })
+        assertFalse(json.contains("IndicXlit"))
+        assertFalse(json.contains("Whisper"))
+        assertFalse(json.contains("Handy"))
         assertEquals(ids.size, Regex("\"sha256\": \"[a-f0-9]{64}\"").findAll(json).count())
         assertEquals(ids.size, Regex("\"downloadUrl\": \"https://").findAll(json).count())
-        assertTrue(json.contains("6a78c7a2746386f8919476a34ef0ca40d596a5c44e979520fae8318da5cfb1f6"))
     }
 }

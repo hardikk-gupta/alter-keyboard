@@ -28,20 +28,22 @@ object VoiceSettings {
         File(context.noBackupFilesDir, "models").walkTopDown().filter { it.isFile }.sumOf { it.length() }
     }
 
-    suspend fun deleteIndicXlit(context: Context) {
+    suspend fun deleteCleanup(context: Context) {
         DictationController.speechSetup {
-            val models = SpeechModels.get(context)
-            models.release()
-            ModelDownloads.delete(context, indicXlitSpecs(models.catalog))
+            VoicePack.setCleanupEnabled(context, false)
+            ModelDownloads.delete(context, listOf(cleanupSpec(context)))
         }
     }
 
-    /** Disable automatic detection without deleting the independent Hindi recognizer or base choice. */
-    suspend fun deleteAutomaticRouting(context: Context) {
+    suspend fun removeRetiredDownloads(context: Context) = withContext(Dispatchers.IO) {
+        if (DictationController.isActive()) return@withContext
         DictationController.speechSetup {
             val models = SpeechModels.get(context)
             models.release()
-            ModelDownloads.delete(context, languageIdentificationSpecs(models.catalog))
+            models.store.removeRetired(models.catalog.models.map { it.id }.toSet())
+            voicePrefs(context).edit().remove("cleanup_model").apply()
+            if (voicePrefs(context).getString("speech_model", null) !in retainedSpeechIds) models.clearSelection()
+            File(context.noBackupFilesDir, "speech-indicconformer").deleteRecursively()
         }
     }
 

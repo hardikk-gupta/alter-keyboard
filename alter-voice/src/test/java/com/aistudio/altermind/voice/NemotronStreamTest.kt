@@ -16,11 +16,11 @@ class NemotronStreamTest {
             assertTrue(it.size <= 1600)
             heard.addAll(it.toList())
             "tentative".encodeToByteArray()
-        }, { flushes++; "पूर्ण final text".encodeToByteArray() }, { ends++ })
+        }, { flushes++; "मैं घर जा रहा हूँ, then I'll call you.".encodeToByteArray() }, { ends++ })
         assertEquals(3502, heard.size)
         assertEquals(3500 / 4000f, heard[3500], 0f)
         assertEquals(.9f, heard.last(), 0f)
-        assertEquals("पूर्ण final text", updates.last())
+        assertEquals("मैं घर जा रहा हूँ, then I'll call you.", updates.last())
         assertEquals(1, flushes); assertEquals(1, ends)
     }
 

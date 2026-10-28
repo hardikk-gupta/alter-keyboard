@@ -70,7 +70,7 @@ class DictationController internal constructor(private val context: Context, pri
         if (capture && !canRecord()) { mutableError.value = "Allow microphone access for ALTER Keyboard, then try again."; return }
         fun validateSpeechSelection() {
             if (capture || (saved?.model != DEVICE_SPEECH && saved?.completed == null)) {
-                if (saved != null) check(saved.model == speech.sessionModelId) { speechRecoveryMessage(saved.model) }
+                if (saved != null && (capture || !retiredRecording(saved.model))) check(saved.model == speech.sessionModelId) { speechRecoveryMessage(saved.model) }
                 speech.checkInstalled()
             }
         }
@@ -100,7 +100,7 @@ class DictationController internal constructor(private val context: Context, pri
                     publishCompleted(generation, draft.completed)
                     return@launch
                 }
-                mutableBackend.value = draft.model
+                mutableBackend.value = if (!capture && retiredRecording(draft.model)) checkNotNull(speech.selected) else draft.model
                 if (draft.model == DEVICE_SPEECH) {
                     if (!capture) { finishTranscript(generation, draft.id, draft.deviceText, preview); return@launch }
                     val session = DeviceSpeechSession(context)

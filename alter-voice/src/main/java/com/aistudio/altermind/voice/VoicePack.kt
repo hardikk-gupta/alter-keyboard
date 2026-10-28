@@ -5,14 +5,6 @@ import android.content.Context
 /** ALTER's voice pack inside the keyboard: deterministic formatting always, the LFM2.5 editor when enabled and installed. */
 object VoicePack {
     const val CLEANUP_MODEL = "lfm25-350m-cleanup"
-    const val HANDY_MODEL = "handy-350m-cleanup"
-    suspend fun releaseHandy() = HandyEditor.release()
-    fun cleanupModel(context: Context) = voicePrefs(context).getString("cleanup_model", CLEANUP_MODEL)
-        ?.takeIf { it == HANDY_MODEL || it == CLEANUP_MODEL } ?: CLEANUP_MODEL
-    fun selectCleanupModel(context: Context, id: String) {
-        require(id == HANDY_MODEL || id == CLEANUP_MODEL)
-        voicePrefs(context).edit().putString("cleanup_model", id).apply()
-    }
     internal const val ENABLED = "dictation_cleanup"
 
     private var engine: CleanupEngine? = null
@@ -30,11 +22,10 @@ object VoicePack {
         val prefs = voicePrefs(context)
         if (!prefs.getBoolean(ENABLED, false) || prefs.getString("voice_language", "auto") == "hi-IN") return formatDictation(cleanDictation(transcript))
         val catalog = ModelCatalog.load(context)
-        val spec = catalog.find(cleanupModel(context))
+        val spec = catalog.find(CLEANUP_MODEL)
         val store = ModelStore(context)
         if (!store.installed(spec)) return formatDictation(cleanDictation(transcript))
         return AlterDictationAgent.process(transcript) { chunk ->
-            if (spec.id == HANDY_MODEL) return@process HandyEditor.edit(context, spec, chunk)
             val result = StringBuilder()
             engine(context).generate(spec, dictationCleanupRequest(chunk))
                 .collect { result.append(it); check(result.length <= 3000) { "Invalid cleanup response" } }

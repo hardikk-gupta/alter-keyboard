@@ -1,5 +1,9 @@
 # Experimental Handy live cleanup
 
+> Retired from the app on October 28, 2026. This document is historical; this model/helper is no longer
+> available or used. See [current voice configuration](VOICE_MODELS.md).
+
+
 ASR remains the user's selected model (including Oriserve Hinglish Swift FP16 or experimental Nemotron streaming). Handy is a separate, explicitly
 selected cleanup editor under ALTER voice → Dictation cleanup → Cleanup editor. Download its 229 MB GGUF and
 turn cleanup on. Existing LiteRT cleanup remains available. The runtime and model are CPU-only/offline; no cloud

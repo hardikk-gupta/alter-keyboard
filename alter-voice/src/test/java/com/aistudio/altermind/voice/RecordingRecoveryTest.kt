@@ -137,7 +137,7 @@ class RecordingRecoveryTest {
         recordingScope: CoroutineScope = this, polish: suspend (String) -> String = { it }) = DictationController(ContextWrapper(null), recordingScope,
         speech, { mic }, polish, saved, { true }, StandardTestDispatcher(testScheduler))
 
-    @Test fun aLanguageRoutingChangeDuringSetupCannotResumeAudioWithTheWrongEngine() = runTest {
+    @Test fun aModelChangeDuringSetupCannotResumeAudioWithTheWrongEngine() = runTest {
         val saved = store()
         val draft = saved.begin("whisper-tiny")
         saved.append(draft.id, shortArrayOf(1000, 2000), 2)
@@ -147,19 +147,19 @@ class RecordingRecoveryTest {
         DictationController.speechSetup {
             current.start(endAfterSilence = false)
             runCurrent() // Initial validation passed, but the session must wait for setup ownership.
-            speech.selected = INDIC_HINDI_MODEL
+            speech.selected = "nemotron-3.5-streaming-q4"
         }
         advanceTimeBy(25); runCurrent()
         assertEquals(0, mic.starts)
         assertEquals("whisper-tiny", saved.load()!!.model)
         assertEquals(2, saved.load()!!.samples)
-        assertTrue(current.error.value.orEmpty().contains("Select whisper-tiny"))
+        assertTrue(current.error.value.orEmpty().contains("removed model"))
     }
 
-    @Test fun automaticRoutingDraftCannotResumeAsEnglishOnlyAfterSetupChanges() = runTest {
+    @Test fun legacyRoutingDraftCannotResumeAsNativeParakeetAfterSetupChanges() = runTest {
         val saved = store()
         val base = "parakeet-110m-ctc-int8"
-        val key = routingDraftModel(base, "auto")!!
+        val key = "auto-en-hi:$base"
         val draft = saved.begin(key)
         saved.append(draft.id, shortArrayOf(1000, 2000), 2)
         val speech = Speech().apply { selected = base; sessionOverride = key }
@@ -172,7 +172,21 @@ class RecordingRecoveryTest {
         advanceTimeBy(25); runCurrent()
         assertEquals(0, mic.starts)
         assertEquals(key, saved.load()!!.model)
-        assertTrue(current.error.value.orEmpty().contains("Automatic language"))
+        assertTrue(current.error.value.orEmpty().contains("removed model"))
+    }
+
+    @Test fun retiredModelAudioCanBeExplicitlyReprocessedWithoutStartingTheMicrophone() = runTest {
+        val saved = store()
+        val draft = saved.begin("auto-en-hi:parakeet-110m-ctc-int8")
+        saved.append(draft.id, shortArrayOf(1200, 2000), 2)
+        val speech = Speech().apply { selected = "nemotron-3.5-streaming-q4" }
+        val mic = Microphone()
+        val current = controller(saved, speech, mic)
+        current.retrySavedAudio(); runCurrent()
+        assertEquals(0, mic.starts)
+        assertEquals("saved words", current.completedText.value)
+        assertEquals(2, saved.load()!!.samples)
+        current.pause()
     }
 
     @Test fun queuedRecoveryRechecksAssetsAfterModelDeletion() = runTest {
