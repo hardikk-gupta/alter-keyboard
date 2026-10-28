@@ -35,9 +35,17 @@ class ModelCatalog(val models: List<ModelSpec>) {
                         val uri = URI(spec.downloadUrl)
                         require(uri.scheme == "https" && !uri.host.isNullOrBlank() && uri.userInfo == null) { "Model source must use HTTPS" }
                         require(spec.downloadBytes in 1..20_000_000_000L)
-                        require(if (spec.modelType == ModelType.SPEECH) (if (spec.family == "Nemotron") spec.filename.endsWith(".gguf") && "STREAMING" in spec.capabilities else spec.filename.substringAfterLast('.') in setOf("bin", "ort", "json")) && "SPEECH_TRANSCRIPTION" in spec.capabilities
-                            else if (spec.modelType == ModelType.TEXT_CLEANUP && spec.family == "Handy") spec.filename.endsWith(".gguf")
-                            else spec.filename.endsWith(".litertlm"))
+                        val validFormat = when (spec.modelType) {
+                            ModelType.SPEECH -> "SPEECH_TRANSCRIPTION" in spec.capabilities && when (spec.family) {
+                                "ParakeetCTC" -> spec.filename.endsWith(".tar.bz2") && "OFFLINE_CTC" in spec.capabilities
+                                "Nemotron" -> spec.filename.endsWith(".gguf") && "STREAMING" in spec.capabilities
+                                else -> spec.filename.substringAfterLast('.') in setOf("bin", "ort", "json")
+                            }
+                            ModelType.TEXT_CLEANUP -> if (spec.family == "Handy") spec.filename.endsWith(".gguf")
+                                else spec.filename.endsWith(".litertlm")
+                            else -> spec.filename.endsWith(".litertlm")
+                        }
+                        require(validFormat) { "Model format does not match its runtime." }
                         require(Regex("[a-f0-9]{64}").matches(spec.sha256)) { "Model checksum is required" }
                         require(spec.backend in setOf("CPU", "GPU") && spec.contextTokens > 0)
                         require(spec.minimumRamBytes > 0 && spec.recommendedRamBytes >= spec.minimumRamBytes)

@@ -2,6 +2,31 @@
   "schemaVersion": 1,
   "models": [
     {
+      "id": "parakeet-110m-ctc-int8",
+      "displayName": "Parakeet 110M \u00b7 INT8 CTC \u00b7 English",
+      "tier": "Speech",
+      "description": "Offline English recognition with periodic previews, not native streaming. CPU INT8 greedy decoding. Hindi/Hinglish not supported; phone speed and accuracy need testing.",
+      "family": "ParakeetCTC",
+      "version": "sherpa-en-36000-int8-v1",
+      "repository": "k2-fsa/sherpa-onnx",
+      "filename": "sherpa-onnx-nemo-parakeet_tdt_ctc_110m-en-36000-int8.tar.bz2",
+      "downloadUrl": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemo-parakeet_tdt_ctc_110m-en-36000-int8.tar.bz2",
+      "downloadBytes": 104337827,
+      "sha256": "17f945007b52ccd8b7200ffc7c5652e9e8e961dfdf479cefcabd06cf5703630b",
+      "license": "CC-BY-4.0",
+      "modelType": "SPEECH",
+      "capabilities": [
+        "SPEECH_TRANSCRIPTION",
+        "OFFLINE_CTC",
+        "ENGLISH"
+      ],
+      "minimumRamBytes": 2147483648,
+      "recommendedRamBytes": 4294967296,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
       "id": "nemotron-3.5-streaming-q4",
       "displayName": "Nemotron 3.5 Streaming \u00b7 Q4 \u00b7 experimental",
       "tier": "Speech",

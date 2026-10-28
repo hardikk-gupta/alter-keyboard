@@ -185,3 +185,12 @@ animation during recording startup. Interim transcript updates can trigger enabl
 never insert text. Finish flushes the ASR stream before final cleanup/insertion. Native feed/finalization errors
 preserve the draft for retry. The model's language selector supports automatic, English and Hindi hints;
 there is no automatic conversion of Devanagari output into Romanized Hinglish.
+
+### Parakeet 110M INT8 CTC (English)
+
+ALTER voice → All speech models includes an optional 104 MB Parakeet 110M INT8 CTC download.
+It runs offline with two CPU threads and greedy decoding, using bounded-window periodic previews
+rather than native streaming. NVIDIA's checkpoint and the sherpa-onnx conversion describe the
+same trained model; only the runnable Android conversion is selectable. Existing choices stay
+unchanged; Hindi/Hinglish still require a multilingual model. Phone speed/accuracy are unverified.
+See [the Parakeet guide](PARAKEET_EXPERIMENT.md) for configuration, recovery and validation limits.

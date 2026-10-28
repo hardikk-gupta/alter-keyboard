@@ -215,3 +215,12 @@ a separate CPU runtime on Android 8+, with live revisions and a final flush; the
 selection stays unchanged. Hindi may appear in Devanagari or mixed script. The 320 ms
 streaming profile is a model setting, not measured phone latency. Speed and accuracy against
 Moonshine still require phone testing. See [Nemotron experiment](docs/NEMOTRON_EXPERIMENT.md).
+
+### Parakeet 110M INT8 CTC (English)
+
+ALTER voice → All speech models includes an optional 104 MB Parakeet 110M INT8 CTC download.
+It runs offline with two CPU threads and greedy decoding, using bounded-window periodic previews
+rather than native streaming. NVIDIA's checkpoint and the sherpa-onnx conversion describe the
+same trained model; only the runnable Android conversion is selectable. Existing choices stay
+unchanged; Hindi/Hinglish still require a multilingual model. Phone speed/accuracy are unverified.
+See [the Parakeet guide](docs/PARAKEET_EXPERIMENT.md) for configuration, recovery and validation limits.

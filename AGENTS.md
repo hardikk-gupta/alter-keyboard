@@ -70,6 +70,9 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 - Nemotron is experimental and opt-in: preserve the existing selection, require successful finalization,
   keep every PCM sample on retry, and never describe its 320 ms model profile as measured phone latency.
   Mixed Hindi/Latin output and phone accuracy/speed remain unverified; no automatic transliteration.
+- Parakeet 110M uses the pinned sherpa-onnx static-ORT JAR/JNI pair; refresh them together with
+  `scripts/import_sherpa_runtime.py`. Preserve archive and component hashes, whitelist extraction,
+  and bounded-window cancellation checks. English-only; previews are not native streaming.
 - Android on-device recognition only on API 31+, never a cloud fallback.
 - No recovery cards: interrupted recording/processing returns as a paused pill. Keep one private temporary draft
   in `noBackupFilesDir/dictation-draft`; delete it only after accepted text insertion or explicit discard.

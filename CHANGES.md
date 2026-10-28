@@ -403,3 +403,18 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
   the keyboard contains no agent policy. Preserved upstream/vendor docs, license text and historical entries.
 - Validation: all 40 local links in 17 changed Markdown documents resolve; `git diff --check` passed. No code or binaries
   changed and no additional Android test run. PR #23's 39 passing voice tests and signing limitation still apply.
+
+## Parakeet 110M INT8 CTC (Oct 28, 2026)
+
+- Added the document's Android deployment of NVIDIA Parakeet 110M as one explicit English-only
+  download; the original checkpoint is recorded as provenance, not a duplicate runnable model.
+- CPU INT8 greedy decoding with two threads and 16 kHz/80-dimensional input, private verified
+  archive extraction, periodic bounded-window previews and existing recovery/cleanup integration.
+- Pinned static-ORT sherpa-onnx Java/JNI artifacts avoid Moonshine's ONNX Runtime library conflict;
+  both 64-bit ABI libraries have 16 KB alignment. Added licenses/provenance and an import script.
+- Checks: exact model/archive/component checksums verified; sherpa-onnx 2.0.1 host inference passed
+  both packaged English WAVs and silence; the Android API JAR with matching host JNI also passed
+  config/decode/lifecycle smoke testing. All 45 voice tests passed, including whitelist extraction,
+  duplicate/missing components, symlinks and wrong size/hash rejection. Android compilation/dexing passed;
+  signing alone failed because the shared debug.keystore is unavailable. No alternate key created.
+  Signed install and phone speed/accuracy/cancellation acceptance remain unverified.
