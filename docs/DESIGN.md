@@ -60,7 +60,8 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 - Thinking: the original AICSS S1 orb choreography (1.7-second cycle, 700ms radial delay per cell, 180ms centre lead,
   eased swelling and fading) is reused across a three-row rectangular lattice. Round dots move from white to yellow
   as they light. The column count adapts to fill the pill; the small orb on other screens keeps its original 3×3 shape.
-- Error: the red Lucide triangle-alert, no text; TalkBack reads the error and "Tap to try again".
+- Error: the red Lucide triangle-alert; TalkBack reads the error and "Tap to try again". A short
+  foreground Toast also shows the reason, without expanding the pill or adding model descriptions.
 - Animations off: the waveform is still and the processing field shows static centre dots lit against dim white dots.
 
 ## Keyboard UX
@@ -158,3 +159,8 @@ play a recording tone: Android has no supported per-app mute switch for SpeechRe
 change global sound volume. Phone acceptance is still required.
 
 See [current voice configuration](VOICE_MODELS.md) for upgrade behavior and validation limits.
+
+Streaming diagnostics: Moonshine uses checked native calls with one fresh stream and one final flush;
+foreground failures show a short error message as well as the pill icon. Nemotron retains native
+English/Hindi/Automatic choices and reports the native failure stage and reason. Both modes worked in
+host checks; device-specific failures and phone accuracy remain unverified. See [recognizer checks](STREAMING_RECOGNIZER_CHECKS.md).

@@ -202,3 +202,8 @@ play a recording tone: Android has no supported per-app mute switch for SpeechRe
 change global sound volume. Phone acceptance is still required.
 
 See [current voice configuration](VOICE_MODELS.md) for upgrade behavior and validation limits.
+
+Streaming diagnostics: Moonshine uses checked native calls with one fresh stream and one final flush;
+foreground failures show a short error message as well as the pill icon. Nemotron retains native
+English/Hindi/Automatic choices and reports the native failure stage and reason. Both modes worked in
+host checks; device-specific failures and phone accuracy remain unverified. See [recognizer checks](STREAMING_RECOGNIZER_CHECKS.md).
