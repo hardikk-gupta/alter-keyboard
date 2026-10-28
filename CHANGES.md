@@ -403,3 +403,13 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
   the keyboard contains no agent policy. Preserved upstream/vendor docs, license text and historical entries.
 - Validation: all 40 local links in 17 changed Markdown documents resolve; `git diff --check` passed. No code or binaries
   changed and no additional Android test run. PR #23's 39 passing voice tests and signing limitation still apply.
+
+## Nemotron Hindi Romanization (Oct 28, 2026)
+
+- Convert Nemotron's Hindi-script runs offline to Latin/ASCII before live cleanup and final output,
+  including saved-audio retry. Already-Latin English/identifiers remain unchanged. No model weights changed.
+- ICU4J 76.1 supplies consistent conversion on Android 8+; its Unicode V3 license is retained.
+  Phonetic spelling differs from casual Hinglish and does not improve ASR word recognition.
+- Added mixed-text preservation, digit/punctuation, revision and idempotence regression checks.
+- Validation: all 42 voice unit tests passed; Android compilation/dexing passed. Assembly remains
+  blocked only by the unavailable shared `debug.keystore`; no substitute key or signed APK was created.
