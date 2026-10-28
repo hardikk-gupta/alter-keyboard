@@ -47,10 +47,15 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     private var parakeet: ParakeetSpeech? = null
     private var moonshine: ai.moonshine.voice.Transcriber? = null
     private var loaded: String? = null
+    private var languageIdentifier: AutomaticLanguageIdentifier? = null
+    private val mutableRoutingNotice = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
+    val routingNotice: kotlinx.coroutines.flow.StateFlow<String?> = mutableRoutingNotice
     @Volatile private var activeOwner: Any? = null
     fun clearSelection() { prefs.edit().remove("speech_model").apply() }
     val recordingSelected get() = prefs.getString("speech_model", null)
     override val selected get() = if (prefs.getBoolean("device_speech", false)) DEVICE_SPEECH else effectiveSpeechModel(recordingSelected, prefs.getString("voice_language", "auto"))
+    val automaticRouting get() = automaticRoutingEnabled(recordingSelected, prefs.getString("voice_language", "auto")) && selected != DEVICE_SPEECH
+    override val sessionModelId get() = if (automaticRouting) routingDraftModel(selected, "auto") else selected
     override fun checkInstalled() {
         if (selected == DEVICE_SPEECH) {
             check(deviceSpeechAvailable(context)) { "On-device recognition is unavailable. Install a system offline recognizer/language, or choose Whisper/Moonshine." }
@@ -59,11 +64,17 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         val choice = speechChoices(catalog).find { it.id == selected }
             ?: error("Download and select a speech model in ALTER Keyboard settings → ALTER voice.")
         check(choice.installed(store)) { if (choice.id == INDIC_HINDI_MODEL) "Hindi mode needs the IndicConformer Hindi download in Voice settings." else "The selected speech model is missing. Download it again in Voice settings." }
+        if (automaticRouting) {
+            val files = automaticRoutingSpecs(catalog)
+            check(files.size == 4 && files.all(store::installed)) {
+                "Download Automatic Hindi/English routing in Voice settings, or choose English-only language."
+            }
+        }
     }
     private var warmup: Job? = null
     fun preload() {
-        if (warmup?.isActive == true || selected == null || selected == DEVICE_SPEECH) return
-        warmup = scope.launch { try { mutex.withLock { load() } } catch (e: CancellationException) { throw e } catch (_: Exception) { /* Setup/transcribe exposes a useful error on explicit use. */ } }
+        if (DictationController.isActive() || warmup?.isActive == true || selected == null || selected == DEVICE_SPEECH) return
+        warmup = scope.launch { try { mutex.withLock { if (!DictationController.isActive()) load() } } catch (e: CancellationException) { throw e } catch (_: Exception) { /* Setup/transcribe exposes a useful error on explicit use. */ } }
     }
     override suspend fun ensureReady() = withContext(Dispatchers.IO) { if (selected != DEVICE_SPEECH) mutex.withLock { load() } }
     suspend fun use(id: String) = withContext(Dispatchers.IO) {
@@ -95,7 +106,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         ?: error("Retrying a recording needs a downloaded speech model. Device recognition supports live dictation only.")) {
         require(choice.installed(store)) { "The selected speech model is missing. Download it again in Voice settings." }
         if (loaded == choice.id) { moonshine?.setKeyterms(keyterms()); return }
-        closeLocked()
+        closeDecoderLocked()
         choice.files.forEach { store.verify(it) }
         try {
         if (choice.id == INDIC_HINDI_MODEL) {
@@ -142,43 +153,64 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         require(audio.isNotEmpty() && audio.size.toLong() <= MAX_DICTATION_SECONDS * 16000L) { "Use audio clips up to 15 minutes." }
         if (!hasAudibleSpeech(audio)) return@withContext "[NO_SPEECH_DETECTED]"
         mutex.withLock {
-            load(); activeOwner = owner
+            activeOwner = owner
             try {
-                if (nemotron != 0L) {
-                    var offset = 0
-                    var text = ""
-                    streamNemotron(read = {
-                        if (offset == audio.size) null else {
-                            val next = minOf(offset + 1600, audio.size)
-                            audio.copyOfRange(offset, next).also { offset = next }
-                        }
-                    }, update = { text = it })
-                    return@withLock text.ifBlank { "[NO_SPEECH_DETECTED]" }
-                }
+                val auto = automaticRouting
+                if (!auto) load()
+                // Keep native streaming context for whole saved Nemotron recordings.
+                if (!auto && nemotron != 0L) return@withLock decodeLoadedWindow(audio).ifBlank { "[NO_SPEECH_DETECTED]" }
                 val raw = transcribeSpeechWindows(audio, decode = { window ->
                     currentCoroutineContext().ensureActive()
-                    if (parakeetTdt != 0L) {
-                        NemotronNative.prepare(parakeetTdt)
-                        currentCoroutineContext().ensureActive()
-                        requireNotNull(ParakeetTdtNative.transcribe(parakeetTdt, window,
-                            minOf(2, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) {
-                            "Parakeet TDT transcription failed. Your recording is saved."
-                        }.decodeToString()
-                    } else if (parakeet != null) parakeet!!.decode(window)
-                    else if (whisper != 0L) {
-                        WhisperNative.prepare(whisper)
-                        requireNotNull(WhisperNative.transcribe(whisper, window, whisperLanguage(), minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) { "Whisper transcription failed." }
-                    } else moonshine!!.transcribeWithoutStreaming(window, 16000).text()
+                    if (auto) {
+                        val detector = languageIdentifier ?: AutomaticLanguageIdentifier.open(store,
+                            languageIdentificationSpecs(catalog)).also { languageIdentifier = it }
+                        val multilingual = speechChoices(catalog).single { it.id == NEMOTRON_MULTILINGUAL }
+                        val route = classifyAutomaticSpeech(window, checkNotNull(recordingSelected),
+                            multilingual.installed(store), detector::detect)
+                        val target = speechChoices(catalog).single { it.id == route.model }
+                        load(target)
+                        mutableRoutingNotice.value = "Last automatic route: ${route.language.name.lowercase().replaceFirstChar(Char::uppercase)} · ${target.name}"
+                    }
+                    decodeLoadedWindow(window)
                 })
                 currentCoroutineContext().ensureActive()
                 romanizeHindiText(cleanDictation(raw)).ifBlank { "[NO_SPEECH_DETECTED]" }
             } finally { activeOwner = null }
         }
     }
+    private suspend fun decodeLoadedWindow(audio: FloatArray): String {
+        currentCoroutineContext().ensureActive()
+        val raw = if (nemotron != 0L) {
+            var offset = 0
+            var text = ""
+            streamNemotron(read = {
+                if (offset == audio.size) null else {
+                    val next = minOf(offset + 1600, audio.size)
+                    audio.copyOfRange(offset, next).also { offset = next }
+                }
+            }, update = { text = it })
+            text
+        } else if (parakeetTdt != 0L) {
+            NemotronNative.prepare(parakeetTdt)
+            currentCoroutineContext().ensureActive()
+            requireNotNull(ParakeetTdtNative.transcribe(parakeetTdt, audio,
+                minOf(2, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) {
+                "Parakeet TDT transcription failed. Your recording is saved."
+            }.decodeToString()
+        } else if (parakeet != null) parakeet!!.decode(audio)
+        else if (whisper != 0L) {
+            WhisperNative.prepare(whisper)
+            requireNotNull(WhisperNative.transcribe(whisper, audio, whisperLanguage(),
+                minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) { "Whisper transcription failed." }
+        } else moonshine!!.transcribeWithoutStreaming(audio, 16000).text()
+        currentCoroutineContext().ensureActive()
+        return romanizeHindiText(cleanDictation(raw))
+    }
     suspend fun transcribe(audio: FloatArray): String = transcribe(audio, Any())
     /** Stream Moonshine or Nemotron while collecting from AudioRecord; return false for Whisper's bounded clip mode. */
     override suspend fun stream(owner: Any, read: suspend () -> FloatArray?, update: (String) -> Unit): Boolean = withContext(Dispatchers.IO) {
         mutex.withLock {
+            if (automaticRouting) { mutableRoutingNotice.value = null; return@withLock false }
             load()
             if (nemotron != 0L) {
                 activeOwner = owner
@@ -219,14 +251,19 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     }
     private fun whisperLanguage() = whisperDecodeLanguage(loaded, prefs.getString("voice_language", "auto"))
     @Synchronized private fun closeLocked() {
+        closeDecoderLocked()
+        languageIdentifier?.close(); languageIdentifier = null
+        mutableRoutingNotice.value = null
+        File(context.noBackupFilesDir, "speech-moonshine").deleteRecursively()
+        File(context.noBackupFilesDir, "speech-parakeet").deleteRecursively()
+        File(context.noBackupFilesDir, "speech-indicconformer").deleteRecursively()
+    }
+    @Synchronized private fun closeDecoderLocked() {
         if (whisper != 0L) { WhisperNative.close(whisper); whisper = 0 }
         if (nemotron != 0L) { NemotronNative.close(nemotron); nemotron = 0L }
         if (parakeetTdt != 0L) { NemotronNative.close(parakeetTdt); parakeetTdt = 0L }
         parakeet?.close(); parakeet = null
         moonshine?.close(); moonshine = null; loaded = null
-        File(context.noBackupFilesDir, "speech-moonshine").deleteRecursively()
-        File(context.noBackupFilesDir, "speech-parakeet").deleteRecursively()
-        File(context.noBackupFilesDir, "speech-indicconformer").deleteRecursively()
     }
     companion object {
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

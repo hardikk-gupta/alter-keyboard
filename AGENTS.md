@@ -110,9 +110,22 @@ is kept. Do not rely on older releases existing.
 ## Hindi mode routing
 
 - Explicit Hindi mode uses IndicConformer for saved Parakeet CTC/TDT and Nemotron choices;
-  keep the saved base choice and display the actual effective engine. Automatic mode is not LID.
+  keep the saved base choice and display the actual effective engine. Automatic Parakeet routing
+  requires the explicit detector/Hindi bundle; Nemotron retains native multilingual Automatic.
 - Require both pinned Hindi files, stage and verify the metadata-only derived graph, retain
   immutable downloaded bytes, and never call native inference on an unverified adaptation.
 - Shared ICU Romanization preserves already-Latin content. Do not label it IndicXlit/Sanscript
   or model fine-tuning; natural Hinglish/code-switching remain unverified. Guard active language
   changes and keep drafts associated with their actual effective model ID.
+
+## Automatic English/Hindi routing
+
+- Both Parakeet variants use the pinned Whisper ONNX language detector in Automatic mode.
+  Tiny is for LID only, not transcription; never invent confidence probabilities or infer language
+  from pitch/energy. Sparse probes can misclassify short/mixed speech; retain clear limits in UI/docs.
+- Decoder receives every full PCM window; classifier gets copies only. Missing detector/Hindi
+  assets block automatic capture. Mixed labels require installed Nemotron or preserve a draft error;
+  unknown/short speech may retain the English base when no multilingual model is installed.
+- Automatic drafts include the routing policy and base in sessionModelId. Do not equate them
+  with explicit-English drafts or change an active session policy. Caches can stay across route
+  switches but must release on explicit selection/deletion/release. Keep only one active ASR decoder.

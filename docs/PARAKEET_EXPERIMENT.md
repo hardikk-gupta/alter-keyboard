@@ -22,7 +22,8 @@ The model runs offline. No weights are bundled in the APK, and no cloud fallback
 For CTC, the verified archive remains in private model storage. Only model.int8.onnx and tokens.txt are
 extracted, with additional exact length/hash checks, into private no-backup storage. Extraction
 is staged, cancellation cleans the staging directory, and incomplete components are rejected.
-Changing/releasing the speech engine deletes extracted copies; selecting again can require
+Releasing or explicitly changing the selected model deletes extracted copies; automatic
+route changes retain them. Selecting again after release can require
 re-extraction. Plan for about 104 MB archive plus 132 MB extracted data and temporary staging.
 The existing model downloader's 1 GB free-space buffer remains in effect.
 
@@ -39,7 +40,7 @@ The existing model downloader's 1 GB free-space buffer remains in effect.
   is reused and serialized with other speech inference. Native CTC decode has no abort API;
   cancellation is checked before and after each bounded window, so late results are discarded.
   Cancelling waits for the current decode before the recognizer can be released or reused.
-- No extra VAD, language routing, FST decoder or unsupported Hindi mode is added.
+- No extra VAD or FST decoder is added. A separate language-routing layer can choose the Hindi engine.
 
 The static-ORT Android runtime avoids shared ONNX Runtime collisions with Moonshine. Its
 prebuilt JAR/JNI entries are pinned by the original AAR checksum; no NDK/CMake is required by Gradle.
@@ -80,5 +81,6 @@ or cancelled native runs return no output and preserve the private draft for ret
 
 Both Parakeet decoders remain English-only. With the IndicConformer Hindi download installed,
 explicit Hindi mode uses that separate recognizer and rule-based Romanization while remembering
-the Parakeet choice for English/Automatic mode. This does not add Hindi to Parakeet weights or
-automatically detect Hindi speech. See [Hindi pipeline](INDIC_HINDI_PIPELINE.md).
+the Parakeet choice for English/Automatic mode. Parakeet's learned weights remain unchanged. [Automatic language routing](AUTOMATIC_LANGUAGE_ROUTING.md)
+now adds a separately downloaded language detector for either variant. See also
+[Hindi pipeline](INDIC_HINDI_PIPELINE.md).

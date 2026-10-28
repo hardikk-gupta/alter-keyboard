@@ -208,7 +208,7 @@ class VoicePackRegressionTest {
         assertTrue(microphoneLevel(.1f) > microphoneLevel(.01f))
     }
 
-    @Test fun keyboardCatalogHoldsOnlyPinnedSpeechAndCleanupModels() {
+    @Test fun keyboardCatalogHoldsOnlyPinnedSpeechCleanupAndLanguageModels() {
         val json = File("src/main/assets/alter_voice_models.json").readText()
         val ids = Regex("\"id\": \"([^\"]+)\"").findAll(json).map { it.groupValues[1] }.toList()
         assertTrue("lfm25-350m-cleanup" in ids)

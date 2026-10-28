@@ -2,6 +2,54 @@
   "schemaVersion": 1,
   "models": [
     {
+      "id": "whisper-lid-tiny-encoder",
+      "displayName": "Whisper Tiny language detector \u00b7 encoder",
+      "tier": "Speech",
+      "description": "On-device spoken language identification for automatic English/Hindi routing. Not used as the dictation transcription model.",
+      "family": "WhisperLID",
+      "version": "65176e2deb88badc814a94058666cadccc29b61c",
+      "repository": "csukuangfj/sherpa-onnx-whisper-tiny",
+      "filename": "tiny-encoder.int8.onnx",
+      "downloadUrl": "https://huggingface.co/csukuangfj/sherpa-onnx-whisper-tiny/resolve/65176e2deb88badc814a94058666cadccc29b61c/tiny-encoder.int8.onnx",
+      "downloadBytes": 12937772,
+      "sha256": "d24fb083ae3b1041fc24e97971d60e280c9342201fbb67b0ab428a8b4a51a434",
+      "license": "MIT",
+      "modelType": "LANGUAGE_DETECTION",
+      "capabilities": [
+        "SPEECH_LANGUAGE_ID",
+        "WHISPER_TINY_LID"
+      ],
+      "minimumRamBytes": 2147483648,
+      "recommendedRamBytes": 4294967296,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
+      "id": "whisper-lid-tiny-decoder",
+      "displayName": "Whisper Tiny language detector \u00b7 decoder",
+      "tier": "Speech",
+      "description": "On-device spoken language identification for automatic English/Hindi routing. Not used as the dictation transcription model.",
+      "family": "WhisperLID",
+      "version": "65176e2deb88badc814a94058666cadccc29b61c",
+      "repository": "csukuangfj/sherpa-onnx-whisper-tiny",
+      "filename": "tiny-decoder.int8.onnx",
+      "downloadUrl": "https://huggingface.co/csukuangfj/sherpa-onnx-whisper-tiny/resolve/65176e2deb88badc814a94058666cadccc29b61c/tiny-decoder.int8.onnx",
+      "downloadBytes": 89855401,
+      "sha256": "d2fece8dd42771f1df975c6c0445770d0c292bf7547c2cae04a6c0cc57540925",
+      "license": "MIT",
+      "modelType": "LANGUAGE_DETECTION",
+      "capabilities": [
+        "SPEECH_LANGUAGE_ID",
+        "WHISPER_TINY_LID"
+      ],
+      "minimumRamBytes": 2147483648,
+      "recommendedRamBytes": 4294967296,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
       "id": "indicconformer-hi-int8",
       "displayName": "IndicConformer Hindi \u00b7 INT8",
       "tier": "Speech",

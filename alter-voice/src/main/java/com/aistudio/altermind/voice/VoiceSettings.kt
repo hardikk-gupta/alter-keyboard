@@ -28,16 +28,25 @@ object VoiceSettings {
         File(context.noBackupFilesDir, "models").walkTopDown().filter { it.isFile }.sumOf { it.length() }
     }
 
+    /** Disable automatic detection without deleting the independent Hindi recognizer or base choice. */
+    suspend fun deleteAutomaticRouting(context: Context) {
+        DictationController.speechSetup {
+            val models = SpeechModels.get(context)
+            models.release()
+            ModelDownloads.delete(context, languageIdentificationSpecs(models.catalog))
+        }
+    }
+
     /** Releases active caches and deletes unshared files; removing Hindi dependencies preserves the saved base choice. */
     suspend fun deleteSpeech(context: Context, choice: SpeechChoice) {
-        val models = SpeechModels.get(context)
-        check(!DictationController.isActive()) { "Finish recording before deleting a speech model." }
-        if (models.selected == choice.id || models.recordingSelected == choice.id) {
+        DictationController.speechSetup {
+            val models = SpeechModels.get(context)
+            // The loaded decoder may be an automatic route, not the saved base choice.
             models.release()
             if (models.recordingSelected == choice.id) models.clearSelection()
+            val shared = speechChoices(models.catalog).filter { it.id != choice.id && it.installed(models.store) }
+                .flatMap { it.files }.map { it.id }.toSet()
+            ModelDownloads.delete(context, choice.files, keep = shared)
         }
-        val shared = speechChoices(models.catalog).filter { it.id != choice.id && it.installed(models.store) }
-            .flatMap { it.files }.map { it.id }.toSet()
-        ModelDownloads.delete(context, choice.files, keep = shared)
     }
 }
