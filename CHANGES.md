@@ -413,3 +413,39 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
 - Added mixed-text preservation, digit/punctuation, revision and idempotence regression checks.
 - Validation: all 42 voice unit tests passed; Android compilation/dexing passed. Assembly remains
   blocked only by the unavailable shared `debug.keystore`; no substitute key or signed APK was created.
+
+## Parakeet 110M INT8 CTC (Oct 28, 2026)
+
+- Added the document's Android deployment of NVIDIA Parakeet 110M as one explicit English-only
+  download; the original checkpoint is recorded as provenance, not a duplicate runnable model.
+- CPU INT8 greedy decoding with two threads and 16 kHz/80-dimensional input, private verified
+  archive extraction, periodic bounded-window previews and existing recovery/cleanup integration.
+- Pinned static-ORT sherpa-onnx Java/JNI artifacts avoid Moonshine's ONNX Runtime library conflict;
+  both 64-bit ABI libraries have 16 KB alignment. Added licenses/provenance and an import script.
+- Checks: exact model/archive/component checksums verified; sherpa-onnx 2.0.1 host inference passed
+  both packaged English WAVs and silence; the Android API JAR with matching host JNI also passed
+  config/decode/lifecycle smoke testing. All 45 voice tests passed, including whitelist extraction,
+  duplicate/missing components, symlinks and wrong size/hash rejection. Android compilation/dexing passed;
+  signing alone failed because the shared debug.keystore is unavailable. No alternate key created.
+  Signed install and phone speed/accuracy/cancellation acceptance remain unverified.
+
+### Parakeet TDT FP16 follow-up
+
+- Added the requested larger Parakeet 110M TDT FP16 variant (229 MB), with pinned GGUF
+  revision/size/hash, CC-BY-4.0 provenance and the converter's NOTICE. Existing selections stay intact.
+- Added offline TDT decoding to the existing isolated transcribe.cpp bridge: up to two CPU threads,
+  fresh native sessions, bounded 20-second PCM input, abort callbacks, UTF-8 results and saved-audio
+  retry through existing previews/cleanup. Both committed Android ABI libraries rebuilt.
+- Production JNI source passed host FP16 inference on both English samples, invalid input limits,
+  fresh-session reuse, in-flight cancellation/restart and streaming-loader rejection. All 45 voice
+  tests passed; Android compilation/dexing passed. Signing remains blocked by the missing shared key.
+  No model weights or alternative keys committed. Phone accuracy/speed still require comparison;
+  the model card's 2.43% LibriSpeech test-clean WER is an upstream benchmark, not an app accuracy claim.
+
+### PR #26 merge resolution
+
+- Merged main after PR #25, preserving Nemotron Hindi Romanization alongside both Parakeet
+  variants, their runtime dependencies, model descriptions and documentation.
+- Validation: all 48 combined voice tests passed; Android compilation/dexing passed. Assembly
+  failed only at signing validation because the shared debug.keystore is unavailable. No
+  replacement key generated. No conflict markers remain; whitespace checks passed.

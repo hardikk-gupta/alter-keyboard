@@ -21,7 +21,7 @@ data class SpeechChoice(val id: String, val name: String, val description: Strin
     fun installed(store: ModelStore) = files.all(store::installed)
 }
 fun speechChoices(catalog: ModelCatalog): List<SpeechChoice> {
-    val standalone = catalog.models.filter { it.modelType == ModelType.SPEECH && it.family in setOf("Whisper", "Nemotron") }
+    val standalone = catalog.models.filter { it.modelType == ModelType.SPEECH && it.family in setOf("Whisper", "Nemotron", "ParakeetCTC", "ParakeetTDT") }
         .map { SpeechChoice(it.id, it.displayName, it.description, listOf(it)) }
     val moonshine = listOf("tiny", "small", "medium").mapNotNull { size ->
         val files = catalog.models.filter { it.family == "Moonshine" && "MOONSHINE_${size.uppercase()}_STREAMING" in it.capabilities }
@@ -40,6 +40,8 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     val store by lazy { ModelStore(context) }
     @Volatile private var whisper = 0L
     @Volatile private var nemotron = 0L
+    @Volatile private var parakeetTdt = 0L
+    private var parakeet: ParakeetSpeech? = null
     private var moonshine: ai.moonshine.voice.Transcriber? = null
     private var loaded: String? = null
     @Volatile private var activeOwner: Any? = null
@@ -82,6 +84,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         if (activeOwner === owner) {
             if (whisper != 0L) WhisperNative.cancel(whisper)
             if (nemotron != 0L) NemotronNative.cancel(nemotron)
+            if (parakeetTdt != 0L) NemotronNative.cancel(parakeetTdt)
         }
     }
     private suspend fun load(choice: SpeechChoice = speechChoices(catalog).find { it.id == recordingSelected }
@@ -91,7 +94,13 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         closeLocked()
         choice.files.forEach { store.verify(it) }
         try {
-        if (choice.files.singleOrNull()?.family == "Nemotron") {
+        if (choice.files.singleOrNull()?.family == "ParakeetTDT") {
+            parakeetTdt = ParakeetTdtNative.load(store.file(choice.files.single()).absolutePath)
+            check(parakeetTdt != 0L) { "Parakeet TDT could not load this verified model on your device." }
+        } else if (choice.files.singleOrNull()?.family == "ParakeetCTC") {
+            parakeet = ParakeetSpeech.open(store.file(choice.files.single()),
+                File(context.noBackupFilesDir, "speech-parakeet/${choice.files.single().version}"))
+        } else if (choice.files.singleOrNull()?.family == "Nemotron") {
             require(Build.VERSION.SDK_INT >= 26) { "Nemotron requires Android 8 or later." }
             nemotron = NemotronNative.load(store.file(choice.files.single()).absolutePath)
             check(nemotron != 0L) { "Nemotron could not load this verified model on your device." }
@@ -139,7 +148,15 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 }
                 val raw = transcribeSpeechWindows(audio, decode = { window ->
                     currentCoroutineContext().ensureActive()
-                    if (whisper != 0L) {
+                    if (parakeetTdt != 0L) {
+                        NemotronNative.prepare(parakeetTdt)
+                        currentCoroutineContext().ensureActive()
+                        requireNotNull(ParakeetTdtNative.transcribe(parakeetTdt, window,
+                            minOf(2, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) {
+                            "Parakeet TDT transcription failed. Your recording is saved."
+                        }.decodeToString()
+                    } else if (parakeet != null) parakeet!!.decode(window)
+                    else if (whisper != 0L) {
                         WhisperNative.prepare(whisper)
                         requireNotNull(WhisperNative.transcribe(whisper, window, whisperLanguage(), minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) { "Whisper transcription failed." }
                     } else moonshine!!.transcribeWithoutStreaming(window, 16000).text()
@@ -195,8 +212,11 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     @Synchronized private fun closeLocked() {
         if (whisper != 0L) { WhisperNative.close(whisper); whisper = 0 }
         if (nemotron != 0L) { NemotronNative.close(nemotron); nemotron = 0L }
+        if (parakeetTdt != 0L) { NemotronNative.close(parakeetTdt); parakeetTdt = 0L }
+        parakeet?.close(); parakeet = null
         moonshine?.close(); moonshine = null; loaded = null
         File(context.noBackupFilesDir, "speech-moonshine").deleteRecursively()
+        File(context.noBackupFilesDir, "speech-parakeet").deleteRecursively()
     }
     companion object {
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

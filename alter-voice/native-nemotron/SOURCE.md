@@ -27,3 +27,16 @@ The bridge maps automatic language selection to a null native hint (the literal 
 Snapshots cross JNI as UTF-8 byte arrays. A successful final flush is required; failed or
 cancelled finalization returns no accepted output. The model's original language/script
 is preserved. See [experiment results](../../docs/NEMOTRON_EXPERIMENT.md).
+
+## Parakeet TDT offline adapter
+
+The same pinned CPU runtime also serves `ParakeetTdtNative` for the English-only Parakeet 110M
+FP16 GGUF. It uses offline `transcribe_run`, not Nemotron's streaming API. Each bounded 20-second
+window gets a fresh native session and abort callback, at most two CPU threads in the app, and
+UTF-8 output after successful completion. Cancellation/failure never accepts partial results.
+Existing prepare/cancel/close methods operate on the shared engine holder; each selected model
+has its own handle. Nemotron's streaming capability gate and profile remain unchanged.
+
+Parakeet weights are CC-BY-4.0, distinct from Nemotron's OpenMDW license. See
+[Parakeet TDT provenance](../../licenses/Parakeet-TDT-PROVENANCE.md). Both arm64-v8a and x86_64
+libraries must be rebuilt and committed when this adapter changes.

@@ -43,3 +43,10 @@ internal suspend fun consumeNemotronStream(read: suspend () -> FloatArray?, upda
         update(cleanDictation(final.decodeToString()))
     } finally { end() }
 }
+
+/** Offline Parakeet TDT entry points in the same isolated, pinned transcribe.cpp library. */
+internal object ParakeetTdtNative {
+    init { System.loadLibrary("alter_nemotron") }
+    external fun load(path: String): Long
+    external fun transcribe(handle: Long, samples: FloatArray, threads: Int): ByteArray?
+}

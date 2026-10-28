@@ -21,6 +21,8 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
   `app_name` must equal its `name` ("ALTER Keyboard").
 - Handy native changes (`alter-voice/native-handy`) require rebuilding both committed ABIs with
   `scripts/build_handy_native.sh`; never bundle model weights or add runtime downloads to Gradle.
+- Parakeet TDT FP16 shares `alter-voice/native-nemotron`; keep offline sessions separate from the
+  streaming path, require successful uncancelled results, and rebuild both ABI libraries.
 - Nemotron native changes (`alter-voice/native-nemotron`) require rebuilding both committed ABIs with
   `scripts/build_nemotron_native.sh`; keep runtime symbols isolated from Whisper and Handy.
 - **No NDK or CMake in Gradle.** AI Studio's container has neither. C/C++ is built by `scripts/build_native_libs.sh`
@@ -71,6 +73,9 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
   keep every PCM sample on retry, and never describe its 320 ms model profile as measured phone latency.
   Native Hindi script is Romanized with ICU4J before live/final cleanup; preserve Latin text verbatim.
   This is script conversion, not model training or an accuracy improvement. Phone speed remains unverified.
+- Parakeet 110M uses the pinned sherpa-onnx static-ORT JAR/JNI pair; refresh them together with
+  `scripts/import_sherpa_runtime.py`. Preserve archive and component hashes, whitelist extraction,
+  and bounded-window cancellation checks. English-only; previews are not native streaming.
 - Android on-device recognition only on API 31+, never a cloud fallback.
 - No recovery cards: interrupted recording/processing returns as a paused pill. Keep one private temporary draft
   in `noBackupFilesDir/dictation-draft`; delete it only after accepted text insertion or explicit discard.

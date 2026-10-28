@@ -4,3 +4,7 @@ alter-voice/native-handy/llama/** -whitespace
 licenses/Handy-Editor-LFM-Open-License-v1.0.txt -whitespace
 alter-voice/native-nemotron/transcribe/** -whitespace
 licenses/Nemotron-3.5-OpenMDW-1.1.txt -whitespace
+
+# Preserve exact upstream license/notice text for the Parakeet runtime dependencies.
+licenses/Parakeet-*.txt -whitespace
+licenses/commons-*.txt -whitespace

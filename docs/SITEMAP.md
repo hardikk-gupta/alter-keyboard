@@ -227,3 +227,12 @@ Moonshine still require phone testing. See [Nemotron experiment](NEMOTRON_EXPERI
 Nemotron Romanization uses ICU4J 76.1 (Unicode License V3), with no additional model or cloud call.
 Only Devanagari runs are converted, preserving existing English text. It uses phonetic transliteration,
 not translation or fine-tuning; spelling can differ from casual Hinglish. Other ASR models are unchanged.
+
+### Parakeet 110M CTC and TDT (English)
+
+ALTER voice → All speech models includes Parakeet 110M INT8 CTC (104 MB archive) and TDT FP16
+(229 MB GGUF). Both run offline with two CPU threads and greedy decoding, using bounded-window
+periodic previews. They share the NVIDIA base checkpoint but use different decoders and precision;
+the raw source checkpoint is recorded as provenance. Existing choices stay
+unchanged; Hindi/Hinglish still require a multilingual model. Phone speed/accuracy are unverified.
+See [the Parakeet guide](PARAKEET_EXPERIMENT.md) for configuration, recovery and validation limits.
