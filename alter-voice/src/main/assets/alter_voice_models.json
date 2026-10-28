@@ -27,6 +27,31 @@
       "contextTokens": 480000
     },
     {
+      "id": "parakeet-110m-tdt-fp16",
+      "displayName": "Parakeet 110M \u00b7 TDT FP16 \u00b7 English",
+      "tier": "Speech",
+      "description": "Larger 229 MB English model with a TDT decoder and FP16 weights. Offline periodic previews; not native streaming. Compare accuracy and speed with INT8 CTC; phone gains are unverified.",
+      "family": "ParakeetTDT",
+      "version": "1c3f0d5378fdd358905cc410a93ed9e64f52d170",
+      "repository": "handy-computer/parakeet-tdt_ctc-110m-gguf",
+      "filename": "parakeet-tdt_ctc-110m-F16.gguf",
+      "downloadUrl": "https://huggingface.co/handy-computer/parakeet-tdt_ctc-110m-gguf/resolve/1c3f0d5378fdd358905cc410a93ed9e64f52d170/parakeet-tdt_ctc-110m-F16.gguf",
+      "downloadBytes": 229334560,
+      "sha256": "965cc3f8e171286ecb4d4e6646b407a1782a97da9aed22f88d1e0ec6c96b2358",
+      "license": "CC-BY-4.0",
+      "modelType": "SPEECH",
+      "capabilities": [
+        "SPEECH_TRANSCRIPTION",
+        "OFFLINE_TDT",
+        "ENGLISH"
+      ],
+      "minimumRamBytes": 2147483648,
+      "recommendedRamBytes": 4294967296,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
       "id": "nemotron-3.5-streaming-q4",
       "displayName": "Nemotron 3.5 Streaming \u00b7 Q4 \u00b7 experimental",
       "tier": "Speech",

@@ -216,11 +216,11 @@ selection stays unchanged. Hindi may appear in Devanagari or mixed script. The 3
 streaming profile is a model setting, not measured phone latency. Speed and accuracy against
 Moonshine still require phone testing. See [Nemotron experiment](docs/NEMOTRON_EXPERIMENT.md).
 
-### Parakeet 110M INT8 CTC (English)
+### Parakeet 110M CTC and TDT (English)
 
-ALTER voice → All speech models includes an optional 104 MB Parakeet 110M INT8 CTC download.
-It runs offline with two CPU threads and greedy decoding, using bounded-window periodic previews
-rather than native streaming. NVIDIA's checkpoint and the sherpa-onnx conversion describe the
-same trained model; only the runnable Android conversion is selectable. Existing choices stay
+ALTER voice → All speech models includes Parakeet 110M INT8 CTC (104 MB archive) and TDT FP16
+(229 MB GGUF). Both run offline with two CPU threads and greedy decoding, using bounded-window
+periodic previews. They share the NVIDIA base checkpoint but use different decoders and precision;
+the raw source checkpoint is recorded as provenance. Existing choices stay
 unchanged; Hindi/Hinglish still require a multilingual model. Phone speed/accuracy are unverified.
 See [the Parakeet guide](docs/PARAKEET_EXPERIMENT.md) for configuration, recovery and validation limits.

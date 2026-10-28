@@ -1,17 +1,25 @@
 # Parakeet 110M English experiment
 
-The supplied reference lists NVIDIA's original `parakeet-tdt_ctc-110m` checkpoint and the
-sherpa-onnx INT8 CTC conversion of that model. ALTER offers one runnable Android entry,
-**Parakeet 110M · INT8 CTC · English**, rather than two duplicate source/deployment entries.
-The original checkpoint and conversion are both recorded in [provenance](../licenses/Parakeet-110M-PROVENANCE.md).
+The supplied reference describes NVIDIA's hybrid `parakeet-tdt_ctc-110m` checkpoint and its
+sherpa-onnx INT8 CTC conversion. ALTER now offers two runnable English variants from that base:
+
+| Choice | Download | Decoder/runtime |
+| --- | --- | --- |
+| Parakeet 110M · INT8 CTC · English | 104 MB archive | INT8 ONNX, sherpa-onnx NeMo CTC |
+| Parakeet 110M · TDT FP16 · English | 229 MB GGUF | FP16 TDT/RNN-T, transcribe.cpp |
+
+The original source checkpoint is provenance, not another trained model. These are distinct
+runtime/precision/decoder choices. Compare on the same English audio; neither is proven more
+accurate in our app. Provenance: [CTC](../licenses/Parakeet-110M-PROVENANCE.md) and
+[TDT](../licenses/Parakeet-TDT-PROVENANCE.md).
 
 ## Use
 
-Open ALTER voice → All speech models, download the 104 MB package, then select it explicitly.
+Open ALTER voice → All speech models, download either variant, then select it explicitly.
 Existing selections stay unchanged. This is English-only; use Oriserve/Nemotron for Hindi/Hinglish.
 The model runs offline. No weights are bundled in the APK, and no cloud fallback is added.
 
-The verified archive remains in private model storage. Only model.int8.onnx and tokens.txt are
+For CTC, the verified archive remains in private model storage. Only model.int8.onnx and tokens.txt are
 extracted, with additional exact length/hash checks, into private no-backup storage. Extraction
 is staged, cancellation cleans the staging directory, and incomplete components are rejected.
 Changing/releasing the speech engine deletes extracted copies; selecting again can require
@@ -46,3 +54,24 @@ a smoke test with the exact Android API JAR, CTC configuration and per-stream re
 All 45 voice regressions passed; assembly compiled/dexed and failed only at missing-key signing validation. Compare 10–30 identical English clips with Moonshine
 and Nemotron on the phone: cold/warm startup, first text, final tail, names/numbers, long speech,
 interruptions, silence, memory, heat and battery. These settings are not a proven best configuration.
+
+## FP16 TDT configuration and validation
+
+The TDT model uses the existing pinned transcribe.cpp CPU library with a separate offline JNI
+entry point. The GGUF downloads directly into verified private model storage; it needs no archive
+extraction or extra runtime dependency. It uses up to two CPU threads, a fresh native session per
+window, default greedy TDT decoding and no timestamps. It uses the same bounded 20-second windows
+and adaptive periodic preview scheduler as CTC, and supports saved-audio retry. It is not native
+streaming and does not add Hindi/Hinglish recognition or automatic fallback.
+
+The model card reports 2.43% WER on LibriSpeech test-clean for FP16, matching its FP32 reference.
+FP16 is chosen to avoid the extra FP32 download/RAM while retaining the reported reference WER;
+this does not establish a phone accuracy or speed advantage over CTC. Benchmark both on the phone.
+
+The production JNI source passed host FP16 inference on both packaged English clips, fresh-session
+reuse, invalid-size input rejection, rejection by Nemotron's streaming loader, in-flight cancellation
+and successful inference after cancellation. These checks establish the adapter works on the host,
+not on-device performance. Both committed Android ABI libraries were rebuilt. All 45 voice unit
+tests passed; Android compilation/dexing passed and signing failed only at the missing shared key.
+No alternate signing key was generated. Cancellation is checked natively and by the caller; failed
+or cancelled native runs return no output and preserve the private draft for retry.

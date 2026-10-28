@@ -418,3 +418,16 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
   duplicate/missing components, symlinks and wrong size/hash rejection. Android compilation/dexing passed;
   signing alone failed because the shared debug.keystore is unavailable. No alternate key created.
   Signed install and phone speed/accuracy/cancellation acceptance remain unverified.
+
+### Parakeet TDT FP16 follow-up
+
+- Added the requested larger Parakeet 110M TDT FP16 variant (229 MB), with pinned GGUF
+  revision/size/hash, CC-BY-4.0 provenance and the converter's NOTICE. Existing selections stay intact.
+- Added offline TDT decoding to the existing isolated transcribe.cpp bridge: up to two CPU threads,
+  fresh native sessions, bounded 20-second PCM input, abort callbacks, UTF-8 results and saved-audio
+  retry through existing previews/cleanup. Both committed Android ABI libraries rebuilt.
+- Production JNI source passed host FP16 inference on both English samples, invalid input limits,
+  fresh-session reuse, in-flight cancellation/restart and streaming-loader rejection. All 45 voice
+  tests passed; Android compilation/dexing passed. Signing remains blocked by the missing shared key.
+  No model weights or alternative keys committed. Phone accuracy/speed still require comparison;
+  the model card's 2.43% LibriSpeech test-clean WER is an upstream benchmark, not an app accuracy claim.
