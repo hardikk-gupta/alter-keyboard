@@ -37,7 +37,7 @@
     <string name="alter_speech_models_title">Speech model</string>
     <string name="alter_speech_models_hint">Models download into private storage on this phone and are checked against a pinned size and SHA-256. Nothing is sent to the cloud.</string>
     <string name="alter_device_speech_name">Android on-device recognition</string>
-    <string name="alter_device_speech_description">Uses the phone\'s own offline recognizer (Android 12+). Only recognized text can be recovered after an interruption; use Whisper or Moonshine to back up audio. No cloud fallback.</string>
+    <string name="alter_device_speech_description">Uses the phone\'s own offline recognizer (Android 12+). Only recognized text can be recovered after an interruption; use a downloaded model to back up audio. No cloud fallback.</string>
     <string name="alter_model_download">Download</string>
     <string name="alter_model_cancel">Cancel</string>
     <string name="alter_model_use">Use</string>
@@ -67,8 +67,4 @@
     <string name="alter_setup_allow">Allow</string>
     <string name="alter_setup_step_model">Download %1$s</string>
     <string name="alter_setup_step_model_hint">Recommended to start. It is used as soon as it finishes</string>
-    <string name="alter_hindi_routing_hint">Hindi mode uses the downloaded IndicConformer Hindi engine and converts its text to English letters. Your English model is remembered; switch to English or Automatic to use it again. Automatic does not detect Hindi for English-only models.</string>
-    <string name="alter_auto_route_download">Automatic Hindi/English routing</string>
-    <string name="alter_auto_route_base">Saved English model · Automatic language routing</string>
-    <string name="alter_auto_route_hint">One-time download: Whisper language detector plus IndicConformer Hindi (~240 MB; existing files are reused). English uses your Parakeet choice; Hindi uses IndicConformer. For mixed or uncertain speech, download Nemotron under All speech models. Detection can be wrong on short or mixed phrases. Deleting this bundle removes the detector only.</string>
 </resources>

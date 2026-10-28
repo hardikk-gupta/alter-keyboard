@@ -19,12 +19,9 @@ Cancellation sets an atomic native abort flag; the owning coroutine releases the
 
 Hindi/English recognition is supported by the model; conversational Hinglish spelling and code switching
 quality are unverified. Native Hindi output can use Devanagari. Custom vocabulary biasing is
-not wired for this runtime. Download **IndicXlit · Hindi to Roman** once for neural Hindi word
-conversion before Alter correction memory and cleanup, including native multilingual live revisions
-and saved-audio retries. Existing Latin text is unchanged. Basic ICU4J conversion remains available
-without that download; it can produce scholarly spellings such as `maim`. Nemotron weights are unchanged.
-See [IndicXlit setup and validation](INDICXLIT_TRANSLITERATION.md). Conversion cannot recover words
-that Nemotron misheard; phone performance remains unverified.
+not wired for this runtime. Native output is passed to Alter cleanup without ICU or IndicXlit.
+No language detector or external Hindi engine is inserted. Hindi may therefore remain Devanagari;
+Roman-Hindi output is not promised. Nemotron weights are unchanged. See [current voice configuration](VOICE_MODELS.md).
 
 ## Reproduce
 

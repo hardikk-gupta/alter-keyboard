@@ -5,30 +5,21 @@ import android.content.pm.PackageManager
 import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.aistudio.altermind.voice.SpeechChoice
-import com.aistudio.altermind.voice.ui.AlterColors
 import org.futo.inputmethod.latin.uix.actions.AlterVoiceNavPath
 import org.futo.inputmethod.latin.uix.settings.AlterType
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.draw.clip
 import org.futo.inputmethod.latin.uix.settings.AlterSettingsGroup
 import org.futo.inputmethod.latin.uix.settings.CollapsibleSection
 import org.futo.inputmethod.latin.uix.settings.DropDownPickerSettingItem
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
@@ -46,6 +37,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -69,53 +62,44 @@ import org.futo.inputmethod.latin.uix.settings.ScreenTitle
 import org.futo.inputmethod.latin.uix.settings.ScrollableList
 import org.futo.inputmethod.latin.uix.settings.SettingItem
 import org.futo.inputmethod.latin.uix.settings.SettingToggleDataStore
-import org.futo.inputmethod.latin.uix.settings.Tip
 import org.futo.inputmethod.latin.uix.settings.useDataStore
 
-/** One model row: download with progress, cancel, use, delete. */
+/** Compact model row: name, size/selection, and one action. */
 @Composable
 private fun ModelRow(
-    title: String, subtitle: String, key: String, files: List<ModelSpec>, installed: Boolean, inUse: Boolean,
-    onUse: (() -> Unit)?, onDelete: () -> Unit, primary: Boolean = false, stepNumber: Int? = null
+    title: String, key: String, files: List<ModelSpec>, installed: Boolean, inUse: Boolean,
+    onUse: (() -> Unit)?, onDelete: () -> Unit
 ) {
     val context = LocalContext.current
     val states by ModelDownloads.states.collectAsState()
     val download = states[key]
-    val total = files.sumOf { it.downloadBytes }
-    SettingItem(
-        title = title,
-        subtitle = listOf(subtitle, Formatter.formatShortFileSize(context, total)).filter { it.isNotBlank() }.joinToString(" · "),
-        icon = when {
-            stepNumber != null -> {{ StepBadge(stepNumber, done = installed) }}
-            onUse != null -> {{ RadioButton(selected = inUse, onClick = if (installed && !inUse) onUse else null) }}
-            else -> null
-        },
-        subcontent = {
-            when (download) {
-                is DownloadState.Running -> {
-                    if (download.verifying) Text(stringResource(R.string.alter_model_verifying))
-                    LinearProgressIndicator(progress = { if (download.total > 0) download.bytes.toFloat() / download.total else 0f },
-                        modifier = Modifier.padding(vertical = 4.dp))
+    Column {
+        SettingItem(title = title, compact = true,
+            modifier = Modifier.semantics { selected = inUse },
+            subtitle = (if (inUse) stringResource(R.string.alter_model_in_use) + " · " else "") +
+                Formatter.formatShortFileSize(context, files.sumOf { it.downloadBytes }),
+            onClick = if (installed) onUse else null) {
+            OutlinedButton(onClick = {
+                when {
+                    download is DownloadState.Running -> ModelDownloads.cancel(key)
+                    !installed -> ModelDownloads.start(context, key, files)
+                    else -> onDelete()
                 }
-                is DownloadState.Failed -> Text(download.message)
-                null -> {}
+            }) {
+                Text(stringResource(when {
+                    download is DownloadState.Running -> R.string.alter_model_cancel
+                    !installed -> R.string.alter_model_download
+                    else -> R.string.alter_model_delete
+                }))
             }
         }
-    ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            when {
-                download is DownloadState.Running -> OutlinedButton(onClick = { ModelDownloads.cancel(key) }) {
-                    Text(stringResource(R.string.alter_model_cancel))
-                }
-                !installed && primary -> Button(onClick = { ModelDownloads.start(context, key, files) }) {
-                    Text(stringResource(R.string.alter_model_download))
-                }
-                !installed -> OutlinedButton(onClick = { ModelDownloads.start(context, key, files) }) {
-                    Text(stringResource(R.string.alter_model_download))
-                }
-                stepNumber != null -> {}
-                else -> OutlinedButton(onClick = onDelete) { Text(stringResource(R.string.alter_model_delete)) }
-            }
+        when (download) {
+            is DownloadState.Running -> LinearProgressIndicator(
+                progress = { if (download.total > 0) download.bytes.toFloat() / download.total else 0f },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp))
+            is DownloadState.Failed -> Text(download.message, color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+            null -> {}
         }
     }
 }
@@ -174,32 +158,27 @@ fun AlterVoiceSetupCard(navController: NavHostController) {
     }
 }
 
-/** Explicit Hindi setup uses the Hindi engine; English retains the smallest live recognizer. */
-private fun recommendedChoice(choices: List<SpeechChoice>, language: String) =
-    choices.find { it.id == if (language == "hi-IN") com.aistudio.altermind.voice.INDIC_HINDI_MODEL else "moonshine-en" } ?: choices.first()
-
 @Composable
 fun AlterVoiceScreen(navController: NavHostController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val models = remember { SpeechModels.get(context) }
     val choices = remember { speechChoices(models.catalog) }
-    var cleanupId by remember { mutableStateOf(VoicePack.cleanupModel(context)) }
-    val cleanup = remember(cleanupId) { models.catalog.find(cleanupId) }
+    val cleanup = remember { models.catalog.find(VoicePack.CLEANUP_MODEL) }
     val downloads by ModelDownloads.states.collectAsState()
-    val xlitFiles = remember { com.aistudio.altermind.voice.indicXlitSpecs(models.catalog) }
-    val routingFiles = remember { com.aistudio.altermind.voice.automaticRoutingSpecs(models.catalog) }
-    val routingNotice by models.routingNotice.collectAsState()
-
     // Re-read installed state and storage after downloads finish or models change.
     var refresh by remember { mutableIntStateOf(0) }
     LaunchedEffect(downloads.keys) { refresh++ }
     var selected by remember(refresh) { mutableStateOf(models.selected) }
     var storage by remember { mutableLongStateOf(0L) }
     LaunchedEffect(refresh) { storage = VoiceSettings.storageBytes(context) }
-    val status = rememberAlterVoiceStatus(selected)
     var error by remember { mutableStateOf<String?>(null) }
     var language by remember { mutableStateOf(VoiceSettings.language(context)) }
+
+    LaunchedEffect(Unit) {
+        runCatching { VoiceSettings.removeRetiredDownloads(context) }
+        refresh++
+    }
 
     fun use(id: String) = scope.launch {
         error = runCatching { models.use(id) }.exceptionOrNull()?.message
@@ -219,106 +198,41 @@ fun AlterVoiceScreen(navController: NavHostController) {
     ScrollableList {
         ScreenTitle(stringResource(R.string.alter_voice_settings_title), showBack = true, navController)
 
-        // 1. Setup, only while something is missing: numbered steps, one primary action each.
-        if (status.state != AlterVoiceState.Ready) {
-            AlterSettingsGroup(stringResource(R.string.alter_voice_setup_title)) {
-                SettingItem(
-                    title = stringResource(R.string.alter_setup_step_mic),
-                    subtitle = stringResource(R.string.alter_mic_permission_subtitle),
-                    icon = { StepBadge(1, done = status.state != AlterVoiceState.NeedsMic) }
-                ) {
-                    if (status.state == AlterVoiceState.NeedsMic) {
-                        Button(onClick = { permission.launch(Manifest.permission.RECORD_AUDIO) }) {
-                            Text(stringResource(R.string.alter_setup_allow))
-                        }
+        AlterSettingsGroup(stringResource(R.string.alter_speech_models_title)) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                SettingItem(title = stringResource(R.string.alter_setup_step_mic), compact = true) {
+                    Button(onClick = { permission.launch(Manifest.permission.RECORD_AUDIO) }) {
+                        Text(stringResource(R.string.alter_setup_allow))
                     }
                 }
-                val base = choices.find { it.id == models.recordingSelected }
-                if (models.automaticRouting && base?.installed(models.store) == true) {
-                    ModelRow(stringResource(R.string.alter_auto_route_download),
-                        stringResource(R.string.alter_auto_route_hint), com.aistudio.altermind.voice.AUTO_ROUTING_DOWNLOAD,
-                        routingFiles, installed = routingFiles.all(models.store::installed), inUse = true,
-                        onUse = null, onDelete = {}, primary = true, stepNumber = 2)
-                } else {
-                    val recommended = if (models.automaticRouting && base != null) base else recommendedChoice(choices, language)
-                    ModelRow(stringResource(R.string.alter_setup_step_model, recommended.name),
-                        stringResource(R.string.alter_setup_step_model_hint), recommended.id, recommended.files,
-                        installed = remember(refresh) { recommended.installed(models.store) }, inUse = selected == recommended.id,
-                        onUse = null, onDelete = {}, primary = true, stepNumber = 2)
+            }
+            choices.forEach { choice ->
+                ModelRow(choice.name, choice.id, choice.files,
+                    remember(refresh) { choice.installed(models.store) }, selected == choice.id,
+                    onUse = { use(choice.id) },
+                    onDelete = { scope.launch {
+                        error = runCatching { VoiceSettings.deleteSpeech(context, choice) }.exceptionOrNull()?.message
+                        selected = models.selected; refresh++
+                    } })
+            }
+            if (VoiceSettings.deviceSpeechAvailable(context)) {
+                SettingItem(title = stringResource(R.string.alter_device_speech_name), compact = true,
+                    subtitle = if (selected == VoiceSettings.DEVICE_SPEECH_ID) stringResource(R.string.alter_model_in_use) else null,
+                    onClick = { use(VoiceSettings.DEVICE_SPEECH_ID) }) {
+                    RadioButton(selected = selected == VoiceSettings.DEVICE_SPEECH_ID,
+                        onClick = { use(VoiceSettings.DEVICE_SPEECH_ID) })
                 }
+            }
+            if (selected == VoiceSettings.DEVICE_SPEECH_ID || selected == "nemotron-3.5-streaming-q4") {
+                val names = listOf(stringResource(R.string.alter_voice_language_auto),
+                    stringResource(R.string.alter_voice_language_en_in), stringResource(R.string.alter_voice_language_hi_in))
+                DropDownPickerSettingItem(stringResource(R.string.alter_voice_language_title), VoiceSettings.LANGUAGES, language,
+                    { next -> scope.launch {
+                        error = runCatching { VoiceSettings.setLanguage(context, next); language = next }.exceptionOrNull()?.message
+                    } }, { names[VoiceSettings.LANGUAGES.indexOf(it).coerceAtLeast(0)] })
             }
         }
-
-        // 2. Speech: the model in use, its language, and every other model behind one disclosure.
-        AlterSettingsGroup(stringResource(R.string.alter_speech_models_title)) {
-            val current = choices.find { it.id == selected }?.name
-                ?: if (selected == VoiceSettings.DEVICE_SPEECH_ID) stringResource(R.string.alter_device_speech_name) else null
-            SettingItem(title = current ?: stringResource(R.string.alter_speech_model_none),
-                subtitle = stringResource(if (models.automaticRouting) R.string.alter_auto_route_base else if (current != null) R.string.alter_model_in_use else R.string.alter_speech_model_none_hint)) {}
-            val languageNames = listOf(
-                stringResource(R.string.alter_voice_language_auto),
-                stringResource(R.string.alter_voice_language_en_in),
-                stringResource(R.string.alter_voice_language_hi_in)
-            )
-            DropDownPickerSettingItem(stringResource(R.string.alter_voice_language_title), VoiceSettings.LANGUAGES, language,
-                { next -> scope.launch {
-                    error = runCatching {
-                        VoiceSettings.setLanguage(context, next)
-                        language = next
-                        selected = models.selected
-                        refresh++
-                    }.exceptionOrNull()?.message
-                } },
-                { languageNames[VoiceSettings.LANGUAGES.indexOf(it).coerceAtLeast(0)] })
-            if (language == "hi-IN" && selected == com.aistudio.altermind.voice.INDIC_HINDI_MODEL &&
-                models.recordingSelected != selected) {
-                Tip(stringResource(R.string.alter_hindi_routing_hint))
-            }
-            if (models.automaticRouting) {
-                val routingInstalled = routingFiles.all(models.store::installed)
-                val downloadShownInSetup = status.state != AlterVoiceState.Ready &&
-                    choices.find { it.id == models.recordingSelected }?.installed(models.store) == true && !routingInstalled
-                if (!downloadShownInSetup) {
-                    ModelRow(stringResource(R.string.alter_auto_route_download), stringResource(R.string.alter_auto_route_hint),
-                        com.aistudio.altermind.voice.AUTO_ROUTING_DOWNLOAD, routingFiles,
-                        installed = routingInstalled, inUse = true, onUse = null,
-                        onDelete = { scope.launch {
-                            error = runCatching { VoiceSettings.deleteAutomaticRouting(context) }.exceptionOrNull()?.message
-                            refresh++
-                        } })
-                }
-                routingNotice?.let { Tip(it) }
-            }
-            ModelRow(stringResource(R.string.alter_indicxlit_name), stringResource(R.string.alter_indicxlit_hint),
-                com.aistudio.altermind.voice.INDIC_XLIT_DOWNLOAD, xlitFiles,
-                installed = xlitFiles.all(models.store::installed), inUse = true, onUse = null,
-                onDelete = { scope.launch {
-                    error = runCatching { VoiceSettings.deleteIndicXlit(context) }.exceptionOrNull()?.message
-                    refresh++
-                } })
-            error?.let { Tip(it) }
-            CollapsibleSection(stringResource(R.string.alter_speech_models_all, choices.size + if (VoiceSettings.deviceSpeechAvailable(context)) 1 else 0)) {
-                choices.forEach { choice ->
-                    val installed = remember(refresh) { choice.installed(models.store) }
-                    ModelRow(choice.name, choice.description.substringBefore(". ").removeSuffix("."), choice.id, choice.files,
-                        installed, selected == choice.id,
-                        onUse = { use(choice.id) },
-                        onDelete = { scope.launch {
-                            error = runCatching { VoiceSettings.deleteSpeech(context, choice) }.exceptionOrNull()?.message
-                            refresh++
-                        } })
-                }
-                if (VoiceSettings.deviceSpeechAvailable(context)) {
-                    SettingItem(
-                        title = stringResource(R.string.alter_device_speech_name),
-                        subtitle = stringResource(R.string.alter_device_speech_description),
-                        icon = { RadioButton(selected = selected == VoiceSettings.DEVICE_SPEECH_ID, onClick = null) },
-                        onClick = { use(VoiceSettings.DEVICE_SPEECH_ID) }
-                    ) {}
-                }
-                Tip(stringResource(R.string.alter_speech_models_hint))
-            }
-        }
+        error?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp)) }
 
         // 3. How the keyboard behaves with voice.
         AlterSettingsGroup(stringResource(R.string.alter_group_keyboard)) {
@@ -329,18 +243,16 @@ fun AlterVoiceScreen(navController: NavHostController) {
                 { startMode.setValue(it) }, { modeNames[modes.indexOf(it).coerceAtLeast(0)] })
             SettingToggleDataStore(
                 title = stringResource(R.string.alter_end_on_silence_title),
-                subtitle = stringResource(R.string.alter_end_on_silence_subtitle),
                 setting = ALTER_END_ON_SILENCE
             )
         }
 
-        AlterSettingsGroup(stringResource(R.string.alter_corrections_title)) {
+        CollapsibleSection(stringResource(R.string.alter_corrections_title)) {
             val corrections = remember { com.aistudio.altermind.voice.VoiceCorrections(context) }
             var entries by remember { mutableStateOf(runCatching { corrections.read() }.getOrDefault(emptyMap())) }
             var from by remember { mutableStateOf("") }
             var to by remember { mutableStateOf("") }
             var failure by remember { mutableStateOf<String?>(null) }
-            Text(stringResource(R.string.alter_corrections_help), modifier = Modifier.padding(16.dp))
             androidx.compose.material3.OutlinedTextField(from, { from = it },
                 label = { Text(stringResource(R.string.alter_corrections_heard)) }, singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
@@ -365,26 +277,16 @@ fun AlterVoiceScreen(navController: NavHostController) {
 
         // 4. Optional cleanup editor.
         AlterSettingsGroup(stringResource(R.string.alter_cleanup_title)) {
-            DropDownPickerSettingItem(stringResource(R.string.alter_cleanup_engine),
-                listOf(VoicePack.CLEANUP_MODEL, VoicePack.HANDY_MODEL), cleanupId,
-                { cleanupId = it; VoicePack.selectCleanupModel(context, it)
-                    if (it != VoicePack.HANDY_MODEL) scope.launch { VoicePack.releaseHandy() }
-                },
-                { models.catalog.find(it).displayName })
-            Text(stringResource(R.string.alter_cleanup_live_note), modifier = Modifier.padding(16.dp))
-            val cleanupInstalled = remember(refresh, cleanupId) { models.store.installed(cleanup) }
+            val cleanupInstalled = remember(refresh) { models.store.installed(cleanup) }
             var cleanupOn by remember(refresh) { mutableStateOf(VoicePack.cleanupEnabled(context)) }
-            SettingItem(title = stringResource(R.string.alter_cleanup_toggle), subtitle = stringResource(R.string.alter_cleanup_subtitle),
+            SettingItem(title = stringResource(R.string.alter_cleanup_toggle), compact = true,
                 disabled = !cleanupInstalled,
                 onClick = { cleanupOn = !cleanupOn; VoicePack.setCleanupEnabled(context, cleanupOn) }) {
                 Switch(checked = cleanupOn && cleanupInstalled, onCheckedChange = null, enabled = cleanupInstalled)
             }
-            ModelRow(cleanup.displayName, cleanup.description, cleanup.id, listOf(cleanup), cleanupInstalled, inUse = false, onUse = null,
+            ModelRow(cleanup.displayName, cleanup.id, listOf(cleanup), cleanupInstalled, inUse = false, onUse = null,
                 onDelete = { scope.launch {
-                    if (com.aistudio.altermind.voice.DictationController.isActive()) { error = "Pause dictation before deleting a cleanup model."; return@launch }
-                    VoicePack.setCleanupEnabled(context, false)
-                    com.aistudio.altermind.voice.VoicePack.releaseHandy()
-                    ModelDownloads.delete(context, listOf(cleanup))
+                    error = runCatching { VoiceSettings.deleteCleanup(context) }.exceptionOrNull()?.message
                     refresh++
                 } })
         }
@@ -395,16 +297,5 @@ fun AlterVoiceScreen(navController: NavHostController) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
         )
-    }
-}
-
-/** Numbered step marker; yellow when done (yellow means progress/selection in ALTER's design). */
-@Composable
-private fun StepBadge(number: Int, done: Boolean) {
-    Box(Modifier.size(28.dp).clip(RoundedCornerShape(14.dp))
-        .background(if (done) AlterColors.AlterYellow else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
-        contentAlignment = Alignment.Center) {
-        Text(if (done) "✓" else number.toString(), style = AlterType.Meta.copy(fontWeight = FontWeight.SemiBold),
-            color = if (done) AlterColors.PitchBlack else MaterialTheme.colorScheme.onSurface)
     }
 }

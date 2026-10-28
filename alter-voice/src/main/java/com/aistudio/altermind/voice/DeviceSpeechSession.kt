@@ -33,10 +33,10 @@ internal fun deviceSpeechIntent(language: String): Intent = Intent(RecognizerInt
 internal fun deviceSpeechError(code: Int): String = when (code) {
     SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Allow microphone access in Android settings."
     SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED, SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE ->
-        "This device recognizer does not have the requested language. Install its offline language in system speech settings, or choose Whisper."
+        "This device recognizer does not have the requested language. Install its offline language in system speech settings, or select a downloaded model."
     SpeechRecognizer.ERROR_NO_MATCH, SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> NO_SPEECH_MESSAGE
     SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "The device recognizer is busy. Close other voice apps and try again."
-    else -> "Device recognition failed (Android error $code). No cloud fallback was used. Try again or select Whisper/Moonshine."
+    else -> "Device recognition failed (Android error $code). No cloud fallback was used. Try again or select a downloaded model."
 }
 
 /** Android owns the microphone here. Never run AudioRecord beside it or use the ordinary/cloud factory. */
@@ -49,17 +49,18 @@ internal class DeviceSpeechSession(private val context: Context) {
         if (stopped) return
         stopped = true; main.post { recognizer?.stopListening(); finishDeadline?.invoke() }
     }
-    private fun release() {
+    private fun release(cancel: Boolean = true) {
         val engine = recognizer; recognizer = null
-        if (engine != null) { runCatching { engine.cancel() }; runCatching { engine.destroy() } }
+        if (engine != null) { if (cancel) runCatching { engine.cancel() }; runCatching { engine.destroy() } }
     }
 
     suspend fun listen(language: String, partial: (String) -> Unit, level: (Float) -> Unit, listening: (Boolean) -> Unit): String =
         withContext(Dispatchers.Main.immediate) {
-            check(deviceSpeechAvailable(context)) { "On-device recognition requires Android 12+ and an installed offline recognition service. Choose Whisper/Moonshine on this phone." }
+            check(deviceSpeechAvailable(context)) { "On-device recognition requires Android 12+ and an installed offline recognition service. Choose a downloaded model on this phone." }
             if (stopped) return@withContext ""
             coroutineScope {
                 var deadline: Job? = null
+                var completed = false
                 try {
                     suspendCancellableCoroutine { result ->
                         val engine = if (Build.VERSION.SDK_INT >= 31) SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
@@ -68,7 +69,7 @@ internal class DeviceSpeechSession(private val context: Context) {
                         fun fail(message: String) { if (result.isActive) result.resumeWithException(IllegalStateException(message)) }
                         fun waitForFinal() {
                             deadline?.cancel()
-                            deadline = launch { delay(10_000); fail("The device recognizer did not return a final transcript. Try again or choose Whisper/Moonshine.") }
+                            deadline = launch { delay(10_000); fail("The device recognizer did not return a final transcript. Try again or choose a downloaded model.") }
                         }
                         finishDeadline = { listening(false); level(0f); waitForFinal() }
                         result.invokeOnCancellation { main.post { if (recognizer === engine) release() } }
@@ -90,7 +91,7 @@ internal class DeviceSpeechSession(private val context: Context) {
                             override fun onResults(results: Bundle?) {
                                 val text = cleanDictation(results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull().orEmpty())
                                 if (text.isBlank()) fail(deviceSpeechError(SpeechRecognizer.ERROR_NO_MATCH))
-                                else if (result.isActive) result.resume(text)
+                                else if (result.isActive) { completed = true; result.resume(text) }
                             }
                             override fun onEvent(eventType: Int, params: Bundle?) { }
                         })
@@ -100,7 +101,7 @@ internal class DeviceSpeechSession(private val context: Context) {
                     }
                 } finally {
                     deadline?.cancel(); finishDeadline = null
-                    release()
+                    release(cancel = !completed)
                     listening(false); level(0f)
                 }
             }

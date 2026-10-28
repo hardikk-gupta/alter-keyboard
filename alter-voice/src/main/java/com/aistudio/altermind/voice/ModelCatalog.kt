@@ -4,7 +4,7 @@ import android.content.Context
 import org.json.JSONObject
 import java.net.URI
 
-enum class ModelType { GENERATION, EMBEDDING, SPEECH, TEXT_CLEANUP, LANGUAGE_DETECTION, TRANSLITERATION }
+enum class ModelType { GENERATION, EMBEDDING, SPEECH, TEXT_CLEANUP }
 data class ModelSpec(
     val id: String, val displayName: String, val tier: String, val description: String,
     val family: String, val version: String, val repository: String, val filename: String,
@@ -37,17 +37,12 @@ class ModelCatalog(val models: List<ModelSpec>) {
                         require(spec.downloadBytes in 1..20_000_000_000L)
                         val validFormat = when (spec.modelType) {
                             ModelType.SPEECH -> "SPEECH_TRANSCRIPTION" in spec.capabilities && when (spec.family) {
-                                "IndicConformer" -> spec.filename.substringAfterLast('.') in setOf("onnx", "txt") && "INDIC_HI_CTC" in spec.capabilities
                                 "ParakeetTDT" -> spec.filename.endsWith(".gguf") && "OFFLINE_TDT" in spec.capabilities
                                 "ParakeetCTC" -> spec.filename.endsWith(".tar.bz2") && "OFFLINE_CTC" in spec.capabilities
                                 "Nemotron" -> spec.filename.endsWith(".gguf") && "STREAMING" in spec.capabilities
                                 else -> spec.filename.substringAfterLast('.') in setOf("bin", "ort", "json")
                             }
-                            ModelType.TRANSLITERATION -> spec.family == "IndicXlit" &&
-                                spec.filename in setOf("encoder.onnx", "decoder.onnx", "vocab.json") && "HINDI_TO_ROMAN" in spec.capabilities
-                            ModelType.LANGUAGE_DETECTION -> spec.filename.endsWith(".onnx") && "SPEECH_LANGUAGE_ID" in spec.capabilities
-                            ModelType.TEXT_CLEANUP -> if (spec.family == "Handy") spec.filename.endsWith(".gguf")
-                                else spec.filename.endsWith(".litertlm")
+                            ModelType.TEXT_CLEANUP -> spec.filename.endsWith(".litertlm")
                             else -> spec.filename.endsWith(".litertlm")
                         }
                         require(validFormat) { "Model format does not match its runtime." }

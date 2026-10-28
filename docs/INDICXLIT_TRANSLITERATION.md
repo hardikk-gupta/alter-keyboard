@@ -1,5 +1,9 @@
 # IndicXlit Hindi-to-Roman conversion
 
+> Retired from the app on October 28, 2026. This document is historical; this model/helper is no longer
+> available or used. See [current voice configuration](VOICE_MODELS.md).
+
+
 Nemotron remains the multilingual speech recognizer. Download **IndicXlit · Hindi to Roman**
 in Settings → ALTER voice once (47,421,034 bytes, approximately 47 MB). It is then used automatically
 for Hindi text from Nemotron's live revisions and final result, and the downloaded recognizers'

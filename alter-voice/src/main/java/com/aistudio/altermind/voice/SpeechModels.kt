@@ -7,32 +7,17 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
 
-internal object WhisperNative {
-    init { System.loadLibrary("alter_whisper") }
-    external fun load(path: String): Long
-    external fun transcribe(handle: Long, audio: FloatArray, language: String, threads: Int): String?
-    external fun prepare(handle: Long)
-    external fun cancel(handle: Long)
-    external fun close(handle: Long)
-}
-
-data class SpeechChoice(val id: String, val name: String, val description: String, val files: List<ModelSpec>, val moonshineSize: String? = null) {
+data class SpeechChoice(val id: String, val name: String, val description: String, val files: List<ModelSpec>) {
     val bytes get() = files.sumOf { it.downloadBytes }
     fun installed(store: ModelStore) = files.all(store::installed)
 }
 fun speechChoices(catalog: ModelCatalog): List<SpeechChoice> {
-    val standalone = catalog.models.filter { it.modelType == ModelType.SPEECH && it.family in setOf("Whisper", "Nemotron", "ParakeetCTC", "ParakeetTDT") }
+    val standalone = catalog.models.filter { it.modelType == ModelType.SPEECH && it.family in setOf("Nemotron", "ParakeetCTC", "ParakeetTDT") }
         .map { SpeechChoice(it.id, it.displayName, it.description, listOf(it)) }
-    val moonshine = listOf("tiny", "small", "medium").mapNotNull { size ->
-        val files = catalog.models.filter { it.family == "Moonshine" && "MOONSHINE_${size.uppercase()}_STREAMING" in it.capabilities }
-        files.takeIf { it.isNotEmpty() }?.let { SpeechChoice(if (size == "tiny") "moonshine-en" else "moonshine-en-$size",
-            "Moonshine ${size.replaceFirstChar(Char::uppercase)} Streaming · English",
-            "Live English transcription. ${if (size == "tiny") "Lightest option." else "Larger model to test for improved accuracy; uses more RAM."} Hindi and Hinglish require a Hindi or multilingual recognizer.", files, size) }
-    }
-    val hindi = catalog.models.filter { it.family == "IndicConformer" && "INDIC_HI_CTC" in it.capabilities }
-    val indic = if (hindi.size == 2) listOf(SpeechChoice(INDIC_HINDI_MODEL, "IndicConformer Hindi · INT8",
-        "Offline Hindi speech with Roman-letter output. English code-switching is not guaranteed. Both files are required.", hindi)) else emptyList()
-    return standalone + indic + moonshine
+    val files = catalog.models.filter { it.family == "Moonshine" && "MOONSHINE_MEDIUM_STREAMING" in it.capabilities }
+    val moonshine = if (files.isEmpty()) emptyList() else listOf(SpeechChoice("moonshine-en-medium",
+        "Moonshine Medium", "English", files))
+    return standalone + moonshine
 }
 
 /** Downloaded ASR beside the brain, plus an explicit live-device selector. No cloud/Gemma speech fallback. */
@@ -41,37 +26,25 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     private val prefs = voicePrefs(context)
     val catalog by lazy { ModelCatalog.load(context) }
     val store by lazy { ModelStore(context) }
-    @Volatile private var whisper = 0L
     @Volatile private var nemotron = 0L
     @Volatile private var parakeetTdt = 0L
     private var parakeet: ParakeetSpeech? = null
     private var moonshine: ai.moonshine.voice.Transcriber? = null
     private var loaded: String? = null
-    private var indicXlit: IndicXlit? = null
-    private var languageIdentifier: AutomaticLanguageIdentifier? = null
-    private val mutableRoutingNotice = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
-    val routingNotice: kotlinx.coroutines.flow.StateFlow<String?> = mutableRoutingNotice
     @Volatile private var activeOwner: Any? = null
     fun clearSelection() { prefs.edit().remove("speech_model").apply() }
-    val recordingSelected get() = prefs.getString("speech_model", null)
-    override val selected get() = if (prefs.getBoolean("device_speech", false)) DEVICE_SPEECH else effectiveSpeechModel(recordingSelected, prefs.getString("voice_language", "auto"))
-    val automaticRouting get() = automaticRoutingEnabled(recordingSelected, prefs.getString("voice_language", "auto")) && selected != DEVICE_SPEECH
-    override val sessionModelId get() = if (automaticRouting) routingDraftModel(selected, "auto") else selected
+    val recordingSelected get() = prefs.getString("speech_model", null)?.takeIf { it in retainedSpeechIds }
+    override val selected get() = if (prefs.getBoolean("device_speech", false)) DEVICE_SPEECH else recordingSelected
     override fun checkInstalled() {
         if (selected == DEVICE_SPEECH) {
-            check(deviceSpeechAvailable(context)) { "On-device recognition is unavailable. Install a system offline recognizer/language, or choose Whisper/Moonshine." }
+            check(deviceSpeechAvailable(context)) { "On-device recognition is unavailable. Install a system offline recognizer/language, or select a downloaded model." }
             return
         }
         val choice = speechChoices(catalog).find { it.id == selected }
             ?: error("Download and select a speech model in ALTER Keyboard settings → ALTER voice.")
-        check(choice.installed(store)) { if (choice.id == INDIC_HINDI_MODEL) "Hindi mode needs the IndicConformer Hindi download in Voice settings." else "The selected speech model is missing. Download it again in Voice settings." }
-        if (automaticRouting) {
-            val files = automaticRoutingSpecs(catalog)
-            check(files.size == 4 && files.all(store::installed)) {
-                "Download Automatic Hindi/English routing in Voice settings, or choose English-only language."
-            }
-        }
+        check(choice.installed(store)) { "Download the selected speech model in Voice settings." }
     }
+
     private var warmup: Job? = null
     fun preload() {
         if (DictationController.isActive() || warmup?.isActive == true || selected == null || selected == DEVICE_SPEECH) return
@@ -87,9 +60,8 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 closeLocked(); prefs.edit().putBoolean("device_speech", true).commit()
                 return@withLock
             }
-            val effectiveId = effectiveSpeechModel(id, prefs.getString("voice_language", "auto"))
-            val choice = speechChoices(catalog).single { it.id == effectiveId }
-            require(choice.installed(store)) { if (choice.id == INDIC_HINDI_MODEL) "Download IndicConformer Hindi first to use Hindi mode." else "Download every speech model component first." }
+            val choice = speechChoices(catalog).single { it.id == id }
+            require(choice.installed(store)) { "Download the speech model first." }
             closeLocked(); load(choice)
             prefs.edit().putString("speech_model", id).putBoolean("device_speech", false).commit()
         }
@@ -98,7 +70,6 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     suspend fun release() = withContext(Dispatchers.IO) { mutex.withLock { closeLocked() } }
     @Synchronized override fun cancel(owner: Any) {
         if (activeOwner === owner) {
-            if (whisper != 0L) WhisperNative.cancel(whisper)
             if (nemotron != 0L) NemotronNative.cancel(nemotron)
             if (parakeetTdt != 0L) NemotronNative.cancel(parakeetTdt)
         }
@@ -110,12 +81,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         closeDecoderLocked()
         choice.files.forEach { store.verify(it) }
         try {
-        if (choice.id == INDIC_HINDI_MODEL) {
-            val graph = choice.files.single { it.filename.endsWith(".onnx") }
-            val vocab = choice.files.single { it.filename.endsWith(".txt") }
-            val adapted = prepareIndicConformer(store, graph, File(context.noBackupFilesDir, "speech-indicconformer"))
-            parakeet = ParakeetSpeech.openFiles(adapted, store.file(vocab))
-        } else if (choice.files.singleOrNull()?.family == "ParakeetTDT") {
+        if (choice.files.singleOrNull()?.family == "ParakeetTDT") {
             parakeetTdt = ParakeetTdtNative.load(store.file(choice.files.single()).absolutePath)
             check(parakeetTdt != 0L) { "Parakeet TDT could not load this verified model on your device." }
         } else if (choice.files.singleOrNull()?.family == "ParakeetCTC") {
@@ -125,27 +91,18 @@ class SpeechModels(private val context: Context) : DictationSpeech {
             require(Build.VERSION.SDK_INT >= 26) { "Nemotron requires Android 8 or later." }
             nemotron = NemotronNative.load(store.file(choice.files.single()).absolutePath)
             check(nemotron != 0L) { "Nemotron could not load this verified model on your device." }
-        } else if (choice.id.startsWith("whisper-")) {
-            whisper = WhisperNative.load(store.file(choice.files.single()).absolutePath)
-            check(whisper != 0L) { "Whisper could not open this verified model on your device." }
         } else {
-            require(Build.VERSION.SDK_INT >= 26) { "Moonshine requires Android 8 or later. Whisper works on older supported phones." }
             // Android may deny hard links even within private storage. Copy verified components.
             val directory = File(context.noBackupFilesDir, "speech-moonshine/${choice.id}/${choice.files.first().version}").apply { mkdirs() }
             choice.files.forEach { spec ->
                 copySpeechComponent(store, spec, File(directory, spec.filename))
             }
             val candidate = ai.moonshine.voice.Transcriber()
-            try { candidate.loadFromFiles(directory.absolutePath, when (choice.moonshineSize) {
-                "tiny" -> ai.moonshine.voice.JNI.MOONSHINE_MODEL_ARCH_TINY_STREAMING
-                "small" -> ai.moonshine.voice.JNI.MOONSHINE_MODEL_ARCH_SMALL_STREAMING
-                "medium" -> ai.moonshine.voice.JNI.MOONSHINE_MODEL_ARCH_MEDIUM_STREAMING
-                else -> error("Unsupported speech architecture")
-            }); candidate.setKeyterms(keyterms()); moonshine = candidate }
+            try { candidate.loadFromFiles(directory.absolutePath, ai.moonshine.voice.JNI.MOONSHINE_MODEL_ARCH_MEDIUM_STREAMING); candidate.setKeyterms(keyterms()); moonshine = candidate }
             catch (e: Throwable) { candidate.close(); throw e }
         }
         loaded = choice.id
-        } catch (e: OutOfMemoryError) { closeLocked(); throw IllegalStateException("Not enough RAM for this speech model. Choose Whisper Tiny or Moonshine English.", e) }
+        } catch (e: OutOfMemoryError) { closeLocked(); throw IllegalStateException("Not enough RAM for this speech model. Try Android on-device recognition or another downloaded model.", e) }
         catch (e: LinkageError) { throw IllegalStateException("The speech runtime cannot start on this device.", e) }
     }
     private fun keyterms(): List<String> = prefs.getString("voice_keyterms", "ALTER\nBRACE").orEmpty()
@@ -156,26 +113,10 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         mutex.withLock {
             activeOwner = owner
             try {
-                val auto = automaticRouting
-                if (!auto) load()
-                // Keep native streaming context for whole saved Nemotron recordings.
-                if (!auto && nemotron != 0L) return@withLock decodeLoadedWindow(audio).ifBlank { "[NO_SPEECH_DETECTED]" }
-                val raw = transcribeSpeechWindows(audio, decode = { window ->
-                    currentCoroutineContext().ensureActive()
-                    if (auto) {
-                        val detector = languageIdentifier ?: AutomaticLanguageIdentifier.open(store,
-                            languageIdentificationSpecs(catalog)).also { languageIdentifier = it }
-                        val multilingual = speechChoices(catalog).single { it.id == NEMOTRON_MULTILINGUAL }
-                        val route = classifyAutomaticSpeech(window, checkNotNull(recordingSelected),
-                            multilingual.installed(store), detector::detect)
-                        val target = speechChoices(catalog).single { it.id == route.model }
-                        load(target)
-                        mutableRoutingNotice.value = "Last automatic route: ${route.language.name.lowercase().replaceFirstChar(Char::uppercase)} · ${target.name}"
-                    }
-                    decodeLoadedWindow(window)
-                })
-                currentCoroutineContext().ensureActive()
-                romanize(cleanDictation(raw)).ifBlank { "[NO_SPEECH_DETECTED]" }
+                load()
+                // Nemotron keeps its native streaming context over the whole saved recording.
+                if (nemotron != 0L) return@withLock decodeLoadedWindow(audio).ifBlank { "[NO_SPEECH_DETECTED]" }
+                transcribeSpeechWindows(audio, decode = ::decodeLoadedWindow).ifBlank { "[NO_SPEECH_DETECTED]" }
             } finally { activeOwner = null }
         }
     }
@@ -199,19 +140,14 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 "Parakeet TDT transcription failed. Your recording is saved."
             }.decodeToString()
         } else if (parakeet != null) parakeet!!.decode(audio)
-        else if (whisper != 0L) {
-            WhisperNative.prepare(whisper)
-            requireNotNull(WhisperNative.transcribe(whisper, audio, whisperLanguage(),
-                minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) { "Whisper transcription failed." }
-        } else moonshine!!.transcribeWithoutStreaming(audio, 16000).text()
+        else moonshine!!.transcribeWithoutStreaming(audio, 16000).text()
         currentCoroutineContext().ensureActive()
-        return romanize(cleanDictation(raw))
+        return cleanDictation(raw)
     }
     suspend fun transcribe(audio: FloatArray): String = transcribe(audio, Any())
-    /** Stream Moonshine or Nemotron while collecting from AudioRecord; return false for Whisper's bounded clip mode. */
+    /** Stream Moonshine or Nemotron while collecting from AudioRecord; return false for Parakeet's bounded clip mode. */
     override suspend fun stream(owner: Any, read: suspend () -> FloatArray?, update: (String) -> Unit): Boolean = withContext(Dispatchers.IO) {
         mutex.withLock {
-            if (automaticRouting) { mutableRoutingNotice.value = null; return@withLock false }
             load()
             if (nemotron != 0L) {
                 activeOwner = owner
@@ -229,7 +165,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                     is ai.moonshine.voice.TranscriptEvent.LineCompleted -> event.line
                     else -> null
                 }
-                if (line != null) { lines[line.id] = line.text; update(romanizeHindiText(cleanDictation(lines.values.joinToString(" ")))) }
+                if (line != null) { lines[line.id] = line.text; update(cleanDictation(lines.values.joinToString(" "))) }
             }
             engine.addListener(listener)
             val stream = engine.createStream()
@@ -246,30 +182,17 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) {
                 "Nemotron could not start the selected streaming profile. Your recording is saved."
             }
-            consumeNemotronStream(read, { update(romanize(it)) }, { NemotronNative.feed(nemotron, it) },
+            consumeNemotronStream(read, update, { NemotronNative.feed(nemotron, it) },
                 { NemotronNative.finish(nemotron) }, {})
         } finally { NemotronNative.end(nemotron) }
     }
-    private suspend fun romanize(text: String): String {
-        if (text.none { it in '\u0900'..'\u097f' }) return text
-        val files = indicXlitSpecs(catalog)
-        if (indicXlit == null && files.size == 3 && files.all(store::installed)) {
-            indicXlit = IndicXlit.open(store, files)
-        }
-        return indicXlit?.convert(text) ?: romanizeHindiText(text)
-    }
-    private fun whisperLanguage() = whisperDecodeLanguage(loaded, prefs.getString("voice_language", "auto"))
     @Synchronized private fun closeLocked() {
         closeDecoderLocked()
-        indicXlit?.close(); indicXlit = null
-        languageIdentifier?.close(); languageIdentifier = null
-        mutableRoutingNotice.value = null
         File(context.noBackupFilesDir, "speech-moonshine").deleteRecursively()
         File(context.noBackupFilesDir, "speech-parakeet").deleteRecursively()
         File(context.noBackupFilesDir, "speech-indicconformer").deleteRecursively()
     }
     @Synchronized private fun closeDecoderLocked() {
-        if (whisper != 0L) { WhisperNative.close(whisper); whisper = 0 }
         if (nemotron != 0L) { NemotronNative.close(nemotron); nemotron = 0L }
         if (parakeetTdt != 0L) { NemotronNative.close(parakeetTdt); parakeetTdt = 0L }
         parakeet?.close(); parakeet = null
@@ -310,8 +233,3 @@ internal fun wavSamples(wav: ByteArray): FloatArray {
     val shorts = java.nio.ByteBuffer.wrap(wav, 44, wav.size - 44).order(java.nio.ByteOrder.LITTLE_ENDIAN).asShortBuffer()
     return FloatArray(shorts.remaining()) { shorts.get() / 32768f }
 }
-
-/** Oriserve's model card specifies Hindi decoding for romanized Hindi/Hinglish output. */
-internal fun whisperDecodeLanguage(model: String?, language: String?): String =
-    if (model in setOf("whisper-oriserve-hinglish-swift-q8", "whisper-oriserve-hinglish-swift-fp16")) "hi"
-    else when (language) { "en-IN" -> "en"; "hi-IN" -> "hi"; else -> "auto" }

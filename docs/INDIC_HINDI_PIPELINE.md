@@ -1,5 +1,9 @@
 # Hindi recognition and Roman-letter output
 
+> Retired from the app on October 28, 2026. This document is historical; this model/helper is no longer
+> available or used. See [current voice configuration](VOICE_MODELS.md).
+
+
 ## What runs
 
 Hindi audio → AI4Bharat IndicConformer Hindi (community INT8 ONNX export) → Devanagari transcript

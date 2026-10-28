@@ -63,17 +63,14 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 
 - PCM capture never waits for model warm-up.
 - No fake audio level.
-- One LiteRT engine at a time, with a fresh engine per cleanup chunk. Handy is opt-in and uses its own pinned
-  CPU llama.cpp library; keep fresh contexts, empty-system ChatML framing, aborts and exact-final snapshot reuse.
+- One LiteRT engine at a time, with a fresh engine per LFM cleanup chunk.
 - Validate every edit, keep all tail text on timeout, and never strip the word "message".
 - Blank or filler-only results are rejected.
 - Models download into private no-backup storage on demand from the pinned catalog
   (`alter-voice/src/main/assets/alter_voice_models.json`) with exact size and SHA-256 checks. Never bundle weights.
 - Nemotron is experimental and opt-in: preserve the existing selection, require successful finalization,
   keep every PCM sample on retry, and never describe its 320 ms model profile as measured phone latency.
-  Native Hindi script uses downloaded IndicXlit before live/final cleanup, with ICU4J as the
-  basic path when the neural bundle is absent; preserve Latin text verbatim.
-  This is script conversion, not model training or an accuracy improvement. Phone speed remains unverified.
+  Keep the recognizer's native script, without transliteration. Phone speed remains unverified.
 - Parakeet 110M uses the pinned sherpa-onnx static-ORT JAR/JNI pair; refresh them together with
   `scripts/import_sherpa_runtime.py`. Preserve archive and component hashes, whitelist extraction,
   and bounded-window cancellation checks. English-only; previews are not native streaming.
@@ -108,36 +105,15 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 Each run then deletes every older `build-N` release (with its tag) and older APK artifacts, so only the newest APK
 is kept. Do not rely on older releases existing.
 
-## Hindi mode routing
+## Retained voice models
 
-- Explicit Hindi mode uses IndicConformer for saved Parakeet CTC/TDT and Nemotron choices;
-  keep the saved base choice and display the actual effective engine. Automatic Parakeet routing
-  requires the explicit detector/Hindi bundle; Nemotron retains native multilingual Automatic.
-- Require both pinned Hindi files, stage and verify the metadata-only derived graph, retain
-  immutable downloaded bytes, and never call native inference on an unverified adaptation.
-- Shared ICU Romanization preserves already-Latin content. Do not label it IndicXlit/Sanscript
-  or model fine-tuning; natural Hinglish/code-switching remain unverified. Guard active language
-  changes and keep drafts associated with their actual effective model ID.
-
-## Automatic English/Hindi routing
-
-- Both Parakeet variants use the pinned Whisper ONNX language detector in Automatic mode.
-  Tiny is for LID only, not transcription; never invent confidence probabilities or infer language
-  from pitch/energy. Sparse probes can misclassify short/mixed speech; retain clear limits in UI/docs.
-- Decoder receives every full PCM window; classifier gets copies only. Missing detector/Hindi
-  assets block automatic capture. Mixed labels require installed Nemotron or preserve a draft error;
-  unknown/short speech may retain the English base when no multilingual model is installed.
-- Automatic drafts include the routing policy and base in sessionModelId. Do not equate them
-  with explicit-English drafts or change an active session policy. Caches can stay across route
-  switches but must release on explicit selection/deletion/release. Keep only one active ASR decoder.
-
-## IndicXlit transliteration
-
-- Use the official Indic-to-Roman checkpoint, not the reverse direction. Preserve pinned hashes and
-  licenses, no weights in Git/APK, no Fairseq/Python in Gradle. Export tooling is host-only.
-- Keep English/identifiers untouched, word-only conversion, finite decoding and cancellation checks.
-  Preserve every recognized word; do not guess missing English phrases from phonetic Hindi output.
-- Keep ORT Java/JNI/full core at 1.23.2 together with Moonshine 0.1.5. The artifact transform removes only
-  Moonshine's reduced duplicate core; do not use arbitrary pickFirst packaging. Verify both ABIs.
-- IndicXlit is automatically used after its complete download; deletion releases caches through
-  speechSetup. No claim of on-device speed or transcription accuracy from host transliteration tests.
+- Offer only Parakeet CTC/TDT, Nemotron, Moonshine Medium and Android on-device recognition.
+  LFM2.5 350M is the only optional editor; ignore retired cleanup preferences.
+- Do not restore external language routing, Hindi helper assets or either Romanization layer.
+  Preserve the selected recognizer's native script. Parakeet/Moonshine remain English-only.
+- Keep settings concise: names, size/selection, download/delete; no explanation paragraphs or duplicate setup rows.
+  Share spacing through Components.kt; rows with no icon must not reserve an icon column.
+- Remove retired downloads only under idle speechSetup ownership, preserving retained files and drafts.
+  Removed-model PCM may be explicitly reprocessed, never appended under a different recording policy.
+- The system recognizer owns its tones. Avoid redundant cancel after successful results; never claim silent
+  phone behavior from host tests or globally mute other phone audio to hide a provider beep.
