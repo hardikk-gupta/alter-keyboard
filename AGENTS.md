@@ -69,7 +69,8 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
   (`alter-voice/src/main/assets/alter_voice_models.json`) with exact size and SHA-256 checks. Never bundle weights.
 - Nemotron is experimental and opt-in: preserve the existing selection, require successful finalization,
   keep every PCM sample on retry, and never describe its 320 ms model profile as measured phone latency.
-  Mixed Hindi/Latin output and phone accuracy/speed remain unverified; no automatic transliteration.
+  Native Hindi script is Romanized with ICU4J before live/final cleanup; preserve Latin text verbatim.
+  This is script conversion, not model training or an accuracy improvement. Phone speed remains unverified.
 - Android on-device recognition only on API 31+, never a cloud fallback.
 - No recovery cards: interrupted recording/processing returns as a paused pill. Keep one private temporary draft
   in `noBackupFilesDir/dictation-draft`; delete it only after accepted text insertion or explicit discard.

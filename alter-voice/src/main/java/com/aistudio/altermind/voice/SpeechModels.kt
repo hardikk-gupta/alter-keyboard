@@ -187,7 +187,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) {
                 "Nemotron could not start the selected streaming profile. Your recording is saved."
             }
-            consumeNemotronStream(read, update, { NemotronNative.feed(nemotron, it) },
+            consumeNemotronStream(read, { update(romanizeNemotronHindi(it)) }, { NemotronNative.feed(nemotron, it) },
                 { NemotronNative.finish(nemotron) }, {})
         } finally { NemotronNative.end(nemotron) }
     }

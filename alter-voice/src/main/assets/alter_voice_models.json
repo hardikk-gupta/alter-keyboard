@@ -5,7 +5,7 @@
       "id": "nemotron-3.5-streaming-q4",
       "displayName": "Nemotron 3.5 Streaming \u00b7 Q4 \u00b7 experimental",
       "tier": "Speech",
-      "description": "Offline Hindi/English streaming with a 320 ms model profile. May output mixed Hindi/Latin script. Experimental: accuracy and speed versus Moonshine are unverified on your phone.",
+      "description": "Offline Hindi/English streaming with a 320 ms model profile. Hindi script is converted offline to English letters (phonetic spelling). Experimental: accuracy and speed versus Moonshine are unverified on your phone.",
       "family": "Nemotron",
       "version": "53ce288f69326b415aeef030cfcb02a08a8096dd",
       "repository": "handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf",
