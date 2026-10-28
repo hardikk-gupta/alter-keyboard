@@ -119,9 +119,10 @@ class RecordingRecoveryTest {
         override var selected = "whisper-tiny"
         var sessionOverride: String? = null
         override val sessionModelId get() = sessionOverride ?: selected
+        var installed = true
         var warmingUp = false
         val heard = mutableListOf<Float>()
-        override fun checkInstalled() {}
+        override fun checkInstalled() { check(installed) { "Missing downloaded model." } }
         override suspend fun ensureReady() { if (warmingUp) awaitCancellation() }
         override suspend fun stream(owner: Any, read: suspend () -> FloatArray?, update: (String) -> Unit): Boolean {
             heard.clear()
@@ -172,6 +173,23 @@ class RecordingRecoveryTest {
         assertEquals(0, mic.starts)
         assertEquals(key, saved.load()!!.model)
         assertTrue(current.error.value.orEmpty().contains("Automatic language"))
+    }
+
+    @Test fun queuedRecoveryRechecksAssetsAfterModelDeletion() = runTest {
+        val saved = store()
+        val draft = saved.begin("whisper-tiny")
+        saved.append(draft.id, shortArrayOf(1000, 2000), 2)
+        val speech = Speech()
+        val mic = Microphone()
+        val current = controller(saved, speech, mic)
+        DictationController.speechSetup {
+            current.start(endAfterSilence = false); runCurrent()
+            speech.installed = false
+        }
+        advanceTimeBy(25); runCurrent()
+        assertEquals(0, mic.starts)
+        assertEquals(2, saved.load()!!.samples)
+        assertEquals("Missing downloaded model.", current.error.value)
     }
 
     @Test fun pauseDuringModelWarmupAndRestoreResumeDoNotLoseOrDuplicateAudio() = runTest {

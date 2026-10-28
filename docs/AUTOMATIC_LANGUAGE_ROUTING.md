@@ -79,7 +79,7 @@ are unverified. Rule-based Romanization still uses phonetic spellings, not an In
 Exact INT8 detector files matched all pinned hashes/sizes. Host sherpa-onnx and the exact Android
 API JAR with matching host JNI identified real English and Hindi three-second samples as en/hi.
 These are functional smoke tests, not a confidence/accuracy rate or phone latency benchmark.
-All 62 combined voice tests passed, including both English decoders, Hindi routing, mixed/unknown/
+All 63 combined voice tests passed, including both English decoders, Hindi routing, mixed/unknown/
 short/silent cases, copied-probe PCM preservation, cancellation and routing-policy draft recovery.
 Android compilation/dexing passed; assembly failed only at missing shared-key signing validation.
 No substitute signing key was created.

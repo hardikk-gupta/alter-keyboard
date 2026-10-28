@@ -73,8 +73,8 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     }
     private var warmup: Job? = null
     fun preload() {
-        if (warmup?.isActive == true || selected == null || selected == DEVICE_SPEECH) return
-        warmup = scope.launch { try { mutex.withLock { load() } } catch (e: CancellationException) { throw e } catch (_: Exception) { /* Setup/transcribe exposes a useful error on explicit use. */ } }
+        if (DictationController.isActive() || warmup?.isActive == true || selected == null || selected == DEVICE_SPEECH) return
+        warmup = scope.launch { try { mutex.withLock { if (!DictationController.isActive()) load() } } catch (e: CancellationException) { throw e } catch (_: Exception) { /* Setup/transcribe exposes a useful error on explicit use. */ } }
     }
     override suspend fun ensureReady() = withContext(Dispatchers.IO) { if (selected != DEVICE_SPEECH) mutex.withLock { load() } }
     suspend fun use(id: String) = withContext(Dispatchers.IO) {

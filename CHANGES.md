@@ -480,7 +480,9 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
 - Classifier sees copied probes; full PCM windows remain intact. Cache the detector and derived
   speech files across route changes while keeping one ASR decoder active. Keep explicit modes and
   Nemotron's native Automatic path, policy-aware draft identity and cancellation/no-late-result checks.
-- Validation: all 62 voice tests passed; exact detector hashes verified. Host sherpa-onnx and the
+- Validation: all 63 voice tests passed; exact detector hashes verified. Host sherpa-onnx and the
   exact Android API JAR/matching host JNI classified real English/Hindi samples correctly.
   Android compilation/dexing passed; signing validation alone failed because the shared key is absent.
   No alternate key created. Phone installation, accuracy/latency, short/mixed cases and thermals pending.
+- Routed-cache deletion is serialized with setup; warmup cannot reload an engine during deletion.
+  Queued saved-audio recovery rechecks missing assets before capture and preserves the private draft.
