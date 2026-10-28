@@ -63,3 +63,9 @@ Cleanup is opt-in. The host currently bypasses model cleanup when Dictation lang
 (`hi-IN`); automatic selection can produce mixed script, with no guaranteed transliteration or Hinglish quality.
 Learned-word rules are explicit local correction memory in the host, not continual model training.
 See [Nemotron](../docs/NEMOTRON_EXPERIMENT.md) and [Handy](../docs/HANDY_EXPERIMENT.md) for runtime limits.
+
+Explicit Hindi mode can now route a saved Parakeet/Nemotron choice through the separately
+downloaded IndicConformer engine in the host. The shared agent still receives text, not audio.
+Rule-based Hindi-to-Latin conversion is shared before cleanup/delivery, including the existing
+explicit-Hindi cleanup bypass. Neither IndicXlit nor Sanscript is embedded. See
+[the Hindi pipeline](../docs/INDIC_HINDI_PIPELINE.md).

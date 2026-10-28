@@ -89,11 +89,14 @@ internal class ParakeetSpeech private constructor(private val recognizer: Offlin
         suspend fun open(archive: File, directory: File): ParakeetSpeech {
             val files = prepareParakeet(archive, directory)
             currentCoroutineContext().ensureActive()
+            return openFiles(File(files, "model.int8.onnx"), File(files, "tokens.txt"))
+        }
+        fun openFiles(model: File, tokens: File): ParakeetSpeech {
             return ParakeetSpeech(OfflineRecognizer(config = OfflineRecognizerConfig(
                 featConfig = FeatureConfig(sampleRate = 16000, featureDim = 80, dither = 0f),
                 modelConfig = OfflineModelConfig(
-                    nemo = OfflineNemoEncDecCtcModelConfig(model = File(files, "model.int8.onnx").absolutePath),
-                    tokens = File(files, "tokens.txt").absolutePath,
+                    nemo = OfflineNemoEncDecCtcModelConfig(model = model.absolutePath),
+                    tokens = tokens.absolutePath,
                     numThreads = minOf(2, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1),
                     provider = "cpu", debug = false
                 ), decodingMethod = "greedy_search"

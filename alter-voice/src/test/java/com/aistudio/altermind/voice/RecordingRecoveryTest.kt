@@ -116,7 +116,7 @@ class RecordingRecoveryTest {
     }
 
     private class Speech : DictationSpeech {
-        override val selected = "whisper-tiny"
+        override var selected = "whisper-tiny"
         var warmingUp = false
         val heard = mutableListOf<Float>()
         override fun checkInstalled() {}
@@ -133,6 +133,25 @@ class RecordingRecoveryTest {
     private fun TestScope.controller(saved: RecordingDraftStore, speech: Speech, mic: Microphone,
         recordingScope: CoroutineScope = this, polish: suspend (String) -> String = { it }) = DictationController(ContextWrapper(null), recordingScope,
         speech, { mic }, polish, saved, { true }, StandardTestDispatcher(testScheduler))
+
+    @Test fun aLanguageRoutingChangeDuringSetupCannotResumeAudioWithTheWrongEngine() = runTest {
+        val saved = store()
+        val draft = saved.begin("whisper-tiny")
+        saved.append(draft.id, shortArrayOf(1000, 2000), 2)
+        val speech = Speech()
+        val mic = Microphone()
+        val current = controller(saved, speech, mic)
+        DictationController.speechSetup {
+            current.start(endAfterSilence = false)
+            runCurrent() // Initial validation passed, but the session must wait for setup ownership.
+            speech.selected = INDIC_HINDI_MODEL
+        }
+        advanceTimeBy(25); runCurrent()
+        assertEquals(0, mic.starts)
+        assertEquals("whisper-tiny", saved.load()!!.model)
+        assertEquals(2, saved.load()!!.samples)
+        assertTrue(current.error.value.orEmpty().contains("Select whisper-tiny"))
+    }
 
     @Test fun pauseDuringModelWarmupAndRestoreResumeDoNotLoseOrDuplicateAudio() = runTest {
         val saved = store()

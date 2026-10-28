@@ -79,7 +79,7 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 - Android on-device recognition only on API 31+, never a cloud fallback.
 - No recovery cards: interrupted recording/processing returns as a paused pill. Keep one private temporary draft
   in `noBackupFilesDir/dictation-draft`; delete it only after accepted text insertion or explicit discard.
-  Whisper/Moonshine/Nemotron journal raw PCM; Android on-device recognition can preserve only its recognized text.
+  Downloaded recognizers journal raw PCM; Android on-device recognition can preserve only its recognized text.
 - Text goes in through the keyboard's input connection (`commitText`), never sent automatically. No accessibility
   service is used.
 - Losing focus or hiding the keyboard pauses capture and preserves the draft. Finished audio keeps processing in
@@ -106,3 +106,13 @@ never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/D
 (`ALTER-Keyboard-<version>.apk`). The repo cannot hold it as a file: it is over GitHub's 100 MB limit.
 Each run then deletes every older `build-N` release (with its tag) and older APK artifacts, so only the newest APK
 is kept. Do not rely on older releases existing.
+
+## Hindi mode routing
+
+- Explicit Hindi mode uses IndicConformer for saved Parakeet CTC/TDT and Nemotron choices;
+  keep the saved base choice and display the actual effective engine. Automatic mode is not LID.
+- Require both pinned Hindi files, stage and verify the metadata-only derived graph, retain
+  immutable downloaded bytes, and never call native inference on an unverified adaptation.
+- Shared ICU Romanization preserves already-Latin content. Do not label it IndicXlit/Sanscript
+  or model fine-tuning; natural Hinglish/code-switching remain unverified. Guard active language
+  changes and keep drafts associated with their actual effective model ID.

@@ -2,6 +2,58 @@
   "schemaVersion": 1,
   "models": [
     {
+      "id": "indicconformer-hi-int8",
+      "displayName": "IndicConformer Hindi \u00b7 INT8",
+      "tier": "Speech",
+      "description": "AI4Bharat Hindi recognition via a community ONNX export. Hindi mode engine for Parakeet/Nemotron; offline Roman-letter output using rules, not IndicXlit. Hindi-English code-switching quality is unverified.",
+      "family": "IndicConformer",
+      "version": "8960b8611af5b8c375d442d52907360176410c8b",
+      "repository": "OpenVoiceOS/ai4bharat-indicconformer-hi-onnx",
+      "filename": "model.int8.onnx",
+      "downloadUrl": "https://huggingface.co/OpenVoiceOS/ai4bharat-indicconformer-hi-onnx/resolve/8960b8611af5b8c375d442d52907360176410c8b/model.int8.onnx",
+      "downloadBytes": 137677313,
+      "sha256": "c2044177b6d44494fe40be755466845a4c7bd1b5a5d1f6a15b33b2b4ba6011cd",
+      "license": "MIT",
+      "modelType": "SPEECH",
+      "capabilities": [
+        "SPEECH_TRANSCRIPTION",
+        "OFFLINE_CTC",
+        "INDIC_HI_CTC",
+        "HINDI"
+      ],
+      "minimumRamBytes": 2147483648,
+      "recommendedRamBytes": 4294967296,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
+      "id": "indicconformer-hi-vocab",
+      "displayName": "IndicConformer Hindi \u00b7 INT8 \u00b7 vocabulary",
+      "tier": "Speech",
+      "description": "AI4Bharat Hindi recognition via a community ONNX export. Hindi mode engine for Parakeet/Nemotron; offline Roman-letter output using rules, not IndicXlit. Hindi-English code-switching quality is unverified.",
+      "family": "IndicConformer",
+      "version": "8960b8611af5b8c375d442d52907360176410c8b",
+      "repository": "OpenVoiceOS/ai4bharat-indicconformer-hi-onnx",
+      "filename": "vocab.txt",
+      "downloadUrl": "https://huggingface.co/OpenVoiceOS/ai4bharat-indicconformer-hi-onnx/resolve/8960b8611af5b8c375d442d52907360176410c8b/vocab.txt",
+      "downloadBytes": 2700,
+      "sha256": "152e58dc9469feb8f74fb006245616ad7cd91b3f7a5ace72ec53f970db10c981",
+      "license": "MIT",
+      "modelType": "SPEECH",
+      "capabilities": [
+        "SPEECH_TRANSCRIPTION",
+        "OFFLINE_CTC",
+        "INDIC_HI_CTC",
+        "HINDI"
+      ],
+      "minimumRamBytes": 2147483648,
+      "recommendedRamBytes": 4294967296,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
       "id": "parakeet-110m-ctc-int8",
       "displayName": "Parakeet 110M \u00b7 INT8 CTC \u00b7 English",
       "tier": "Speech",

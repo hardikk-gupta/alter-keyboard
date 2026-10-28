@@ -174,9 +174,9 @@ fun AlterVoiceSetupCard(navController: NavHostController) {
     }
 }
 
-/** The model offered first: Moonshine Tiny for English (smallest, live), Whisper Base when Hindi is chosen. */
+/** Explicit Hindi setup uses the Hindi engine; English retains the smallest live recognizer. */
 private fun recommendedChoice(choices: List<SpeechChoice>, language: String) =
-    choices.find { it.id == if (language == "hi-IN") "whisper-base" else "moonshine-en" } ?: choices.first()
+    choices.find { it.id == if (language == "hi-IN") com.aistudio.altermind.voice.INDIC_HINDI_MODEL else "moonshine-en" } ?: choices.first()
 
 @Composable
 fun AlterVoiceScreen(navController: NavHostController) {
@@ -204,9 +204,10 @@ fun AlterVoiceScreen(navController: NavHostController) {
     }
 
     // A finished download is used straight away when no usable speech model is chosen (none yet, or the saved one
-    // was removed or disabled): no extra "Use" tap.
+    // was removed or disabled): no extra "Use" tap. Missing Hindi files must not replace a valid base choice.
     LaunchedEffect(refresh) {
-        if (runCatching { models.checkInstalled() }.isFailure)
+        val saved = choices.find { it.id == models.recordingSelected }
+        if (models.selected != VoiceSettings.DEVICE_SPEECH_ID && (saved == null || !saved.installed(models.store)))
             choices.firstOrNull { it.installed(models.store) }?.let { use(it.id) }
     }
 
@@ -249,8 +250,19 @@ fun AlterVoiceScreen(navController: NavHostController) {
                 stringResource(R.string.alter_voice_language_hi_in)
             )
             DropDownPickerSettingItem(stringResource(R.string.alter_voice_language_title), VoiceSettings.LANGUAGES, language,
-                { VoiceSettings.setLanguage(context, it); language = it },
+                { next -> scope.launch {
+                    error = runCatching {
+                        VoiceSettings.setLanguage(context, next)
+                        language = next
+                        selected = models.selected
+                        refresh++
+                    }.exceptionOrNull()?.message
+                } },
                 { languageNames[VoiceSettings.LANGUAGES.indexOf(it).coerceAtLeast(0)] })
+            if (language == "hi-IN" && selected == com.aistudio.altermind.voice.INDIC_HINDI_MODEL &&
+                models.recordingSelected != selected) {
+                Tip(stringResource(R.string.alter_hindi_routing_hint))
+            }
             error?.let { Tip(it) }
             CollapsibleSection(stringResource(R.string.alter_speech_models_all, choices.size + if (VoiceSettings.deviceSpeechAvailable(context)) 1 else 0)) {
                 choices.forEach { choice ->

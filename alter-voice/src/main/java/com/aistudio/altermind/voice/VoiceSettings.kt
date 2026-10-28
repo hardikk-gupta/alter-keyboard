@@ -13,9 +13,12 @@ object VoiceSettings {
     fun deviceSpeechAvailable(context: Context) = com.aistudio.altermind.voice.deviceSpeechAvailable(context)
 
     fun language(context: Context) = voicePrefs(context).getString("voice_language", "auto") ?: "auto"
-    fun setLanguage(context: Context, language: String) {
+    suspend fun setLanguage(context: Context, language: String) {
         require(language in LANGUAGES)
-        voicePrefs(context).edit().putString("voice_language", language).apply()
+        check(!DictationController.isActive()) { "Finish dictation before changing its language." }
+        DictationController.speechSetup {
+            voicePrefs(context).edit().putString("voice_language", language).apply()
+        }
     }
 
     fun cleanupSpec(context: Context) = ModelCatalog.load(context).find(VoicePack.CLEANUP_MODEL)
@@ -25,11 +28,14 @@ object VoiceSettings {
         File(context.noBackupFilesDir, "models").walkTopDown().filter { it.isFile }.sumOf { it.length() }
     }
 
-    /** Deletes a speech choice's files, keeping any shared with another installed choice; unselects it if in use. */
+    /** Releases active caches and deletes unshared files; removing Hindi dependencies preserves the saved base choice. */
     suspend fun deleteSpeech(context: Context, choice: SpeechChoice) {
         val models = SpeechModels.get(context)
         check(!DictationController.isActive()) { "Finish recording before deleting a speech model." }
-        if (models.recordingSelected == choice.id) { models.release(); models.clearSelection() }
+        if (models.selected == choice.id || models.recordingSelected == choice.id) {
+            models.release()
+            if (models.recordingSelected == choice.id) models.clearSelection()
+        }
         val shared = speechChoices(models.catalog).filter { it.id != choice.id && it.installed(models.store) }
             .flatMap { it.files }.map { it.id }.toSet()
         ModelDownloads.delete(context, choice.files, keep = shared)

@@ -37,6 +37,7 @@ class ModelCatalog(val models: List<ModelSpec>) {
                         require(spec.downloadBytes in 1..20_000_000_000L)
                         val validFormat = when (spec.modelType) {
                             ModelType.SPEECH -> "SPEECH_TRANSCRIPTION" in spec.capabilities && when (spec.family) {
+                                "IndicConformer" -> spec.filename.substringAfterLast('.') in setOf("onnx", "txt") && "INDIC_HI_CTC" in spec.capabilities
                                 "ParakeetTDT" -> spec.filename.endsWith(".gguf") && "OFFLINE_TDT" in spec.capabilities
                                 "ParakeetCTC" -> spec.filename.endsWith(".tar.bz2") && "OFFLINE_CTC" in spec.capabilities
                                 "Nemotron" -> spec.filename.endsWith(".gguf") && "STREAMING" in spec.capabilities
