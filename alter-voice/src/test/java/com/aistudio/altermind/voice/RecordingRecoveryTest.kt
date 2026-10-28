@@ -117,6 +117,8 @@ class RecordingRecoveryTest {
 
     private class Speech : DictationSpeech {
         override var selected = "whisper-tiny"
+        var sessionOverride: String? = null
+        override val sessionModelId get() = sessionOverride ?: selected
         var warmingUp = false
         val heard = mutableListOf<Float>()
         override fun checkInstalled() {}
@@ -151,6 +153,25 @@ class RecordingRecoveryTest {
         assertEquals("whisper-tiny", saved.load()!!.model)
         assertEquals(2, saved.load()!!.samples)
         assertTrue(current.error.value.orEmpty().contains("Select whisper-tiny"))
+    }
+
+    @Test fun automaticRoutingDraftCannotResumeAsEnglishOnlyAfterSetupChanges() = runTest {
+        val saved = store()
+        val base = "parakeet-110m-ctc-int8"
+        val key = routingDraftModel(base, "auto")!!
+        val draft = saved.begin(key)
+        saved.append(draft.id, shortArrayOf(1000, 2000), 2)
+        val speech = Speech().apply { selected = base; sessionOverride = key }
+        val mic = Microphone()
+        val current = controller(saved, speech, mic)
+        DictationController.speechSetup {
+            current.start(endAfterSilence = false); runCurrent()
+            speech.sessionOverride = null // Same base model, different language/routing policy.
+        }
+        advanceTimeBy(25); runCurrent()
+        assertEquals(0, mic.starts)
+        assertEquals(key, saved.load()!!.model)
+        assertTrue(current.error.value.orEmpty().contains("Automatic language"))
     }
 
     @Test fun pauseDuringModelWarmupAndRestoreResumeDoNotLoseOrDuplicateAudio() = runTest {

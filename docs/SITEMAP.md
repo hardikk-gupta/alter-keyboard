@@ -18,6 +18,7 @@ Android launcher: ALTER Keyboard icon
     │       │   └── 2 Download <recommended> . [Download], progress, used as soon as it finishes
     │       ├── Speech ....................... model in use · Dictation language
     │       │   └── All speech models (n) .... collapsed: Moonshine, Whisper/Oriserve, experimental Nemotron, IndicConformer Hindi, device recognition
+    │       │   └── Automatic Hindi/English .. routing assets for either Parakeet in Automatic mode
     │       ├── Keyboard ..................... Start mode (Full / Pill) · End recording after silence
     │       ├── Dictation cleanup ............ switch · Cleanup editor (stock LFM2.5 / experimental Handy)
     │       │   └── Editor models ............ download/select/delete
@@ -243,6 +244,17 @@ Download IndicConformer Hindi INT8 (~138 MB) under ALTER voice → All speech mo
 Hindi mode uses it for either Parakeet variant or Nemotron, with Roman-letter output through
 the existing offline ICU rules. The actual Hindi engine is shown in settings; the base model is
 remembered for English/Automatic mode. Missing Hindi files require download, without a silent
-recognizer fallback. Parakeet itself remains English-only and Automatic adds no new Hindi detection.
+recognizer fallback. Parakeet itself remains English-only; the separate Automatic routing download now provides
+English/Hindi detection and engine selection for both variants.
 This is rule-based script conversion, not IndicXlit, fine-tuning or proven natural code-switching.
 See [Hindi pipeline](INDIC_HINDI_PIPELINE.md) for configuration, recovery and testing.
+
+### Automatic English/Hindi with either Parakeet
+
+Keep the selected Parakeet model and choose Automatic language. A one-time routing download
+(~240 MB total, or ~103 MB extra when Hindi is already installed) provides Whisper Tiny LID
+and IndicConformer Hindi. English uses the saved CTC/TDT model; Hindi uses IndicConformer.
+Nemotron is the optional mixed/uncertain fallback. Missing mixed-language fallback preserves
+the recording with an error. Sparse language detection is experimental and can miss short
+or mixed phrases; it is not Whisper Tiny transcription or guaranteed natural Hinglish.
+See [automatic routing](AUTOMATIC_LANGUAGE_ROUTING.md) for setup, asset deletion and recovery behavior.

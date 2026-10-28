@@ -70,7 +70,7 @@ class DictationController internal constructor(private val context: Context, pri
         if (capture && !canRecord()) { mutableError.value = "Allow microphone access for ALTER Keyboard, then try again."; return }
         fun validateSpeechSelection() {
             if (capture || (saved?.model != DEVICE_SPEECH && saved?.completed == null)) {
-                if (saved != null) check(saved.model == speech.selected) { "Select ${saved.model} again to resume this recording, or discard it." }
+                if (saved != null) check(saved.model == speech.sessionModelId) { speechRecoveryMessage(saved.model) }
                 speech.checkInstalled()
             }
         }
@@ -93,7 +93,7 @@ class DictationController internal constructor(private val context: Context, pri
                 while (!owner.compareAndSet(null, sessionClaim)) { delay(25); ensureActive() }
                 // Model/language setup may have changed the effective engine while this session waited.
                 validateSpeechSelection()
-                val draft = if (saved == null) drafts.begin(checkNotNull(speech.selected))
+                val draft = if (saved == null) drafts.begin(checkNotNull(speech.sessionModelId))
                     else if (capture) drafts.resume(saved.id) else saved
                 synchronized(this@DictationController) { if (generation == epoch) draftId = draft.id }
                 if (!capture && draft.completed != null) {

@@ -57,6 +57,7 @@ internal class AndroidDictationMicrophone(private val context: Context) : Dictat
 
 internal interface DictationSpeech {
     val selected: String?
+    val sessionModelId: String? get() = selected
     fun checkInstalled()
     suspend fun ensureReady()
     suspend fun stream(owner: Any, read: suspend () -> FloatArray?, update: (String) -> Unit): Boolean

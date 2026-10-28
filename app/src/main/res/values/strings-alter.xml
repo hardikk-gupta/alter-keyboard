@@ -68,4 +68,7 @@
     <string name="alter_setup_step_model">Download %1$s</string>
     <string name="alter_setup_step_model_hint">Recommended to start. It is used as soon as it finishes</string>
     <string name="alter_hindi_routing_hint">Hindi mode uses the downloaded IndicConformer Hindi engine and converts its text to English letters. Your English model is remembered; switch to English or Automatic to use it again. Automatic does not detect Hindi for English-only models.</string>
+    <string name="alter_auto_route_download">Automatic Hindi/English routing</string>
+    <string name="alter_auto_route_base">Saved English model · Automatic language routing</string>
+    <string name="alter_auto_route_hint">One-time download: Whisper language detector plus IndicConformer Hindi (~240 MB; existing files are reused). English uses your Parakeet choice; Hindi uses IndicConformer. For mixed or uncertain speech, download Nemotron under All speech models. Detection can be wrong on short or mixed phrases. Deleting this bundle removes the detector only.</string>
 </resources>

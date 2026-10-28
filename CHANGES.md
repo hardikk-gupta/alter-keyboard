@@ -467,3 +467,20 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
   revalidating saved-audio engine identity after waiting for atomic language/model setup.
   Android compilation/dexing passed; signing alone failed due to the unavailable shared key.
   No replacement key created. Phone Hindi/Hinglish accuracy/latency and install acceptance pending.
+
+## Automatic English/Hindi routing for both Parakeet variants (Oct 28, 2026)
+
+- Adapted Sayso's Whisper spoken-language-identification approach, retaining its MIT attribution,
+  with pinned INT8 ONNX detector assets and the existing sherpa runtime. One routing download
+  groups detector/Hindi files (~240 MB total; existing Hindi files reused), without bundling weights.
+- Automatic language keeps the selected English CTC/TDT decoder, routes Hindi to IndicConformer
+  and uses installed Nemotron for mixed/uncertain labels. Mixed without Nemotron preserves audio
+  with an actionable error. Unknown/short input can retain the base recognizer with an uncertainty
+  notice. No hard-coded confidence, guaranteed code-switching or Whisper Tiny transcription claim.
+- Classifier sees copied probes; full PCM windows remain intact. Cache the detector and derived
+  speech files across route changes while keeping one ASR decoder active. Keep explicit modes and
+  Nemotron's native Automatic path, policy-aware draft identity and cancellation/no-late-result checks.
+- Validation: all 62 voice tests passed; exact detector hashes verified. Host sherpa-onnx and the
+  exact Android API JAR/matching host JNI classified real English/Hindi samples correctly.
+  Android compilation/dexing passed; signing validation alone failed because the shared key is absent.
+  No alternate key created. Phone installation, accuracy/latency, short/mixed cases and thermals pending.

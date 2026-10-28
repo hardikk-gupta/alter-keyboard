@@ -187,6 +187,8 @@ fun AlterVoiceScreen(navController: NavHostController) {
     var cleanupId by remember { mutableStateOf(VoicePack.cleanupModel(context)) }
     val cleanup = remember(cleanupId) { models.catalog.find(cleanupId) }
     val downloads by ModelDownloads.states.collectAsState()
+    val routingFiles = remember { com.aistudio.altermind.voice.automaticRoutingSpecs(models.catalog) }
+    val routingNotice by models.routingNotice.collectAsState()
 
     // Re-read installed state and storage after downloads finish or models change.
     var refresh by remember { mutableIntStateOf(0) }
@@ -230,11 +232,19 @@ fun AlterVoiceScreen(navController: NavHostController) {
                         }
                     }
                 }
-                val recommended = recommendedChoice(choices, language)
-                ModelRow(stringResource(R.string.alter_setup_step_model, recommended.name),
-                    stringResource(R.string.alter_setup_step_model_hint), recommended.id, recommended.files,
-                    installed = remember(refresh) { recommended.installed(models.store) }, inUse = selected == recommended.id,
-                    onUse = null, onDelete = {}, primary = true, stepNumber = 2)
+                val base = choices.find { it.id == models.recordingSelected }
+                if (models.automaticRouting && base?.installed(models.store) == true) {
+                    ModelRow(stringResource(R.string.alter_auto_route_download),
+                        stringResource(R.string.alter_auto_route_hint), com.aistudio.altermind.voice.AUTO_ROUTING_DOWNLOAD,
+                        routingFiles, installed = routingFiles.all(models.store::installed), inUse = true,
+                        onUse = null, onDelete = {}, primary = true, stepNumber = 2)
+                } else {
+                    val recommended = if (models.automaticRouting && base != null) base else recommendedChoice(choices, language)
+                    ModelRow(stringResource(R.string.alter_setup_step_model, recommended.name),
+                        stringResource(R.string.alter_setup_step_model_hint), recommended.id, recommended.files,
+                        installed = remember(refresh) { recommended.installed(models.store) }, inUse = selected == recommended.id,
+                        onUse = null, onDelete = {}, primary = true, stepNumber = 2)
+                }
             }
         }
 
@@ -243,7 +253,7 @@ fun AlterVoiceScreen(navController: NavHostController) {
             val current = choices.find { it.id == selected }?.name
                 ?: if (selected == VoiceSettings.DEVICE_SPEECH_ID) stringResource(R.string.alter_device_speech_name) else null
             SettingItem(title = current ?: stringResource(R.string.alter_speech_model_none),
-                subtitle = stringResource(if (current != null) R.string.alter_model_in_use else R.string.alter_speech_model_none_hint)) {}
+                subtitle = stringResource(if (models.automaticRouting) R.string.alter_auto_route_base else if (current != null) R.string.alter_model_in_use else R.string.alter_speech_model_none_hint)) {}
             val languageNames = listOf(
                 stringResource(R.string.alter_voice_language_auto),
                 stringResource(R.string.alter_voice_language_en_in),
@@ -262,6 +272,21 @@ fun AlterVoiceScreen(navController: NavHostController) {
             if (language == "hi-IN" && selected == com.aistudio.altermind.voice.INDIC_HINDI_MODEL &&
                 models.recordingSelected != selected) {
                 Tip(stringResource(R.string.alter_hindi_routing_hint))
+            }
+            if (models.automaticRouting) {
+                val routingInstalled = routingFiles.all(models.store::installed)
+                val downloadShownInSetup = status.state != AlterVoiceState.Ready &&
+                    choices.find { it.id == models.recordingSelected }?.installed(models.store) == true && !routingInstalled
+                if (!downloadShownInSetup) {
+                    ModelRow(stringResource(R.string.alter_auto_route_download), stringResource(R.string.alter_auto_route_hint),
+                        com.aistudio.altermind.voice.AUTO_ROUTING_DOWNLOAD, routingFiles,
+                        installed = routingInstalled, inUse = true, onUse = null,
+                        onDelete = { scope.launch {
+                            error = runCatching { VoiceSettings.deleteAutomaticRouting(context) }.exceptionOrNull()?.message
+                            refresh++
+                        } })
+                }
+                routingNotice?.let { Tip(it) }
             }
             error?.let { Tip(it) }
             CollapsibleSection(stringResource(R.string.alter_speech_models_all, choices.size + if (VoiceSettings.deviceSpeechAvailable(context)) 1 else 0)) {

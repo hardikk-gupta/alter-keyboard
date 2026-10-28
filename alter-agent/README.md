@@ -69,3 +69,8 @@ downloaded IndicConformer engine in the host. The shared agent still receives te
 Rule-based Hindi-to-Latin conversion is shared before cleanup/delivery, including the existing
 explicit-Hindi cleanup bypass. Neither IndicXlit nor Sanscript is embedded. See
 [the Hindi pipeline](../docs/INDIC_HINDI_PIPELINE.md).
+
+Automatic Parakeet mode now uses a separate Whisper language detector in the host to select
+the saved English decoder, IndicConformer Hindi or installed Nemotron for mixed/uncertain
+speech. The dictation agent's instructions/weights are unchanged. This is not a full main-app
+agent migration or word-level language switching; see [routing](../docs/AUTOMATIC_LANGUAGE_ROUTING.md).

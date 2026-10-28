@@ -28,6 +28,15 @@ object VoiceSettings {
         File(context.noBackupFilesDir, "models").walkTopDown().filter { it.isFile }.sumOf { it.length() }
     }
 
+    /** Disable automatic detection without deleting the independent Hindi recognizer or base choice. */
+    suspend fun deleteAutomaticRouting(context: Context) {
+        DictationController.speechSetup {
+            val models = SpeechModels.get(context)
+            models.release()
+            ModelDownloads.delete(context, languageIdentificationSpecs(models.catalog))
+        }
+    }
+
     /** Releases active caches and deletes unshared files; removing Hindi dependencies preserves the saved base choice. */
     suspend fun deleteSpeech(context: Context, choice: SpeechChoice) {
         val models = SpeechModels.get(context)

@@ -8,7 +8,8 @@ Hindi audio → AI4Bharat IndicConformer Hindi (community INT8 ONNX export) → 
 This is an additional Hindi recognizer, not a fine-tune or Hindi capability inside Parakeet.
 Both Parakeet variants remain English-only. Explicit Hindi mode routes the selected Parakeet INT8
 CTC, Parakeet FP16 TDT or Nemotron choice through the downloaded Hindi engine. English/Automatic
-mode restores the saved base choice; Automatic does not add Hindi detection/routing to Parakeet.
+mode restores the saved base choice. Automatic mode with either Parakeet now uses the
+[automatic language-routing package](AUTOMATIC_LANGUAGE_ROUTING.md); Explicit English stays single-engine.
 Nemotron's native Hindi support remains available in Automatic mode.
 
 ## Setup and recovery
@@ -19,7 +20,8 @@ Nemotron's native Hindi support remains available in Automatic mode.
    The current-model row shows IndicConformer and a hint explains the routing. If Hindi files are
    missing, the setup card recommends that download; it does not silently choose another recognizer.
 3. Dictate normally. Hindi-script output is converted to English letters before live/final delivery.
-4. Switch language to English or Automatic to return to the saved English/general model.
+4. Switch to English to use the saved base model directly, or Automatic for the separate
+   language-detector routing package with either Parakeet. Nemotron Automatic remains natively multilingual.
 
 IndicConformer can also be selected directly as a Hindi-only recognizer. Whisper/Oriserve,
 Moonshine and Android device recognition are not redirected. Model-based outputs share script
@@ -40,7 +42,8 @@ preserving the saved base choice, and requires a re-download before Hindi mode c
   learned weights remain unchanged. The adapted copy has a separate fixed length/hash check.
   The original downloaded artifact is immutable. Failed/cancelled adaptation removes staging files.
 - About 138 MB download storage plus a 138 MB adapted private copy; existing download free-space
-  checks remain. Releasing/changing the engine deletes its adapted copy, so selecting it again
+  checks remain. Releasing or explicitly changing the selected model deletes its adapted copy; automatic
+route changes retain derived caches. Selecting again after release
   can require re-adaptation. No weights are bundled, no cloud fallback or native build step is added.
 
 The selected cleanup editor remains separate. Explicit Hindi mode retains the existing cleanup-model
@@ -66,7 +69,7 @@ The exact adapted INT8 graph and vocabulary produced Hindi text on a public Oris
 Android API JAR with matching host JNI. Silence returned empty text; repeated fresh streams worked.
 The graph's metadata and deterministic adapted checksum were independently verified with ONNX tools.
 
-All 52 voice unit tests passed, including Hindi routing for both Parakeet variants/Nemotron,
+The initial Hindi integration's 52 voice unit tests passed, including Hindi routing for both Parakeet variants/Nemotron,
 restoring English/Automatic choices, preserving unrelated/device/no-selection choices, failed
 adaptation cleanup, immutable source bytes and mixed-text transliteration. Android compilation/dexing
 passed; signing failed only because the shared debug.keystore is unavailable. No alternate key created.
@@ -75,3 +78,6 @@ Phone acceptance still needs short/long Hindi, pauses/calls, interrupted downloa
 Hindi components, actual model labels, saved-audio retry, language switching and comparisons with
 Oriserve/Nemotron on the same Hindi/Hinglish recordings. Measure cold/warm latency, word accuracy,
 RAM and thermals. Host smoke tests establish compatibility, not phone accuracy percentages.
+
+The current combined automatic-routing suite and detector validation are recorded in the
+[automatic routing guide](AUTOMATIC_LANGUAGE_ROUTING.md).
