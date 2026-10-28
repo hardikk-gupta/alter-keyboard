@@ -404,6 +404,16 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
 - Validation: all 40 local links in 17 changed Markdown documents resolve; `git diff --check` passed. No code or binaries
   changed and no additional Android test run. PR #23's 39 passing voice tests and signing limitation still apply.
 
+## Nemotron Hindi Romanization (Oct 28, 2026)
+
+- Convert Nemotron's Hindi-script runs offline to Latin/ASCII before live cleanup and final output,
+  including saved-audio retry. Already-Latin English/identifiers remain unchanged. No model weights changed.
+- ICU4J 76.1 supplies consistent conversion on Android 8+; its Unicode V3 license is retained.
+  Phonetic spelling differs from casual Hinglish and does not improve ASR word recognition.
+- Added mixed-text preservation, digit/punctuation, revision and idempotence regression checks.
+- Validation: all 42 voice unit tests passed; Android compilation/dexing passed. Assembly remains
+  blocked only by the unavailable shared `debug.keystore`; no substitute key or signed APK was created.
+
 ## Parakeet 110M INT8 CTC (Oct 28, 2026)
 
 - Added the document's Android deployment of NVIDIA Parakeet 110M as one explicit English-only
@@ -431,3 +441,11 @@ model quality/latency/thermal acceptance or APK signature verification was perfo
   tests passed; Android compilation/dexing passed. Signing remains blocked by the missing shared key.
   No model weights or alternative keys committed. Phone accuracy/speed still require comparison;
   the model card's 2.43% LibriSpeech test-clean WER is an upstream benchmark, not an app accuracy claim.
+
+### PR #26 merge resolution
+
+- Merged main after PR #25, preserving Nemotron Hindi Romanization alongside both Parakeet
+  variants, their runtime dependencies, model descriptions and documentation.
+- Validation: all 48 combined voice tests passed; Android compilation/dexing passed. Assembly
+  failed only at signing validation because the shared debug.keystore is unavailable. No
+  replacement key generated. No conflict markers remain; whitespace checks passed.

@@ -109,7 +109,7 @@ audio continues processing to the clipboard.
 Open ALTER voice → Speech → All speech models → Nemotron 3.5 Streaming · Q4 · experimental.
 Download the 496 MB model, then select it. An existing selection remains active during download.
 Record English/Hindi, compare with the previous model, and reselect the previous model at any time.
-Automatic language selection can produce mixed Hindi/Latin script; Romanized Hinglish is unverified.
+Nemotron Hindi-script runs are converted offline to English letters; recognition accuracy remains unverified.
 See [the experiment guide](NEMOTRON_EXPERIMENT.md) for test results and phone acceptance.
 
 ### Pill mode
@@ -220,9 +220,13 @@ the stock editor. Future app context/memory/tool access is not granted by dictat
 Voice settings → All speech models includes **Nemotron 3.5 Streaming · Q4 · experimental**
 (496 MB download), alongside the existing Whisper, Oriserve and Moonshine choices. It uses
 a separate CPU runtime on Android 8+, with live revisions and a final flush; the current
-selection stays unchanged. Hindi may appear in Devanagari or mixed script. The 320 ms
+selection stays unchanged. Hindi-script runs are now converted offline to English letters before cleanup. The 320 ms
 streaming profile is a model setting, not measured phone latency. Speed and accuracy against
 Moonshine still require phone testing. See [Nemotron experiment](NEMOTRON_EXPERIMENT.md).
+
+Nemotron Romanization uses ICU4J 76.1 (Unicode License V3), with no additional model or cloud call.
+Only Devanagari runs are converted, preserving existing English text. It uses phonetic transliteration,
+not translation or fine-tuning; spelling can differ from casual Hinglish. Other ASR models are unchanged.
 
 ### Parakeet 110M CTC and TDT (English)
 

@@ -35,6 +35,9 @@ dependencies {
   api(project(":alter-agent"))
   implementation(files("libs/sherpa-onnx-2.0.1.jar"))
   implementation("org.apache.commons:commons-compress:1.27.1")
+
+  // ICU provides the same offline script conversion on every supported Android version.
+  implementation("com.ibm.icu:icu4j:76.1")
   implementation("androidx.core:core-ktx:1.13.1")
   implementation(platform("androidx.compose:compose-bom:2025.06.00"))
   implementation("androidx.compose.ui:ui")

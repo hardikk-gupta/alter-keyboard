@@ -17,9 +17,13 @@ and cleanup add time. Recording never waits for model loading. Draft audio follo
 existing interruption/retry flow. Failed finalization must not accept a partial transcript.
 Cancellation sets an atomic native abort flag; the owning coroutine releases the session.
 
-Hindi/English recognition is supported by the model; Romanized Hinglish and code switching
-quality are unverified. Hindi can be emitted in Devanagari. Custom vocabulary biasing is
-not wired for this runtime. Alter correction memory and cleanup still operate downstream.
+Hindi/English recognition is supported by the model; conversational Hinglish spelling and code switching
+quality are unverified. Native Hindi output can use Devanagari. Custom vocabulary biasing is
+not wired for this runtime. Hindi-script runs are now converted offline to Latin/ASCII by ICU4J 76.1 before Alter correction memory
+and cleanup. Already-Latin text is unchanged. This applies to live snapshots and saved-audio retries,
+including explicit Hindi mode. No new model is used and Nemotron weights remain unchanged.
+Spellings are phonetic, not guaranteed conversational Hinglish (for example मैं can become maim).
+This cannot recover words the recognizer misheard. License: `licenses/ICU4J-76.1-LICENSE.txt`.
 
 ## Reproduce
 
@@ -45,7 +49,8 @@ See [native provenance](../alter-voice/native-nemotron/SOURCE.md) and
   because this environment lacks the shared keystore. No signed install/signature check ran.
 
 Cleanup follows the selected editor's policy and remains opt-in. Explicit Hindi mode
-(`hi-IN`) bypasses model cleanup; automatic mode does not guarantee Romanized output.
+(`hi-IN`) bypasses model cleanup but still receives script conversion. Automatic mode also receives
+script conversion for Devanagari runs. Other non-Latin scripts are not converted.
 
 ## Phone acceptance still required
 
