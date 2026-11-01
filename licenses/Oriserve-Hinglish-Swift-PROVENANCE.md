@@ -1,5 +1,8 @@
 # Oriserve Hindi2Hinglish Swift Q8
 
+> Retired app experiment. Original artifact/source/license facts below are preserved for provenance;
+> this is not an active download or runtime instruction. See [current models](../docs/VOICE_MODELS.md).
+
 Original fine-tune/training: Oriserve, https://huggingface.co/Oriserve/Whisper-Hindi2Hinglish-Swift
 Base: OpenAI Whisper Base (upstream MIT license remains applicable to upstream material).
 GGML conversion/quantization: https://huggingface.co/anish2305/airnote-hinglish-stt-ggml

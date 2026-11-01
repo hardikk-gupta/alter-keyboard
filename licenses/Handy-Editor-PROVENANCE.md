@@ -1,5 +1,8 @@
 # Handy Editor 350M Q4_K_M
 
+> Retired app experiment. Original artifact/source/license facts below are preserved for provenance;
+> this is not an active download or runtime instruction. See [current models](../docs/VOICE_MODELS.md).
+
 Fine-tune/conversion: MagicNoThief/handy-editor-lfm2.5-350m
 https://huggingface.co/MagicNoThief/handy-editor-lfm2.5-350m
 Pinned revision: f1f01e16ab10143f51ffb0fb180ac715dcef964e

@@ -164,3 +164,10 @@ Streaming diagnostics: Moonshine uses checked native calls with one fresh stream
 foreground failures show a short error message as well as the pill icon. Nemotron retains native
 English/Hindi/Automatic choices and reports the native failure stage and reason. Both modes worked in
 host checks; device-specific failures and phone accuracy remain unverified. See [recognizer checks](STREAMING_RECOGNIZER_CHECKS.md).
+
+## Design handoff maintenance
+
+UI plans, decisions, implementation status and device acceptance belong in the committed
+[plan](../PLAN.md), [handoff](../HANDOFF.md) and [changelog](../CHANGES.md). Update this guide and
+[SITEMAP.md](SITEMAP.md) alongside any UI behavior change; do not leave the design decision only in chat.
+The [agent workflow](../AGENT_INSTRUCTIONS.md) and [Markdown inventory](MARKDOWN_INDEX.md) define the review obligation.

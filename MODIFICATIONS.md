@@ -97,9 +97,9 @@ Each keeps its own license under [`licenses/`](licenses):
 | Moonshine Voice 0.1.5 and Moonshine models | MIT |
 | LiteRT-LM 0.18.0 | Apache 2.0 |
 | LFM2.5 350M INT8 cleanup model (downloaded on demand, never bundled) | LFM Open License v1.0 |
-| Oriserve Hinglish Swift Q8/FP16 community conversions (downloaded on demand) | Apache-2.0; upstream Whisper MIT notices retained |
-| Handy Editor 350M Q4_K_M (downloaded on demand) | LFM Open License v1.0 |
-| llama.cpp CPU runtime for Handy | MIT; bundled dependency notices retained |
+| Oriserve Hinglish Swift Q8/FP16 community conversions (retired) | Apache-2.0; upstream Whisper MIT notices retained |
+| Handy Editor 350M Q4_K_M (retired) | LFM Open License v1.0 |
+| llama.cpp CPU runtime for Handy (archived, excluded from APK) | MIT; bundled dependency notices retained |
 | Nemotron 3.5 Streaming Q4_K_M (downloaded on demand) | OpenMDW-1.1; model NOTICE retained |
 | transcribe.cpp CPU runtime for Nemotron | MIT; bundled dependency notices retained |
 | Lucide icon paths | ISC |

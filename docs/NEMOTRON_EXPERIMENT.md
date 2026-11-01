@@ -1,9 +1,8 @@
 # Nemotron streaming experiment
 
-This is an opt-in on-device transcription candidate, not a replacement for the selected
-Oriserve/Moonshine model. Open Voice settings → All speech models, download **Nemotron 3.5
-Streaming · Q4 · experimental**, then select it. The download is 495,831,520 bytes; allow
-additional RAM for inference (catalog estimates: 3 GB minimum device RAM, 6 GB recommended).
+Nemotron Q4 is one of the retained on-device recognizers. Open Voice settings → Speech,
+download **Nemotron · Q4**, then tap its row to select it. The download is 495,831,520 bytes;
+allow additional RAM for inference (catalog estimates: 3 GB minimum device RAM, 6 GB recommended).
 Android 8+ and a supported arm64-v8a or x86_64 device are required.
 
 ## Pipeline
@@ -46,21 +45,27 @@ See [native provenance](../alter-voice/native-nemotron/SOURCE.md) and
 - All 39 voice unit tests passed. Android compilation/dexing completed; APK signing failed
   because this environment lacks the shared keystore. No signed install/signature check ran.
 
-Cleanup follows the selected editor's policy and remains opt-in. Explicit Hindi mode
-(`hi-IN`) bypasses model cleanup but still receives script conversion. Automatic mode also receives
-script conversion for Devanagari runs. Other non-Latin scripts are not converted.
+Cleanup follows the LFM/Alter policy and remains opt-in. Explicit Hindi (`hi-IN`) bypasses model
+cleanup. No mode receives script conversion. Short/simple text also skips model inference.
 
 ## Phone acceptance still required
 
-Use the same English, Hindi and Hinglish recordings with Nemotron, Moonshine and Oriserve.
+Use the same English/Hindi/Hinglish recordings with Nemotron and Android recognition; compare
+English separately with Moonshine Medium and both Parakeets.
 Measure first visible text, completion delay, word accuracy, self-corrections, RAM and heat.
 Test short silence, one-word input, a long recording, pause/resume, hiding during processing,
 retry and cancellation. Include names, numbers and notebook/loadbook examples. Keep the
 existing preferred model unless this comparison demonstrates an improvement. Host inference
 and Android compilation cannot establish phone speed or competitive accuracy.
 
-## Explicit Hindi mode
+## Language selection and failure diagnostics
 
-The Hindi-mode routing update uses the separately downloaded IndicConformer Hindi recognizer
-when Nemotron is the saved base choice and Dictation language is Hindi. Automatic mode keeps
-Nemotron's native multilingual decoder. See [the shared Hindi pipeline](INDIC_HINDI_PIPELINE.md).
+English maps to `en-US`, Hindi to `hi-IN` and Automatic to a null native hint. All use Nemotron itself;
+no separate Hindi model, routing download or transliteration is inserted. Selecting Hindi can make
+English speech appear phonetically in Hindi script; it is not a request to translate into English.
+
+PR #31 adds native operation/status messages and locale information at start failures, with a short
+foreground error Toast. It does not force Automatic to English. Both Android ABI libraries are rebuilt.
+The English-only phone report has not been reproduced in host tests. See
+[streaming verification](STREAMING_RECOGNIZER_CHECKS.md) and the dated [handoff](../HANDOFF.md)
+for current main/PR state. PR #23's test counts above are historical, not the current suite count.

@@ -1,3 +1,9 @@
+# Archived Handy runtime
+
+> Retired from the app: this source and its licenses are retained as provenance. Its voice JNI
+> library is excluded from the current APK; these build notes are not an active model recommendation.
+> See [current model scope](../../docs/VOICE_MODELS.md).
+
 CPU subset of ggml-org/llama.cpp, revision 2280f0fd163b03d4331d49e08460f66502e35854, MIT.
 Includes src/include/cmake and ggml CPU dependencies. Tools, servers, tests and accelerators are excluded.
 ALTER's JNI bridge uses Handy's explicit-empty-system ChatML framing, greedy decoding, fresh contexts and abort callbacks.

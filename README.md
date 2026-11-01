@@ -4,6 +4,16 @@ ALTER Keyboard is a complete typing keyboard with ALTER's on-device voice pack a
 into any app through Android's input-method system, so it needs no accessibility service (banking apps such as YONO
 SBI have nothing to flag), and all speech recognition runs on the phone.
 
+## Project handoff and agent work
+
+Start with [HANDOFF.md](HANDOFF.md) for current state and open issues, [PLAN.md](PLAN.md) for planned/completed
+work, [CHANGES.md](CHANGES.md) for history, and [AGENTS.md](AGENTS.md) / [AGENT_INSTRUCTIONS.md](AGENT_INSTRUCTIONS.md)
+for coding-agent rules. [Development setup](docs/DEVELOPMENT.md) and the complete
+[Markdown inventory](docs/MARKDOWN_INDEX.md) are also committed. All essential handoff material belongs in this repo.
+Agents must review all Markdown and immediately update every affected document with each logical change,
+in the same commit/PR; licenses/upstream/history are preserved intentionally. See the dated handoff before
+assuming that branch-only streaming changes have merged or have fixed a phone issue.
+
 ## Install on a phone
 
 1. Open the repo's **Releases** page on the phone and download the newest

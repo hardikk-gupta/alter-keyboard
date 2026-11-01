@@ -1,5 +1,8 @@
 # AI4Bharat IndicConformer Hindi INT8
 
+> Retired app experiment. Original artifact/source/license facts below are preserved for provenance;
+> this is not an active download or runtime instruction. See [current models](../docs/VOICE_MODELS.md).
+
 Original model: https://huggingface.co/ai4bharat/indicconformer_stt_hi_hybrid_ctc_rnnt_large
 Publisher: AI4Bharat; original model repository revision deada84ce880997c56ee933aa21571d768264700.
 The original Hugging Face checkpoint is gated. ALTER does not download or redistribute that checkpoint.

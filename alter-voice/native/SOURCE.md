@@ -1,5 +1,10 @@
 # whisper.cpp source provenance
 
+> Retired from the app: this source and its licenses are retained as provenance. Its voice JNI
+> library is excluded from the current APK; these build notes are not an active model recommendation.
+> See [current model scope](../../docs/VOICE_MODELS.md).
+
+
 Unmodified CPU build subset of ggml-org/whisper.cpp v1.9.5, commit
 `d1be6fde11ac6e0407606b4e42fe72d34add8037`.
 
