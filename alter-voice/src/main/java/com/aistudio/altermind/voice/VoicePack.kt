@@ -2,9 +2,9 @@ package com.aistudio.altermind.voice
 
 import android.content.Context
 
-/** ALTER's voice pack inside the keyboard: deterministic formatting always, the LFM2.5 editor when enabled and installed. */
+/** ALTER's voice pack inside the keyboard: deterministic formatting always, the Qwen3 1.7B editor when enabled and installed. */
 object VoicePack {
-    const val CLEANUP_MODEL = "lfm25-350m-cleanup"
+    const val CLEANUP_MODEL = "qwen3-1.7b-cleanup"
     internal const val ENABLED = "dictation_cleanup"
 
     private var engine: CleanupEngine? = null
@@ -20,7 +20,8 @@ object VoicePack {
         if (dictationCleanupLevel(transcript) == DictationCleanupLevel.BASIC)
             return formatDictation(cleanDictation(transcript))
         val prefs = voicePrefs(context)
-        if (!prefs.getBoolean(ENABLED, false) || prefs.getString("voice_language", "auto") == "hi-IN") return formatDictation(cleanDictation(transcript))
+        // Qwen3 handles Hindi and Hinglish, so Hindi dictation is cleaned too (LFM2.5 had to skip it).
+        if (!prefs.getBoolean(ENABLED, false)) return formatDictation(cleanDictation(transcript))
         val catalog = ModelCatalog.load(context)
         val spec = catalog.find(CLEANUP_MODEL)
         val store = ModelStore(context)
@@ -29,10 +30,12 @@ object VoicePack {
             val result = StringBuilder()
             engine(context).generate(spec, dictationCleanupRequest(chunk))
                 .collect { result.append(it); check(result.length <= 3000) { "Invalid cleanup response" } }
-            check(result.isNotBlank()) { "The cleanup model produced no text." }
-            result.toString()
+            stripThinking(result.toString()).also { check(it.isNotBlank()) { "The cleanup model produced no text." } }
         }
     }
 }
+
+/** Thinking is disabled for Qwen3; drop an empty or stray reasoning block if one still appears. */
+internal fun stripThinking(text: String): String = text.replace(Regex("(?s)<think>.*?</think>"), "").trim()
 
 internal fun voicePrefs(context: Context) = context.getSharedPreferences("alter_voice", Context.MODE_PRIVATE)

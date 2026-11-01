@@ -2,6 +2,30 @@
   "schemaVersion": 1,
   "models": [
     {
+      "id": "whisper-oriserve-hinglish-apex-q8",
+      "displayName": "Oriserve Hinglish Apex",
+      "tier": "Speech",
+      "description": "Hindi + English \u00b7 Roman letters",
+      "family": "Whisper",
+      "version": "d1de3ff618856e5675c47d3158ca820506fb4d9e",
+      "repository": "Marquestra/Whisper-Hindi2Hinglish-Apex-GGML",
+      "filename": "ggml-apex-hinglish-q8_0.bin",
+      "downloadUrl": "https://huggingface.co/Marquestra/Whisper-Hindi2Hinglish-Apex-GGML/resolve/d1de3ff618856e5675c47d3158ca820506fb4d9e/ggml-apex-hinglish-q8_0.bin",
+      "downloadBytes": 874188075,
+      "sha256": "bef6d9d571e9e7bd3cd2ebba8b2d5c9cc4731e210d6750ae6a9c621a87e60d4c",
+      "license": "Apache-2.0",
+      "modelType": "SPEECH",
+      "capabilities": [
+        "SPEECH_TRANSCRIPTION",
+        "HINGLISH_ROMANIZED"
+      ],
+      "minimumRamBytes": 3221225472,
+      "recommendedRamBytes": 6442450944,
+      "backend": "CPU",
+      "cpuFallback": false,
+      "contextTokens": 480000
+    },
+    {
       "id": "parakeet-110m-ctc-int8",
       "displayName": "Parakeet CTC \u00b7 INT8",
       "tier": "Speech",
@@ -277,27 +301,27 @@
       "sha256": "6884b35fd6377d4c4d32336a0bc152f36b64d1e45b6503683cdc238250a8472d"
     },
     {
-      "id": "lfm25-350m-cleanup",
-      "displayName": "LFM dictation cleanup",
+      "id": "qwen3-1.7b-cleanup",
+      "displayName": "Qwen3 dictation cleanup",
       "tier": "Voice pack",
-      "description": "350M",
-      "family": "LFM2.5",
-      "version": "0fdead63ee63cd01703adb5f085d0a72b0cb5e20",
-      "repository": "litert-community/LFM2.5-350M",
-      "filename": "LFM2.5-350M_int8.litertlm",
-      "downloadUrl": "https://huggingface.co/litert-community/LFM2.5-350M/resolve/0fdead63ee63cd01703adb5f085d0a72b0cb5e20/LFM2.5-350M_int8.litertlm",
-      "downloadBytes": 403416064,
-      "sha256": "6a78c7a2746386f8919476a34ef0ca40d596a5c44e979520fae8318da5cfb1f6",
-      "license": "LFM Open License v1.0",
+      "description": "1.7B \u00b7 Hindi + English",
+      "family": "Qwen3",
+      "version": "ebb4eef4c07c0ecf019fa3cf7b501771d44ca21f",
+      "repository": "litert-community/Qwen3-1.7B",
+      "filename": "Qwen3_1.7B.litertlm",
+      "downloadUrl": "https://huggingface.co/litert-community/Qwen3-1.7B/resolve/ebb4eef4c07c0ecf019fa3cf7b501771d44ca21f/Qwen3_1.7B.litertlm",
+      "downloadBytes": 1754890240,
+      "sha256": "e40599625f3e446d6522674586a40566d6a3a117af608f6e9ea46ac86d326461",
+      "license": "Apache-2.0",
       "modelType": "TEXT_CLEANUP",
       "capabilities": [
         "TEXT_CHAT"
       ],
-      "minimumRamBytes": 3221225472,
-      "recommendedRamBytes": 6442450944,
+      "minimumRamBytes": 4294967296,
+      "recommendedRamBytes": 8589934592,
       "backend": "CPU",
       "cpuFallback": false,
-      "contextTokens": 2048
+      "contextTokens": 4096
     }
   ]
 }

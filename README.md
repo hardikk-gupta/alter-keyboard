@@ -11,7 +11,8 @@ SBI have nothing to flag), and all speech recognition runs on the phone.
 2. Open the file and allow installing from your browser when Android asks.
 3. Settings → System → Keyboard → On-screen keyboard → turn on **ALTER Keyboard**, then pick it in any text field.
 4. For voice: open ALTER Keyboard's settings → **ALTER voice** → allow the microphone and download a speech model
-   (both Parakeets, Nemotron or Moonshine Medium), or select Android on-device recognition when available.
+   (Oriserve Hinglish Apex for Hindi/Hinglish, both Parakeets, Nemotron or Moonshine Medium), or select Android
+   on-device recognition when available.
 
 Updates install over the previous build only when both are signed with the same key. Until the repository secret
 `ALTER_SIGNING_KEYSTORE_B64` is set, each build gets a one-off key and the old app must be uninstalled first
@@ -42,8 +43,9 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
   recognized text only for Android's recognizer (Android does not expose its source audio). It survives process restarts
   and is removed after accepted insertion or an explicit ✕ discard, with a fifteen-minute audio limit. Resume uses the
   same speech model; reselect it if changed. No recording history is kept. Errors preserve the draft for retry.
-- Speech models: Parakeet 110M CTC INT8, Parakeet 110M TDT FP16, Nemotron Q4, Moonshine Medium,
-  or Android on-device recognition (Android 12+). Optional cleanup uses only LFM2.5 350M.
+- Speech models: Oriserve Hinglish Apex (Hindi + English in Roman letters), Parakeet 110M CTC INT8, Parakeet 110M
+  TDT FP16, Nemotron Q4, Moonshine Medium, or Android on-device recognition (Android 12+). Optional cleanup uses
+  only Qwen3 1.7B, which also cleans Hindi and Hinglish.
   Models download into private storage with exact size and SHA-256 checks; nothing is sent to the cloud.
 
 
@@ -67,7 +69,7 @@ The full sitemap and user flows are in [docs/SITEMAP.md](docs/SITEMAP.md).
   top, and the ALTER voice row shows its status ("Ready · model" or the missing step).
 - **ALTER voice:** numbered setup steps while needed (allow the microphone, download the recommended model, which is
   used as soon as it finishes), then Speech (model in use, dictation language, all models collapsed), Keyboard (start
-  mode, end recording after silence), Dictation cleanup (LFM only), Learned words, and storage used.
+  mode, end recording after silence), Dictation cleanup (Qwen3), Learned words, and storage used.
 - Languages, keyboard and typing, swipe, predictive text, actions, themes and help, plus the upstream payment page,
   which the license requires to stay.
 
@@ -89,7 +91,8 @@ Native code is prebuilt because Google AI Studio has no NDK or CMake. After chan
 28.2.13676358 and CMake 3.22.1 and run `scripts/build_native_libs.sh`, which rebuilds and replaces:
 
 - `app/src/main/jniLibs/<abi>/libjni_latinime.so`, the typing engine, from `app/native/jni`;
-- Archived `libalter_whisper.so` from `alter-voice/native` is excluded from the APK;
+- `alter-voice/src/main/jniLibs/<abi>/libalter_whisper*.so`, the whisper.cpp bridge for Oriserve Apex, from
+  `alter-voice/native` (three arm64 builds by CPU feature level, via `scripts/build_whisper_native.sh`);
 - Archived `libalter_handy.so` from `alter-voice/native-handy` is excluded from the APK;
 - `alter-voice/src/main/jniLibs/<abi>/libalter_nemotron.so`, Nemotron streaming ASR, from `alter-voice/native-nemotron`.
 
@@ -133,7 +136,7 @@ The voice pipeline is audio → transcription → `alter-agent` dictation policy
 validated text output. The reusable core owns instructions/examples, explicit weekday correction handling,
 formatting, edit validation, bounded processing and full-transcript fallback. The keyboard supplies model inference
 and handles insertion/clipboard delivery. No main-app installation, chat history, memories, tools or cloud fallback
-is required. Cleanup remains opt-in and Hindi mode retains its existing bypass. This is a dictation-specific core,
+is required. Cleanup remains opt-in and now also covers Hindi and Hinglish. This is a dictation-specific core,
 not the main app's full chat/action agent; the main app has not yet migrated to this module.
 
 Dictation instructions now explicitly cover fillers, false starts, repetition, latest explicit corrections,
@@ -141,7 +144,7 @@ faithful grammar/formatting, Hindi/Hinglish language preservation, and protectio
 They forbid answering/executing spoken requests or inventing context/preferences. This is an instruction update,
 not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
 semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
-limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.
+limited correction class. Formatting remains bounded by the current formatter.
 
 Bounded Parakeet preview scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
 or download), targets its first preview after two seconds of captured audio, and spaces later previews according
@@ -164,7 +167,7 @@ phrases of up to six words/80 characters use deterministic formatting and skip c
 and tagged/code syntax take the model path. Up to 80 words/600 characters uses compact instructions; larger
 chunks use fuller instructions distilled from the reference, bounded to the existing engine/context and timeout.
 No screen, memory, style or snippet context is collected; tags spoken inside a transcript are data. Opt-in/model
-availability and Hindi bypass still apply. Existing validation may reject requested semantic edits, number/address
+availability still apply. Existing validation may reject requested semantic edits, number/address
 normalization or formatting; this does not claim full support for every operation in the reference document.
 
 Settings → ALTER voice → Learned words lets users explicitly save/delete single-word corrections. Up to 100
@@ -176,12 +179,11 @@ when inappropriate. This is visible correction memory, not model training, edito
 
 ## Current voice models
 
-Keep either Parakeet 110M CTC INT8 or TDT FP16 (English), Nemotron Q4 (multilingual),
-Moonshine Medium (English), or Android on-device recognition (Android 12+ when available).
-LFM2.5 350M is the only optional cleanup model. Models download on demand with pinned size/hash checks.
-There is no Hindi routing download, external language detector, IndicConformer, IndicXlit or ICU
-Romanization, and no Handy editor. Speech uses the selected engine and its native output script.
-Parakeet and Moonshine do not gain Hindi support from the language selector.
+Oriserve Hinglish Apex (Hindi + English in Roman letters; the choice for Hinglish), Parakeet 110M CTC INT8 or TDT
+FP16 (English), Nemotron Q4 (multilingual), Moonshine Medium (English), or Android on-device recognition (Android
+12+ when available). Qwen3 1.7B INT8 is the only optional cleanup model and also cleans Hindi and Hinglish.
+Models download on demand with pinned size/hash checks. There is no external language detector, automatic engine
+switch or transliteration layer: Apex writes Roman Hinglish itself and the other engines keep their native script.
 
 Voice settings show one row per model: name, size/selection and download/delete, with progress or errors
 only when needed. Tap a downloaded row to select it. Language appears for Nemotron/device recognition;

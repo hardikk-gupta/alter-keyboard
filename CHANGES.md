@@ -528,3 +528,33 @@ raw Hindi/English stream output and removed-model draft reprocessing without ope
 Android Kotlin/Java, resources, dex and native merging passed; both ABI merge directories exclude Handy,
 ALTER Whisper and ONNX Java JNI. Retained model artifact hashes/lengths are unchanged. `assembleStableDebug`
 stops only at the missing shared signing keystore; no signed APK, phone UI or silent-provider claim.
+
+## Oriserve Hinglish Apex speech and Qwen3 1.7B cleanup (Nov 1, 2026)
+
+- Add Oriserve Hindi2Hinglish Apex (Whisper large-v3-turbo fine-tune, Roman-letter Hinglish) as a speech model:
+  Marquestra's Q8_0 GGML, 874,188,075 bytes, pinned revision and SHA-256. Hindi language token, greedy, flash
+  attention, no temperature fallback, full 30 s encoder window, 28 s saved-audio windows.
+- Rebuild the whisper.cpp bridge three ways for arm64-v8a (baseline, ARMv8.2 dotprod+fp16, +i8mm) with
+  `scripts/build_whisper_native.sh`; `WhisperNative` loads the best one from `/proc/cpuinfo`. The previous
+  single build had no int8 dot-product instructions. Whisper is packaged again; Handy stays excluded.
+- Replace LFM2.5 350M with Qwen3 1.7B INT8 (LiteRT-LM, 1,754,890,240 bytes, pinned) as the only cleanup editor and
+  remove the rule that skipped cleanup for Hindi. Stray `<think>` blocks are dropped before validation.
+- Licenses/provenance for Apex and Qwen3 under `licenses/`; README, AGENTS, MODIFICATIONS, VOICE_MODELS, SITEMAP,
+  DESIGN, alter-agent and native SOURCE docs updated.
+
+Checks run (cloud host, 4-core x86, no phone):
+
+- Apex Q8 and FP16 files verified against Hugging Face size/SHA-256. Host build of the bundled whisper.cpp 1.9.5 on
+  Oriserve's 6 Apex card clips and 6 Swift sample clips: Q8 and FP16 gave the same text; FP16 took about twice as
+  long. Old settings ≈10 s per clip; flash attention + no fallback ≈5.4 s with the same text; language "auto"
+  ≈11 s with worse text; shortened `audio_ctx` made the model loop on tokens (rejected).
+- Qwen3 and LFM2.5 through `litertlm-jvm` 0.18.0 with the app's own `AlterDictationAgent` instructions, examples
+  and validator on 11 Hinglish/English transcripts: LFM2.5 inserted unrelated text on every Hinglish sample (all
+  rejected); Qwen3 had 9 accepted edits, 2 rejected by the validator (one real error, one valid "so basically"
+  removal the conservative validator does not allow). About 5 s per call on the host.
+- `objdump`: baseline 0 `sdot`, dotprod 966 `sdot`, i8mm 966 `sdot` + 260 `smmla`; 16 KB LOAD alignment kept.
+- `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest`: passed, 52 voice tests
+  (3 new: library selection, Apex Hindi decoding, thinking strip). The APK contains all three arm64 Whisper builds.
+  Signed with a local throwaway key, not the shared key; `check_apk_signature.py` not run.
+- Not run: anything on a phone (latency, RAM, thermals, recognition quality, cleanup speed). Host times are not
+  phone times.

@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-// ALTER's voice pack: on-device speech (Parakeet, Nemotron, Moonshine, Android on-device recognition) and the optional
-// LFM2.5 cleanup editor. Model weights are never bundled; they download on demand from the pinned catalog.
+// ALTER's voice pack: on-device speech (Oriserve Apex Hinglish, Parakeet, Nemotron, Moonshine, Android on-device
+// recognition) and the optional Qwen3 1.7B cleanup editor. Model weights are never bundled; they download on demand
+// from the pinned catalog.
 plugins {
   id("com.android.library")
   id("org.jetbrains.kotlin.android")
@@ -22,7 +23,7 @@ android {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
   }
-  packaging { jniLibs.excludes += setOf("**/libalter_handy.so", "**/libalter_whisper.so") }
+  packaging { jniLibs.excludes += setOf("**/libalter_handy.so") }
   buildFeatures { compose = true }
   testOptions { unitTests.isReturnDefaultValues = true }
 }

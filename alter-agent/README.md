@@ -20,7 +20,7 @@ faithful grammar/formatting, Hindi/Hinglish language preservation, and protectio
 They forbid answering/executing spoken requests or inventing context/preferences. This is an instruction update,
 not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
 semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
-limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.
+limited correction class. Formatting remains bounded by the current formatter.
 
 Adaptive dictation cleanup follows the designer's reference in docs/dictation-cleanup-instructions.md. Simple
 phrases of up to six words/80 characters use deterministic formatting and skip cleanup-model/catalog loading;
@@ -28,49 +28,24 @@ phrases of up to six words/80 characters use deterministic formatting and skip c
 and tagged/code syntax take the model path. Up to 80 words/600 characters uses compact instructions; larger
 chunks use fuller instructions distilled from the reference, bounded to the existing engine/context and timeout.
 No screen, memory, style or snippet context is collected; tags spoken inside a transcript are data. Opt-in/model
-availability and Hindi bypass still apply. Existing validation may reject requested semantic edits, number/address
+availability still apply. Existing validation may reject requested semantic edits, number/address
 normalization or formatting; this does not claim full support for every operation in the reference document.
 
-### Experimental live Handy cleanup
+### Retired editors
 
-ALTER voice → Cleanup editor offers Handy Editor 350M Q4_K_M (229 MB) alongside the existing LiteRT editor.
-Download, select and enable it explicitly. Oriserve Hinglish Swift FP16 remains the user's ASR choice; no Tiny
-model is substituted. Handy runs with a pinned CPU-only llama.cpp JNI library, an explicit empty system turn,
-greedy decoding and fresh contexts; its trained input format replaces the generic editor instructions. It is
-English-trained; Hinglish quality and Android latency remain unverified. License/provenance are under licenses/.
-
-Enabled cleanup can run during recording after a 1.2-second ASR update debounce. Each provisional edit sees the
-current whole transcript (up to 4,000 characters), so later words can revise earlier wording; obsolete work is
-cancelled, no PCM is dropped, and no text is inserted during recording. Finalization reuses a cleaned snapshot
-only if the final normalized ASR text matches exactly; otherwise it runs final cleanup. Errors preserve raw text.
-Raw final ASR text is stored separately from polished text in the existing private no-backup draft until accepted
-insertion/discard; older drafts remain readable. Explicit Pause/hide cancels capture/provisional work as before.
-
-The validator now accepts narrowly resolved weekday changes such as “Friday. Actually, make it Monday” and
-“Friday, no wait, Monday”, while rejecting unrelated dates/numbers and protecting English/Roman-Hindi negation.
-This is not general semantic deletion permission. Handy's real host test did not resolve the tested Hinglish
-kal/parso correction; unsafe negation removal falls back to the source. The existing agent rules continue for
-the stock editor. Future app context/memory/tool access is not granted by dictated text.
+Handy Editor and LFM2.5 350M are retired. The host's only cleanup editor is Qwen3 1.7B INT8 on LiteRT-LM.
 
 ## Speech runtime boundary
 
-Whisper/Oriserve, Moonshine and experimental Nemotron provide transcripts in the host's `alter-voice` module.
+Oriserve Hinglish Apex (Whisper), Parakeet, Moonshine and Nemotron provide transcripts in the host's `alter-voice` module.
 This module receives text, not microphone audio, and does not select or train the ASR model. Nemotron publishes
 whole-transcript streaming snapshots into the same debounced live-cleanup flow. Final output still requires a
 successful ASR flush and validation; a provisional snapshot never authorizes insertion by itself.
 
-Cleanup is opt-in. The host currently bypasses model cleanup when Dictation language is explicitly Hindi
-(`hi-IN`); automatic selection can produce mixed script, with no guaranteed transliteration or Hinglish quality.
+Cleanup is opt-in and runs for every dictation language, including Hindi; the instructions already preserve
+Hindi and Hinglish. The host has no transliteration layer: Oriserve Hinglish Apex writes Roman Hinglish itself.
 Learned-word rules are explicit local correction memory in the host, not continual model training.
-See [Nemotron](../docs/NEMOTRON_EXPERIMENT.md) and [Handy](../docs/HANDY_EXPERIMENT.md) for runtime limits.
+See [Nemotron](../docs/NEMOTRON_EXPERIMENT.md) and [voice configuration](../docs/VOICE_MODELS.md) for runtime limits.
 
-Explicit Hindi mode can now route a saved Parakeet/Nemotron choice through the separately
-downloaded IndicConformer engine in the host. The shared agent still receives text, not audio.
-Rule-based Hindi-to-Latin conversion is shared before cleanup/delivery, including the existing
-explicit-Hindi cleanup bypass. Neither IndicXlit nor Sanscript is embedded. See
-[the Hindi pipeline](../docs/INDIC_HINDI_PIPELINE.md).
-
-Automatic Parakeet mode now uses a separate Whisper language detector in the host to select
-the saved English decoder, IndicConformer Hindi or installed Nemotron for mixed/uncertain
-speech. The dictation agent's instructions/weights are unchanged. This is not a full main-app
-agent migration or word-level language switching; see [routing](../docs/AUTOMATIC_LANGUAGE_ROUTING.md).
+IndicConformer Hindi routing, automatic Whisper language detection and rule-based Hindi-to-Latin conversion were
+retired on October 28, 2026 ([routing history](../docs/AUTOMATIC_LANGUAGE_ROUTING.md)).

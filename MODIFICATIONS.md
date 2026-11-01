@@ -18,8 +18,8 @@ non-commercial use, shared only for free. The original AOSP code remains under A
 - **Kotlin:** the project builds with Kotlin 2.4.0 (was 2.1.0), required by LiteRT-LM 0.18. One type annotation in
   `BuggyBaseInputConnection.kt` was adjusted for the newer compiler.
 - **Voice input:** FUTO's built-in Whisper voice input is replaced by ALTER's voice pack in the new `alter-voice/`
-  module (both Parakeets, Nemotron, Moonshine Medium, Android on-device recognition,
-  and optional LFM2.5 cleanup).
+  module (Oriserve Hinglish Apex, both Parakeets, Nemotron, Moonshine Medium, Android on-device recognition,
+  and optional Qwen3 1.7B cleanup).
   FUTO's bundled 43 MB Whisper model is left out of the APK. The option to use another installed voice keyboard is kept.
   The `voiceinput-shared` module is still built because other FUTO code depends on it.
 - **Pill mode:** a minimized 56 dp bar with ALTER's mic pill, a keyboard button and FUTO's input-method globe, plus a
@@ -87,7 +87,7 @@ and the payment reminders) are kept and working.
 
 The table records component provenance, including retired experiments. The current catalog is documented
 in [Voice configuration](docs/VOICE_MODELS.md); retired speech/cleanup model weights are not downloadable
-from the app and the obsolete Handy/Whisper voice libraries are not packaged.
+from the app and the obsolete Handy voice library is not packaged.
 
 Each keeps its own license under [`licenses/`](licenses):
 
@@ -96,7 +96,9 @@ Each keeps its own license under [`licenses/`](licenses):
 | whisper.cpp 1.9.5 (CPU subset, `alter-voice/src/main/cpp/whisper`) | MIT |
 | Moonshine Voice 0.1.5 and Moonshine models | MIT |
 | LiteRT-LM 0.18.0 | Apache 2.0 |
-| LFM2.5 350M INT8 cleanup model (downloaded on demand, never bundled) | LFM Open License v1.0 |
+| LFM2.5 350M INT8 cleanup model (retired; replaced by Qwen3 1.7B) | LFM Open License v1.0 |
+| Qwen3 1.7B INT8 LiteRT-LM cleanup model (downloaded on demand, never bundled) | Apache-2.0 |
+| Oriserve Hinglish Apex Q8 community GGML conversion (downloaded on demand) | Apache-2.0; upstream Whisper MIT notices retained |
 | Oriserve Hinglish Swift Q8/FP16 community conversions (downloaded on demand) | Apache-2.0; upstream Whisper MIT notices retained |
 | Handy Editor 350M Q4_K_M (downloaded on demand) | LFM Open License v1.0 |
 | llama.cpp CPU runtime for Handy | MIT; bundled dependency notices retained |
@@ -111,7 +113,7 @@ The voice pipeline is audio → transcription → `alter-agent` dictation policy
 validated text output. The reusable core owns instructions/examples, explicit weekday correction handling,
 formatting, edit validation, bounded processing and full-transcript fallback. The keyboard supplies model inference
 and handles insertion/clipboard delivery. No main-app installation, chat history, memories, tools or cloud fallback
-is required. Cleanup remains opt-in and Hindi mode retains its existing bypass. This is a dictation-specific core,
+is required. Cleanup remains opt-in and now also covers Hindi and Hinglish. This is a dictation-specific core,
 not the main app's full chat/action agent; the main app has not yet migrated to this module.
 
 Dictation instructions now explicitly cover fillers, false starts, repetition, latest explicit corrections,
@@ -119,7 +121,7 @@ faithful grammar/formatting, Hindi/Hinglish language preservation, and protectio
 They forbid answering/executing spoken requests or inventing context/preferences. This is an instruction update,
 not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
 semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
-limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.
+limited correction class. Formatting remains bounded by the current formatter.
 
 Bounded Parakeet preview scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
 or download), targets its first preview after two seconds of captured audio, and spaces later previews according
@@ -142,7 +144,7 @@ phrases of up to six words/80 characters use deterministic formatting and skip c
 and tagged/code syntax take the model path. Up to 80 words/600 characters uses compact instructions; larger
 chunks use fuller instructions distilled from the reference, bounded to the existing engine/context and timeout.
 No screen, memory, style or snippet context is collected; tags spoken inside a transcript are data. Opt-in/model
-availability and Hindi bypass still apply. Existing validation may reject requested semantic edits, number/address
+availability still apply. Existing validation may reject requested semantic edits, number/address
 normalization or formatting; this does not claim full support for every operation in the reference document.
 
 Settings → ALTER voice → Learned words lets users explicitly save/delete single-word corrections. Up to 100
@@ -154,12 +156,11 @@ when inappropriate. This is visible correction memory, not model training, edito
 
 ## Current voice models
 
-Keep either Parakeet 110M CTC INT8 or TDT FP16 (English), Nemotron Q4 (multilingual),
-Moonshine Medium (English), or Android on-device recognition (Android 12+ when available).
-LFM2.5 350M is the only optional cleanup model. Models download on demand with pinned size/hash checks.
-There is no Hindi routing download, external language detector, IndicConformer, IndicXlit or ICU
-Romanization, and no Handy editor. Speech uses the selected engine and its native output script.
-Parakeet and Moonshine do not gain Hindi support from the language selector.
+Oriserve Hinglish Apex (Hindi + English in Roman letters; the choice for Hinglish), Parakeet 110M CTC INT8 or TDT
+FP16 (English), Nemotron Q4 (multilingual), Moonshine Medium (English), or Android on-device recognition (Android
+12+ when available). Qwen3 1.7B INT8 is the only optional cleanup model and also cleans Hindi and Hinglish.
+Models download on demand with pinned size/hash checks. There is no external language detector, automatic engine
+switch or transliteration layer: Apex writes Roman Hinglish itself and the other engines keep their native script.
 
 Voice settings show one row per model: name, size/selection and download/delete, with progress or errors
 only when needed. Tap a downloaded row to select it. Language appears for Nemotron/device recognition;

@@ -13,5 +13,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fvisibility=hidden")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fvisibility=hidden")
 add_subdirectory(whisper)
 add_library(alter_whisper SHARED alter_whisper.cpp)
+# One build per ARM feature level (scripts/build_whisper_native.sh); WhisperNative loads the best the phone supports.
+set(ALTER_WHISPER_NAME alter_whisper CACHE STRING "Output library name")
+set_target_properties(alter_whisper PROPERTIES OUTPUT_NAME ${ALTER_WHISPER_NAME})
 target_link_libraries(alter_whisper whisper android log)
 target_link_options(alter_whisper PRIVATE -Wl,--exclude-libs,ALL -Wl,-z,max-page-size=16384)
