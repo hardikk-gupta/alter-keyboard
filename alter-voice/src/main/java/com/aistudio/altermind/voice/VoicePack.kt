@@ -6,6 +6,11 @@ import android.content.Context
 object VoicePack {
     const val CLEANUP_MODEL = "qwen3-1.7b-cleanup"
     internal const val ENABLED = "dictation_cleanup"
+    /**
+     * Provisional cleanup while recording reloads the editor on every pause. Qwen3 1.7B takes seconds per pass on a
+     * phone CPU and would compete with speech recognition, so cleanup runs once after recording instead.
+     */
+    internal const val LIVE_CLEANUP = false
 
     private var engine: CleanupEngine? = null
     @Synchronized private fun engine(context: Context) =

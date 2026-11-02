@@ -1,5 +1,8 @@
 # IndicXlit Indic-to-Roman v1.0
 
+> Retired app experiment. Original artifact/source/license facts below are preserved for provenance;
+> this is not an active download or runtime instruction. See [current models](../docs/VOICE_MODELS.md).
+
 Source: https://github.com/AI4Bharat/IndicXlit (MIT, including pretrained weights).
 Official model: https://github.com/AI4Bharat/IndicXlit/releases/download/v1.0/indicxlit-indic-en-v1.0.zip
 

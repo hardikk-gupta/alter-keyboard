@@ -40,3 +40,9 @@ has its own handle. Nemotron's streaming capability gate and profile remain unch
 Parakeet weights are CC-BY-4.0, distinct from Nemotron's OpenMDW license. See
 [Parakeet TDT provenance](../../licenses/Parakeet-TDT-PROVENANCE.md). Both arm64-v8a and x86_64
 libraries must be rebuilt and committed when this adapter changes.
+
+JNI streaming failures now throw an operation-specific `IllegalStateException` using
+`transcribe_status_string`: session setup, start (including the requested locale), feed,
+finalize and snapshot. Successful language mapping and model weights are unchanged;
+automatic still passes a null hint and Hindi passes `hi-IN`, never an English fallback.
+Both committed Android ABI libraries are rebuilt with this adapter change.

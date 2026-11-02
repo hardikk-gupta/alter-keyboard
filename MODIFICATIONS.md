@@ -99,9 +99,9 @@ Each keeps its own license under [`licenses/`](licenses):
 | LFM2.5 350M INT8 cleanup model (retired; replaced by Qwen3 1.7B) | LFM Open License v1.0 |
 | Qwen3 1.7B INT8 LiteRT-LM cleanup model (downloaded on demand, never bundled) | Apache-2.0 |
 | Oriserve Hinglish Apex Q8 community GGML conversion (downloaded on demand) | Apache-2.0; upstream Whisper MIT notices retained |
-| Oriserve Hinglish Swift Q8/FP16 community conversions (downloaded on demand) | Apache-2.0; upstream Whisper MIT notices retained |
-| Handy Editor 350M Q4_K_M (downloaded on demand) | LFM Open License v1.0 |
-| llama.cpp CPU runtime for Handy | MIT; bundled dependency notices retained |
+| Oriserve Hinglish Swift Q8/FP16 community conversions (retired) | Apache-2.0; upstream Whisper MIT notices retained |
+| Handy Editor 350M Q4_K_M (retired) | LFM Open License v1.0 |
+| llama.cpp CPU runtime for Handy (archived, excluded from APK) | MIT; bundled dependency notices retained |
 | Nemotron 3.5 Streaming Q4_K_M (downloaded on demand) | OpenMDW-1.1; model NOTICE retained |
 | transcribe.cpp CPU runtime for Nemotron | MIT; bundled dependency notices retained |
 | Lucide icon paths | ISC |
@@ -173,3 +173,8 @@ play a recording tone: Android has no supported per-app mute switch for SpeechRe
 change global sound volume. Phone acceptance is still required.
 
 See [current voice configuration](docs/VOICE_MODELS.md) for upgrade behavior and validation limits.
+
+Streaming diagnostics: Moonshine uses checked native calls with one fresh stream and one final flush;
+foreground failures show a short error message as well as the pill icon. Nemotron retains native
+English/Hindi/Automatic choices and reports the native failure stage and reason. Both modes worked in
+host checks; device-specific failures and phone accuracy remain unverified. See [recognizer checks](docs/STREAMING_RECOGNIZER_CHECKS.md).

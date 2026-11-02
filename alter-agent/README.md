@@ -22,7 +22,7 @@ not new cleanup levels, context collection or a new model. Existing conservative
 semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
 limited correction class. Formatting remains bounded by the current formatter.
 
-Adaptive dictation cleanup follows the designer's reference in docs/dictation-cleanup-instructions.md. Simple
+Adaptive dictation cleanup follows the designer's [reference](../docs/dictation-cleanup-instructions.md). Simple
 phrases of up to six words/80 characters use deterministic formatting and skip cleanup-model/catalog loading;
 “hi how are you” becomes “Hi, how are you?” without inference. Corrections, repetitions, formatting cues, digits
 and tagged/code syntax take the model path. Up to 80 words/600 characters uses compact instructions; larger
@@ -31,21 +31,43 @@ No screen, memory, style or snippet context is collected; tags spoken inside a t
 availability still apply. Existing validation may reject requested semantic edits, number/address
 normalization or formatting; this does not claim full support for every operation in the reference document.
 
-### Retired editors
+## Live cleanup
 
-Handy Editor and LFM2.5 350M are retired. The host's only cleanup editor is Qwen3 1.7B INT8 on LiteRT-LM.
+The host currently turns live cleanup off (`VoicePack.LIVE_CLEANUP`): Qwen3 1.7B takes seconds per pass on a phone
+CPU and would compete with speech recognition, so cleanup runs once after recording. The mechanism stays available
+and tested. When enabled, cleanup runs during recording after a 1.2-second ASR update debounce. Each provisional edit sees the
+current whole transcript (up to 4,000 characters), so later words can revise earlier wording; obsolete work is
+cancelled, no PCM is dropped, and no text is inserted during recording. Finalization reuses a cleaned snapshot
+only if the final normalized ASR text matches exactly; otherwise it runs final cleanup. Errors preserve raw text.
+Raw final ASR text is stored separately from polished text in the existing private no-backup draft until accepted
+insertion/discard; older drafts remain readable. Explicit Pause/hide cancels capture/provisional work as before.
+
+The validator now accepts narrowly resolved weekday changes such as “Friday. Actually, make it Monday” and
+“Friday, no wait, Monday”, while rejecting unrelated dates/numbers and protecting English/Roman-Hindi negation.
+This is not general semantic deletion permission. Unsafe edits fall back to source text.
+Qwen3 1.7B INT8 is the host's only optional cleanup engine (it replaced LFM2.5 350M).
+Future app context/memory/tool access is not granted by dictated text.
 
 ## Speech runtime boundary
 
-Oriserve Hinglish Apex (Whisper), Parakeet, Moonshine and Nemotron provide transcripts in the host's `alter-voice` module.
-This module receives text, not microphone audio, and does not select or train the ASR model. Nemotron publishes
-whole-transcript streaming snapshots into the same debounced live-cleanup flow. Final output still requires a
-successful ASR flush and validation; a provisional snapshot never authorizes insertion by itself.
+Oriserve Hinglish Apex (Whisper), both Parakeet variants, Moonshine Medium, Nemotron and Android on-device
+recognition provide transcripts
+in the host's `alter-voice` module. This shared module receives text, not microphone audio, and does not
+select, train or change ASR models. Native streaming snapshots feed the debounced cleanup flow; final
+insertion still requires a successful final ASR result and validation.
 
-Cleanup is opt-in and runs for every dictation language, including Hindi; the instructions already preserve
-Hindi and Hinglish. The host has no transliteration layer: Oriserve Hinglish Apex writes Roman Hinglish itself.
-Learned-word rules are explicit local correction memory in the host, not continual model training.
-See [Nemotron](../docs/NEMOTRON_EXPERIMENT.md) and [voice configuration](../docs/VOICE_MODELS.md) for runtime limits.
+Cleanup is opt-in and uses only Qwen3 1.7B. It runs for every dictation language, including Hindi; short/simple
+phrases skip inference. Apex writes Roman Hinglish itself; Nemotron's automatic mode can produce mixed script.
+The host preserves native script: no IndicConformer routing, Whisper language detector, IndicXlit or ICU
+Romanization is active. Learned-word rules are explicit local corrections, not continual model training.
+Handy and the small Whisper/Oriserve Swift experiments and their alternate protocols are retired.
 
-IndicConformer Hindi routing, automatic Whisper language detection and rule-based Hindi-to-Latin conversion were
-retired on October 28, 2026 ([routing history](../docs/AUTOMATIC_LANGUAGE_ROUTING.md)).
+See [current speech/cleanup choices](../docs/VOICE_MODELS.md) and
+[streaming checks and limitations](../docs/STREAMING_RECOGNIZER_CHECKS.md). The host phone failures remain
+unconfirmed by host-only checks; [HANDOFF.md](../HANDOFF.md) records branch/PR and acceptance status.
+
+## Maintenance
+
+Update this guide whenever the module contract, prompt policy, supported cleanup engine or host boundary changes.
+Follow [AGENTS.md](../AGENTS.md) and [AGENT_INSTRUCTIONS.md](../AGENT_INSTRUCTIONS.md): update the plan,
+handoff, changelog and all affected documentation alongside each implementation change.

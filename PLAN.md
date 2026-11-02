@@ -1,0 +1,64 @@
+# Current plan
+
+Updated: November 2, 2026. Read [HANDOFF.md](HANDOFF.md) and verify live Git/PR state before continuing.
+This records task-level plans and decisions, not private reasoning or a transcript of the chat.
+
+## Current task: Hinglish speech and cleanup (PR #32)
+
+The user's requirement: the retained models are good for English but not Hinglish. Add Oriserve's
+Hindi2Hinglish Apex with as little compression as still runs well on a phone, and pair it with a cleanup
+model that handles Hindi (Qwen3 1.7B was chosen over LFM2.5 350M).
+
+| Work | Status | Result / next action |
+| --- | --- | --- |
+| Apex Q8_0 as a pinned download on the Whisper bridge | Done in open PR #32 | Q8 = FP16 text on 12 sample clips, half the time; FP16 not offered |
+| Whisper decode tuning | Done in open PR #32 | Hindi token, greedy, flash attention, no temperature fallback; full 30 s window kept |
+| arm64 feature-level Whisper builds | Done in open PR #32 | Baseline, dotprod+fp16, +i8mm; best chosen from `/proc/cpuinfo` |
+| Qwen3 1.7B INT8 replaces LFM2.5 | Done in open PR #32 | Host JVM test: 9/11 accepted on Hinglish/English vs 0 useful for LFM |
+| Remove Hindi cleanup bypass; live cleanup off | Done in open PR #32 | Cleanup once after recording; mechanism kept and tested |
+| Merge `main` (PR #31) into PR #32 | Done | Conflicts in SpeechModels.kt and docs resolved |
+| Phone test of the PR #32 APK | Pending, user | Apex seconds after stop, Hinglish accuracy, cleanup quality/time, RAM |
+| Merge PR #32 | Owner action pending | Hardikk or Chirag merges |
+| Backtrack / Wispr-style corrections | Proposed, awaiting go-ahead | Plan in HANDOFF.md; needs correction-aware validation (next PR) |
+
+## Previous documentation task (PR #31, merged)
+
+The user's requirement: all agent handoffs, instructions, completed changes, planning and remaining work
+must live in this GitHub repository. Documentation must stay synchronized immediately with each change.
+
+| Work | Status | Result / next action |
+| --- | --- | --- |
+| Audit all tracked Markdown | Complete | 46 files inventoried; current, retired, provenance and preserved upstream roles recorded |
+| Correct stale active instructions | Complete | Shared-agent README, cleanup status, Nemotron/Parakeet guides and retired source/provenance reconciled |
+| Prepare handoff and operating instructions for PR #31 | Complete | HANDOFF.md, AGENT_INSTRUCTIONS.md and this plan included in the documentation change |
+| Document reproducible setup and verification | Complete | docs/DEVELOPMENT.md and existing committed runtime probe/check guides |
+| Require documentation with every change | Complete | Mandatory immediate all-Markdown review/affected-file updates in AGENTS.md |
+| Validate links, inventory and consistency | Complete | 46-file coverage, first-party links, protected-byte checks and whitespace pass; four preserved upstream exceptions documented |
+
+## Runtime work and acceptance
+
+| Work | Status | Evidence / next action |
+| --- | --- | --- |
+| Simplify voice choices and UI | Merged in PR #30 | Both Parakeets, Nemotron, Moonshine Medium, Android recognition; LFM cleanup only |
+| Checked Moonshine streaming / visible errors | Merged in PR #31 | 53 unit tests and actual Kotlin/JNI host probes passed on October 28 |
+| Native Nemotron failure reasons | Merged in PR #31 | Both ABI libraries rebuilt; Automatic/Hindi/English produced host results |
+| Merge PR #31 | Done | Merged as `9145b9dfc` |
+| Reproduce Moonshine failure on the phone | Pending after installing the matching build | Capture the new visible error, model/language, APK version and exact steps |
+| Reproduce Nemotron English-only report | Pending on phone | Host tests do not reproduce it; do not silently force English |
+| Validate signed install and device behavior | Blocked locally / pending on phone | Shared signing key absent from this cloud environment |
+| Remove Android provider beep | Platform limitation / unverified | No supported per-app mute API; no global-volume workaround is implemented |
+
+## Decisions to retain
+
+- Do not restore the small Whisper/Oriserve Swift models, Moonshine Tiny/Small, Handy, external language
+  routing, IndicConformer, IndicXlit or ICU Romanization without a new product decision. Their Hindi was
+  not good enough. Oriserve Apex (PR #32) is the new product decision for Hinglish.
+- Preserve native script, dictation meaning, private drafts and existing selection. Never discard audio
+  to test a different model; use the explicit saved-audio recovery path.
+- Keep model rows concise. Only actionable error/progress text belongs in that flow.
+- Cleanup stays optional and uses Qwen3 1.7B; short/simple phrases skip inference; Hindi is cleaned too.
+- Apex keeps the full 30 s encoder window: shorter `audio_ctx` windows made it loop on tokens.
+- Do not describe host success as a phone fix, phone accuracy score or measured mobile latency.
+
+Before implementation, update this file with scope, intended changes, dependencies and validation.
+After each logical change, update status and the related handoff/changelog immediately, in the same commit.

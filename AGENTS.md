@@ -1,7 +1,29 @@
 # ALTER Keyboard: rules for agents
 
 ALTER Keyboard is FUTO Keyboard with ALTER's voice pack and mic pill on top. This repo holds only the keyboard; it
-never depends on the ALTER app being installed. Read `MODIFICATIONS.md`, `docs/DESIGN.md` and `docs/SIGNING.md` first.
+never depends on the ALTER app being installed. Read `HANDOFF.md`, `PLAN.md`, `AGENT_INSTRUCTIONS.md`,
+`MODIFICATIONS.md`, `docs/DESIGN.md` and `docs/SIGNING.md` first.
+
+## Mandatory documentation and handoff workflow
+
+- Treat documentation as part of every code, configuration and planning change. **Review all repository
+  Markdown and update every affected first-party MD file immediately after each logical change, in the
+  same commit/PR.** Do not defer it to the end of a session, a follow-up task or an uncommitted chat summary.
+- Before implementation, write the task goal, plan, proposed changes, dependencies and validation in PLAN.md.
+  As work changes, record decisions, implemented changes, pending work and blockers there immediately.
+- Keep HANDOFF.md current with branch/PR vs main status, implementation state, checks actually run, limitations
+  and concrete next actions. All essential handoff files must be tracked in this repository and pushed to GitHub.
+- Append each change's purpose, outcome and actual checks to CHANGES.md. Keep historical entries append-only.
+- Reconcile README.md, MODIFICATIONS.md, design/sitemap/model guides, module READMEs, runtime source notes
+  and agent instructions whenever their content is affected. Record task-level plans/decisions, not private reasoning.
+- Maintain docs/MARKDOWN_INDEX.md as the complete Markdown inventory. Add/remove/recategorize entries with
+  the files; review unaffected entries too. Preserve immutable licenses, upstream/vendor documentation and
+  historical evidence; label retired features instead of presenting them as active or cosmetically rewriting all files.
+- Use canonical filenames: AGENTS.md, AGENT_INSTRUCTIONS.md, HANDOFF.md, PLAN.md and CHANGES.md.
+  Do not create conflicting lowercase copies. This rule supplements all technical/license rules below.
+- Before commit/handoff, validate links, inventory completeness and consistency. Missing documentation makes
+  the change unfinished. Documentation-only edits need appropriate documentation checks, not fabricated
+  build/device claims. Never store secrets, signing keys, model weights or private recordings in handoff documents.
 
 ## License (FUTO Source First License 1.1)
 

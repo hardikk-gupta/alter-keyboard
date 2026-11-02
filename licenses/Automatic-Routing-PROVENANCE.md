@@ -1,5 +1,8 @@
 # Automatic routing detector and reference
 
+> Retired app experiment. Original artifact/source/license facts below are preserved for provenance;
+> this is not an active download or runtime instruction. See [current models](../docs/VOICE_MODELS.md).
+
 Detector base model: OpenAI Whisper Tiny multilingual, MIT.
 Converter/export repository: https://huggingface.co/csukuangfj/sherpa-onnx-whisper-tiny
 Pinned revision: 65176e2deb88badc814a94058666cadccc29b61c

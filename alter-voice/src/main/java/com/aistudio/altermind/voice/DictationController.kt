@@ -18,7 +18,7 @@ class DictationController internal constructor(private val context: Context, pri
     constructor(context: Context, scope: CoroutineScope) : this(context, scope, SpeechModels.get(context),
         { AndroidDictationMicrophone(context) }, { VoicePack.polish(context, it) }, draftStore(context),
         { ContextCompat.checkSelfPermission(context, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED },
-        liveCleanup = { VoicePack.cleanupEnabled(context) })
+        liveCleanup = { VoicePack.LIVE_CLEANUP && VoicePack.cleanupEnabled(context) })
 
     private val mutableStarting = MutableStateFlow(false)
     val starting = mutableStarting.asStateFlow()
