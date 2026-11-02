@@ -95,18 +95,17 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 ### Shared ALTER dictation core
 
 The voice pipeline is audio → transcription → `alter-agent` dictation policy → optional local cleanup model →
-validated text output. The reusable core owns instructions/examples, explicit weekday correction handling,
+validated text output. The reusable core owns instructions/examples, Backtrack correction handling,
 formatting, edit validation, bounded processing and full-transcript fallback. The keyboard supplies model inference
 and handles insertion/clipboard delivery. No main-app installation, chat history, memories, tools or cloud fallback
-is required. Cleanup remains opt-in and Hindi mode retains its existing bypass. This is a dictation-specific core,
+is required. Cleanup remains opt-in and now also covers Hindi and Hinglish. This is a dictation-specific core,
 not the main app's full chat/action agent; the main app has not yet migrated to this module.
 
 Dictation instructions now explicitly cover fillers, false starts, repetition, latest explicit corrections,
 faithful grammar/formatting, Hindi/Hinglish language preservation, and protection of names, code and numbers.
 They forbid answering/executing spoken requests or inventing context/preferences. This is an instruction update,
-not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
-semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
-limited correction class. Formatting remains bounded by the current formatter. Hindi's model bypass is unchanged.
+not new cleanup levels, context collection or a new model. [Backtrack](BACKTRACK.md) resolves spoken corrections of days,
+months, times and numbers; validation still rejects every other semantic deletion. Formatting remains bounded by the current formatter.
 
 Bounded Parakeet preview scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
 or download), targets its first preview after two seconds of captured audio, and spaces later previews according
@@ -129,7 +128,7 @@ phrases of up to six words/80 characters use deterministic formatting and skip c
 and tagged/code syntax take the model path. Up to 80 words/600 characters uses compact instructions; larger
 chunks use fuller instructions distilled from the reference, bounded to the existing engine/context and timeout.
 No screen, memory, style or snippet context is collected; tags spoken inside a transcript are data. Opt-in/model
-availability and Hindi bypass still apply. Existing validation may reject requested semantic edits, number/address
+availability still apply. Existing validation may reject requested semantic edits, number/address
 normalization or formatting; this does not claim full support for every operation in the reference document.
 
 Settings → ALTER voice → Learned words lets users explicitly save/delete single-word corrections. Up to 100
@@ -141,12 +140,11 @@ when inappropriate. This is visible correction memory, not model training, edito
 
 ## Current voice models
 
-Keep either Parakeet 110M CTC INT8 or TDT FP16 (English), Nemotron Q4 (multilingual),
-Moonshine Medium (English), or Android on-device recognition (Android 12+ when available).
-LFM2.5 350M is the only optional cleanup model. Models download on demand with pinned size/hash checks.
-There is no Hindi routing download, external language detector, IndicConformer, IndicXlit or ICU
-Romanization, and no Handy editor. Speech uses the selected engine and its native output script.
-Parakeet and Moonshine do not gain Hindi support from the language selector.
+Oriserve Hinglish Apex (Hindi + English in Roman letters; the choice for Hinglish), Parakeet 110M CTC INT8 or TDT
+FP16 (English), Nemotron Q4 (multilingual), Moonshine Medium (English), or Android on-device recognition (Android
+12+ when available). Qwen3 1.7B INT8 is the only optional cleanup model and also cleans Hindi and Hinglish.
+Models download on demand with pinned size/hash checks. There is no external language detector, automatic engine
+switch or transliteration layer: Apex writes Roman Hinglish itself and the other engines keep their native script.
 
 Voice settings show one row per model: name, size/selection and download/delete, with progress or errors
 only when needed. Tap a downloaded row to select it. Language appears for Nemotron/device recognition;

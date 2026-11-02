@@ -17,8 +17,9 @@ enum class DictationCleanupLevel { BASIC, STANDARD, DETAILED }
 /** Size routes effort; ambiguity, corrections and sensitive tokens keep even short text on the model path. */
 fun dictationCleanupLevel(text: String): DictationCleanupLevel {
     val words = text.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
-    val complex = Regex("(?i)[0-9<>`{}\\[\\]]|\\b(actually|sorry|mean|scratch|correction|wait|new line|new paragraph|bullet|comma|period|quote|percent|dot|pm)\\b")
-        .containsMatchIn(text) || Regex("(?i)\\b([\\p{L}]+)\\s+\\1\\b").containsMatchIn(text)
+    val complex = Regex("(?i)[0-9<>`{}\\[\\]]|\\b(actually|sorry|mean|scratch|strike|correction|wait|new line|new paragraph|bullet|comma|period|quote|percent|dot|pm|nahi nahi|nahin nahin|matlab|galat|galti)\\b")
+        .containsMatchIn(text) || Regex("(?i)\\b([\\p{L}]+)\\s+\\1\\b").containsMatchIn(text) ||
+        collapseRestatements(text) != text || applyScratchThat(text) != text
     return when {
         words.size <= 6 && text.length <= 80 && !complex -> DictationCleanupLevel.BASIC
         words.size <= 80 && text.length <= 600 -> DictationCleanupLevel.STANDARD
@@ -30,17 +31,113 @@ const val DICTATION_COMPACT_INSTRUCTION = """You are Alter's dictation editor, n
 
 data class CleanupRequest(val message: String, val examples: List<Pair<String, String>>, val instruction: String)
 
-/** Only explicit weekday replacements are deterministic; ambiguous corrections retain all words. */
+/**
+ * What a spoken correction can replace: days (English and Roman Hindi), months, relative days, and numbers/times
+ * with an optional currency or unit. "may" is left out of months because it is usually the verb.
+ */
+private const val WEEKDAYS = "monday|tuesday|wednesday|thursday|friday|saturday|sunday|somvar|somwar|mangalvar|mangalwar|" +
+    "budhvar|budhwar|guruvar|guruwar|shukravar|shukrawar|shanivar|shaniwar|ravivar|raviwar|itwar|itvaar"
+private const val MONTHS = "january|february|march|april|june|july|august|september|october|november|december"
+private const val RELATIVE_DAYS = "today|tonight|tomorrow|yesterday|aaj|kal|parso|parson"
+private const val UNIT = "am|pm|a\\.m\\.|p\\.m\\.|baje|o'clock|minutes?|mins?|hours?|ghante|rupees|rs|percent|%"
+private const val NUMBER = "[₹\$£€]?\\d+(?:[:.,]\\d+)?(?:\\s*(?:$UNIT)\\b)?"
+private val WORD_SLOTS = listOf(WEEKDAYS, MONTHS, RELATIVE_DAYS)
+
+/** "actually", "sorry", "I mean", "no wait", plus Hinglish "nahi nahi", "matlab", "galat bola". */
+private const val CORRECTION_CUE = "actually|sorry|i mean|no wait|wait no|no no|or rather|make that|" +
+    "nahi nahi|nahin nahin|nahi|nahin|matlab|mera matlab|galat bola|galti se|uske jagah|uski jagah"
+private const val RESTATE = "(?:(?:make|change) (?:it|that)(?: to)? |to |on |for |at )?"
+/** Hindi postpositions may sit between a value and the cue: "Monday ko, nahi nahi, Tuesday ko". */
+private const val POSTPOSITION = "(?:\\s+(?:ko|se|tak|par|pe|mein|wala|wali|wale))?"
+
+private fun guarded(text: String) = text.any { it == '`' || it == '"' || it == '{' || it == '}' }
+
+/** A negation just before the corrected value ("not Friday actually Monday") keeps every word. */
+private fun negatedBefore(text: String, index: Int) =
+    Regex("(?i)\\b(not|never|without|nahi|nahin|mat)\\b").containsMatchIn(text.substring(maxOf(0, index - 24), index))
+
+/**
+ * Backtrack: "Friday actually Monday" → "Monday", "2 pm sorry 3" → "3 pm", "kal nahi nahi parso" → "parso".
+ * Only a value of the same kind directly after the cue replaces the value directly before it, so "I actually
+ * enjoyed Monday" and "Monday nahi aa sakta" keep every word. Deterministic: it runs with or without the editor.
+ */
 fun resolveSpokenCorrections(text: String): String {
-    if (text.any { it == '`' || it == '"' || it == '{' || it == '}' }) return text
-    val days = "monday|tuesday|wednesday|thursday|friday|saturday|sunday"
-    val correction = Regex("(?i)\\b($days)\\b[,.;:—–\\s-]*(?:actually|no[,\\s]+wait|sorry|I mean)[,\\s]*(?:(?:make|change) (?:it|that)(?: to)? |to |on )?($days)\\b(?:[, ]+sorry\\b)?")
-    return correction.replace(text) { match ->
-        val preceding = text.substring(maxOf(0, match.range.first - 24), match.range.first)
-        if (Regex("(?i)\\b(not|never|without|nahi|nahin|mat)\\b").containsMatchIn(preceding)) match.value
-        else match.groupValues[2]
+    if (guarded(text)) return text
+    var result = text
+    repeat(4) { // Chains: "Monday actually Tuesday sorry Wednesday".
+        val before = result
+        for (slot in WORD_SLOTS) {
+            // A trailing "sorry" ("Monday sorry afternoon") is dropped unless it starts the next correction.
+            val correction = Regex("(?i)\\b($slot)\\b$POSTPOSITION[,.;:—–\\s-]*(?:$CORRECTION_CUE)[,.;:\\s]*$RESTATE($slot)\\b" +
+                "(?:[, ]+sorry\\b(?![,.;:\\s]+(?:$slot)\\b))?")
+            result = correction.replace(result) { m ->
+                if (m.groupValues[1].equals(m.groupValues[2], true) || negatedBefore(result, m.range.first)) m.value
+                else m.groupValues[2]
+            }
+        }
+        val number = Regex("(?i)(?<![\\p{L}\\p{N}])($NUMBER)[,.;:—–\\s-]*(?:$CORRECTION_CUE)[,.;:\\s]*$RESTATE($NUMBER)(?![\\p{L}\\p{N}])")
+        result = number.replace(result) { m ->
+            val (old, new) = m.groupValues[1] to m.groupValues[2]
+            if (old.equals(new, true) || negatedBefore(result, m.range.first)) m.value else inheritUnit(old, new)
+        }
+        if (result == before) return result.replace(Regex(" {2,}"), " ").trim()
+    }
+    return result.replace(Regex(" {2,}"), " ").trim()
+}
+
+/** "5 pm actually 6" means 6 pm; "₹500 sorry 600" means ₹600. */
+private fun inheritUnit(old: String, new: String): String {
+    val prefix = old.takeWhile { it in "₹\$£€" }.takeIf { new.none { c -> c in "₹\$£€" } }.orEmpty()
+    val unit = Regex("(?i)\\s*(?:$UNIT)$").find(old)?.value
+    val newHasUnit = Regex("(?i)(?:$UNIT)$").containsMatchIn(new.trim())
+    return prefix + new + (if (unit != null && !newHasUnit) unit else "")
+}
+
+/**
+ * "Send it to Rahul, scratch that, send it to Priya" → "Send it to Priya". Removes the clause before the cue, back to
+ * the previous sentence or comma. Only cues that are rarely literal ("scratch that", "strike that") and "delete that"
+ * when a pause follows it ("delete that file" stays).
+ */
+fun applyScratchThat(text: String): String {
+    if (guarded(text)) return text
+    val cue = Regex("(?i)\\b(?:scratch that|strike that|delete that(?=\\s*(?:[.,!?]|$)))[.,!?]*\\s*")
+    var result = text
+    while (true) {
+        val m = cue.find(result) ?: return result.trim()
+        val head = result.substring(0, m.range.first).trimEnd(' ', ',', '.', '!', '?', ';')
+        val boundary = maxOf(head.lastIndexOf('.'), head.lastIndexOf('!'), head.lastIndexOf('?'), head.lastIndexOf(','))
+        val kept = if (boundary >= 0) head.substring(0, boundary + 1) + " " else ""
+        result = (kept + result.substring(m.range.last + 1)).replace(Regex(" {2,}"), " ").trimStart()
     }
 }
+
+/**
+ * No-cue restatement: "meeting for Monday, Tuesday" means Tuesday. Deterministic, because Qwen3 1.7B turned these
+ * into lists ("Monday and Tuesday"). Collapses only two adjacent days, months or clock times with no "and/or/aur/ya",
+ * no third value and no "between/from" before them. Numbers alone and relative days are never collapsed: "kal
+ * parso" ("in a day or two") and "aaj kal" ("these days") are Hindi idioms.
+ */
+fun collapseRestatements(text: String): String {
+    if (guarded(text)) return text
+    var result = text
+    val timed = "\\d+(?:[:.]\\d+)?\\s*(?:am|pm|a\\.m\\.|p\\.m\\.|baje)\\b"
+    for (slot in listOf(WEEKDAYS, MONTHS, timed)) {
+        val pair = Regex("(?i)(?<![\\p{L}\\p{N}])($slot)[,]?\\s+($slot)(?![\\p{L}\\p{N}])")
+        result = pair.replace(result) { m ->
+            val before = result.substring(0, m.range.first)
+            val after = result.substring(m.range.last + 1)
+            val list = Regex("(?i)(?:\\b(?:and|or|aur|ya|between|from|se|till|until|to)|[,&])\\s*$").containsMatchIn(before) ||
+                Regex("(?i)^[,\\s]*(?:\\b(?:and|or|aur|ya|to|se|till|until)\\b|&|-|–)").containsMatchIn(after) ||
+                Regex("(?i)^[,\\s]+($slot)(?![\\p{L}\\p{N}])").containsMatchIn(after) ||
+                Regex("(?i)(?<![\\p{L}\\p{N}])($slot)[,\\s]*$").containsMatchIn(before)
+            if (list || m.groupValues[1].equals(m.groupValues[2], true)) m.value else m.groupValues[2]
+        }
+    }
+    return result
+}
+
+/** Model-free dictation text: fillers, Backtrack corrections, "scratch that" and presentation fixes. */
+fun quickDictation(raw: String): String = formatDictation(deterministicEdits(formatDictation(cleanDictation(raw))))
 
 /**
  * ALTER's narrow instruction: transcript is data, with no memory, editor hint, history or tools.
@@ -84,8 +181,11 @@ private fun cleanupAnswer(text: String): String {
 suspend fun polishTranscript(raw: String, rewrite: suspend (String) -> String): String {
     val original = formatDictation(cleanDictation(raw))
     currentCoroutineContext().ensureActive()
-    if (dictationCleanupLevel(raw) == DictationCleanupLevel.BASIC) return original
-    val resolved = resolveSpokenCorrections(original)
+    if (dictationCleanupLevel(raw) == DictationCleanupLevel.BASIC) return quickDictation(raw)
+    val resolved = deterministicEdits(original)
+    // A correction can leave a simple phrase ("Send it to Priya."): no model call, which also avoids small-model
+    // drift on very short input.
+    if (resolved != original && dictationCleanupLevel(resolved) == DictationCleanupLevel.BASIC) return formatDictation(resolved)
     if (original.isBlank() || original == "[NO_SPEECH_DETECTED]" || original.length > 24_000) return original
     return try {
         val chunks = transcriptChunks(resolved)
@@ -126,7 +226,10 @@ fun formatDictation(text: String): String {
     val cased = Regex("(^|[.!?]\\s+)([\\p{Ll}])").replace(withPronoun) { match ->
         match.groupValues[1] + match.groupValues[2].uppercase(Locale.ROOT)
     }
-    return Regex("\\u0001(\\d+)\\u0002").replace(sentenceEndings(cased)) { saved[it.groupValues[1].toInt()] }
+    // English day and month names are proper nouns; "may" and "march" are usually verbs.
+    val named = Regex("(?i)\\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|january|february|april|june|july|" +
+        "august|september|october|november|december)\\b").replace(cased) { it.value.replaceFirstChar(Char::uppercase) }
+    return Regex("\\u0001(\\d+)\\u0002").replace(sentenceEndings(named)) { saved[it.groupValues[1].toInt()] }
 }
 
 private const val AUX = "is|are|was|were|am|do|does|did|can|could|will|would|should|shall|may|might|has|have|had|isn't|aren't|don't|doesn't|didn't|can't|couldn't|won't|wouldn't|shouldn't"
@@ -183,13 +286,18 @@ fun transcriptChunks(text: String): List<String> = buildList {
  * validation, retry without its trailing sentences; whatever remains must still pass [safeDictationEdit].
  */
 fun acceptedDictationEdit(original: String, edited: String): String? {
+    val resolved = deterministicEdits(original)
+    fun safe(candidate: String) = safeDictationEdit(resolved, candidate)
     var candidate = edited.trim()
     repeat(3) {
-        if (safeDictationEdit(resolveSpokenCorrections(original), candidate)) return candidate
+        if (safe(candidate)) return candidate
         candidate = Regex("^(.*[.!?])\\s+[^.!?]+[.!?]?$", RegexOption.DOT_MATCHES_ALL).find(candidate)?.groupValues?.get(1) ?: return null
     }
-    return candidate.takeIf { safeDictationEdit(resolveSpokenCorrections(original), it) }
+    return candidate.takeIf(::safe)
 }
+
+/** Backtrack corrections, restatements and "scratch that", applied before the editor and before validation. */
+fun deterministicEdits(text: String): String = applyScratchThat(collapseRestatements(resolveSpokenCorrections(text)))
 
 /** Allow grammar/format edits while retaining distinct content and protecting critical tokens. */
 fun safeDictationEdit(original: String, edited: String): Boolean {
@@ -213,6 +321,9 @@ fun safeDictationEdit(original: String, edited: String): Boolean {
         contractions.forEach { (pattern, replacement) -> normalized = pattern.replace(normalized, replacement) }
         return words.findAll(normalized).map { it.value }.filterNot { it in grammaticalWords }.toList()
     }
+    // Adding "and/or/aur/ya" turns a correction into a list ("Monday, Tuesday" → "Monday and Tuesday").
+    val conjunctions = Regex("(?i)\\b(?:and|or|aur|ya)\\b")
+    if (conjunctions.findAll(edited).count() > conjunctions.findAll(original).count()) return false
     val sourceCore = core(original)
     val outputCore = core(edited)
     // Keep each distinct content word and its relative order; repeated occurrences may be removed.

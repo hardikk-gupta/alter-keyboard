@@ -8,7 +8,7 @@ Android 8+ and a supported arm64-v8a or x86_64 device are required.
 ## Pipeline
 
 16 kHz mono PCM → Nemotron cache-aware streaming → raw transcript revisions → existing
-Alter live cleanup agent → final flush → validated cleanup → text insertion.
+final flush → validated cleanup → text insertion (live cleanup is currently off in the host).
 A new native session is created for each recording, while the selected model stays loaded.
 Audio feeds are at most 100 ms, and the model profile uses right context 3 (320 ms chunks).
 These settings do not promise 320 ms end-to-end latency: compute, buffering, model warm-up
@@ -45,8 +45,8 @@ See [native provenance](../alter-voice/native-nemotron/SOURCE.md) and
 - All 39 voice unit tests passed. Android compilation/dexing completed; APK signing failed
   because this environment lacks the shared keystore. No signed install/signature check ran.
 
-Cleanup follows the LFM/Alter policy and remains opt-in. Explicit Hindi (`hi-IN`) bypasses model
-cleanup. No mode receives script conversion. Short/simple text also skips model inference.
+Cleanup follows the Alter policy with Qwen3 1.7B and remains opt-in, including for Hindi. No mode receives script
+conversion. Short/simple text skips model inference. For Roman-letter Hinglish, use Oriserve Hinglish Apex.
 
 ## Phone acceptance still required
 

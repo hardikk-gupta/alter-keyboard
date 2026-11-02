@@ -4,7 +4,7 @@
 # Google AI Studio has no Android NDK or CMake, so Gradle never compiles C++. The libraries below are committed
 # instead; run this script (with the NDK and CMake installed) whenever their C/C++ sources change:
 #   - libjni_latinime.so  FUTO's typing engine (app/native/jni)      -> app/src/main/jniLibs/<abi>/
-#   - libalter_whisper.so ALTER's whisper.cpp bridge (alter-voice/native) -> alter-voice/src/main/jniLibs/<abi>/
+#   - libalter_whisper*.so ALTER's whisper.cpp bridge (alter-voice/native), via scripts/build_whisper_native.sh
 #
 # Usage: ANDROID_HOME=/path/to/sdk scripts/build_native_libs.sh
 set -euo pipefail
@@ -33,8 +33,10 @@ for ABI in arm64-v8a x86_64; do
     echo "$ABI/$lib.so: $(stat -c %s "$dest/$ABI/$lib.so") bytes"
   }
   build latinime "$ROOT/app/native/jni" libjni_latinime "$ROOT/app/src/main/jniLibs"
-  build alter_whisper "$ROOT/alter-voice/native" libalter_whisper "$ROOT/alter-voice/src/main/jniLibs"
 done
+
+# Whisper is built once per ARM feature level.
+"$ROOT/scripts/build_whisper_native.sh"
 
 # Handy cleanup has its own pinned CPU runtime and isolated symbols.
 "$ROOT/scripts/build_handy_native.sh"

@@ -47,6 +47,8 @@ never depends on the ALTER app being installed. Read `HANDOFF.md`, `PLAN.md`, `A
   streaming path, require successful uncancelled results, and rebuild both ABI libraries.
 - Nemotron native changes (`alter-voice/native-nemotron`) require rebuilding both committed ABIs with
   `scripts/build_nemotron_native.sh`; keep runtime symbols isolated from Whisper and Handy.
+- Whisper native changes (`alter-voice/native`) require `scripts/build_whisper_native.sh`, which rebuilds all three
+  arm64 feature-level libraries and x86_64 together.
 - **No NDK or CMake in Gradle.** AI Studio's container has neither. C/C++ is built by `scripts/build_native_libs.sh`
   (Release, arm64-v8a and x86_64) and the `.so` files are committed to `app/src/main/jniLibs` and
   `alter-voice/src/main/jniLibs`. Change native sources (`app/native/jni`, `alter-voice/native*`) only together with
@@ -85,7 +87,7 @@ never depends on the ALTER app being installed. Read `HANDOFF.md`, `PLAN.md`, `A
 
 - PCM capture never waits for model warm-up.
 - No fake audio level.
-- One LiteRT engine at a time, with a fresh engine per LFM cleanup chunk.
+- One LiteRT engine at a time, with a fresh engine per cleanup chunk.
 - Validate every edit, keep all tail text on timeout, and never strip the word "message".
 - Blank or filler-only results are rejected.
 - Models download into private no-backup storage on demand from the pinned catalog
@@ -129,10 +131,13 @@ is kept. Do not rely on older releases existing.
 
 ## Retained voice models
 
-- Offer only Parakeet CTC/TDT, Nemotron, Moonshine Medium and Android on-device recognition.
-  LFM2.5 350M is the only optional editor; ignore retired cleanup preferences.
+- Offer only Oriserve Hinglish Apex, Parakeet CTC/TDT, Nemotron, Moonshine Medium and Android on-device
+  recognition. Qwen3 1.7B INT8 is the only optional editor (it also cleans Hindi); ignore retired cleanup preferences.
 - Do not restore external language routing, Hindi helper assets or either Romanization layer.
   Preserve the selected recognizer's native script. Parakeet/Moonshine remain English-only.
+- Apex decodes with the Hindi language token, greedy, flash attention, no temperature fallback and the full 30 s
+  encoder window (shorter windows make it loop). Rebuild the whisper bridge only with
+  `scripts/build_whisper_native.sh`, which produces the baseline, dotprod and i8mm arm64 libraries together.
 - Keep settings concise: names, size/selection, download/delete; no explanation paragraphs or duplicate setup rows.
   Share spacing through Components.kt; rows with no icon must not reserve an icon column.
 - Remove retired downloads only under idle speechSetup ownership, preserving retained files and drafts.

@@ -574,3 +574,68 @@ preserved upstream/legal copies are explicitly documented in the inventory; curr
 file links resolve. Root legal and preserved upstream content remain byte-identical.
 
 Design/sitemap guides now link the repository handoff workflow separately from product UI navigation.
+
+## Oriserve Hinglish Apex speech and Qwen3 1.7B cleanup (Nov 1, 2026)
+
+- Add Oriserve Hindi2Hinglish Apex (Whisper large-v3-turbo fine-tune, Roman-letter Hinglish) as a speech model:
+  Marquestra's Q8_0 GGML, 874,188,075 bytes, pinned revision and SHA-256. Hindi language token, greedy, flash
+  attention, no temperature fallback, full 30 s encoder window, 28 s saved-audio windows.
+- Rebuild the whisper.cpp bridge three ways for arm64-v8a (baseline, ARMv8.2 dotprod+fp16, +i8mm) with
+  `scripts/build_whisper_native.sh`; `WhisperNative` loads the best one from `/proc/cpuinfo`. The previous
+  single build had no int8 dot-product instructions. Whisper is packaged again; Handy stays excluded.
+- Replace LFM2.5 350M with Qwen3 1.7B INT8 (LiteRT-LM, 1,754,890,240 bytes, pinned) as the only cleanup editor and
+  remove the rule that skipped cleanup for Hindi. Stray `<think>` blocks are dropped before validation.
+- Licenses/provenance for Apex and Qwen3 under `licenses/`; README, AGENTS, MODIFICATIONS, VOICE_MODELS, SITEMAP,
+  DESIGN, alter-agent and native SOURCE docs updated.
+
+Checks run (cloud host, 4-core x86, no phone):
+
+- Apex Q8 and FP16 files verified against Hugging Face size/SHA-256. Host build of the bundled whisper.cpp 1.9.5 on
+  Oriserve's 6 Apex card clips and 6 Swift sample clips: Q8 and FP16 gave the same text; FP16 took about twice as
+  long. Old settings ≈10 s per clip; flash attention + no fallback ≈5.4 s with the same text; language "auto"
+  ≈11 s with worse text; shortened `audio_ctx` made the model loop on tokens (rejected).
+- Qwen3 and LFM2.5 through `litertlm-jvm` 0.18.0 with the app's own `AlterDictationAgent` instructions, examples
+  and validator on 11 Hinglish/English transcripts: LFM2.5 inserted unrelated text on every Hinglish sample (all
+  rejected); Qwen3 had 9 accepted edits, 2 rejected by the validator (one real error, one valid "so basically"
+  removal the conservative validator does not allow). About 5 s per call on the host.
+- `objdump`: baseline 0 `sdot`, dotprod 966 `sdot`, i8mm 966 `sdot` + 260 `smmla`; 16 KB LOAD alignment kept.
+- `./gradlew assembleStableDebug -PalterAbis=arm64-v8a :alter-voice:testDebugUnitTest`: passed, 52 voice tests
+  (3 new: library selection, Apex Hindi decoding, thinking strip). The APK contains all three arm64 Whisper builds.
+  Signed with a local throwaway key, not the shared key; `check_apk_signature.py` not run.
+- Not run: anything on a phone (latency, RAM, thermals, recognition quality, cleanup speed). Host times are not
+  phone times.
+
+## PR #32 follow-up: merge main (PR #31) and turn off live cleanup (Nov 2, 2026)
+
+- Merged `main` after PR #31. Resolved conflicts: `SpeechModels.kt` keeps the Apex branch before PR #31's
+  checked `MoonshineSpeech.decode`; VOICE_MODELS, MODIFICATIONS, alter-agent README and CHANGES combine both sides.
+- Live cleanup during recording is off (`VoicePack.LIVE_CLEANUP = false`): it reloads the editor on every
+  1.2 s pause, and Qwen3 1.7B would compete with recognition on a phone CPU. Cleanup runs once after recording;
+  the mechanism and its tests are unchanged.
+- PR #31's new documents updated for Apex/Qwen3: PLAN, HANDOFF, Markdown inventory (48 files, two new
+  provenance files), dictation-cleanup status, Nemotron guide and the Whisper SOURCE note.
+
+## Backtrack: spoken corrections (Nov 2, 2026)
+
+- Generalize `resolveSpokenCorrections` from weekdays to days (English and Roman Hindi), months, relative days and
+  numbers/times with currency or units, with English and Hinglish cues (actually, sorry, I mean, no wait, nahi nahi,
+  matlab, galat bola …), Hindi postpositions before the cue, chains and unit inheritance ("5 pm sorry 6" → 6 pm).
+- Add `collapseRestatements` ("Monday, Tuesday" → Tuesday; days, months and clock times only, never lists,
+  ranges or the "kal parso"/"aaj kal" idioms) and `applyScratchThat` ("scratch that", "strike that", paused
+  "delete that"). `quickDictation` applies them when cleanup is off or the phrase is simple.
+- Validator: rejects edits that add "and/or/aur/ya". Corrected text that becomes simple skips the editor.
+  English day/month names are capitalized (not "may"/"march"). Cleanup instructions/examples are unchanged.
+- Changed one older assertion on purpose: "send it tomorrow actually tonight" now gives "Send it tonight." (the
+  user asked for Wispr-style Backtrack); a reverted "Send it tomorrow." edit is still rejected.
+- New docs/BACKTRACK.md; README, MODIFICATIONS, DESIGN, SITEMAP, alter-agent README, cleanup-instructions status,
+  PLAN, HANDOFF and the Markdown inventory (49 files) updated; stale "tomorrow, actually tonight" claims removed.
+
+Checks run (cloud host, no phone):
+
+- `./gradlew :alter-voice:testDebugUnitTest`: 63 tests passed, including the new BacktrackTest (about 70 English
+  and Hinglish cases for corrections, never-changed text, lists, "scratch that", validation and model-free paths).
+- Qwen3 1.7B through `litertlm-jvm` 0.18.0 with the app pipeline on 15 sentences, before the redesign: it turned
+  "Monday, Tuesday" and "5 pm 6 pm" into "and" lists (accepted by the old validator) and produced unrelated text on
+  one short input. After the redesign: all restatement and cue cases corrected, lists and idioms kept, 6 of 15 with
+  no model call. "meeting Monday ko rakho nahi nahi Tuesday ko" (cue after the verb) is still unchanged.
+- Not run: phone checks of any kind.

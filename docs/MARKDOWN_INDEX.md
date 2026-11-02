@@ -12,7 +12,7 @@ The classifications below record that decision. New task-specific audit details 
 Current guides describe this branch. Main/PR state and runtime checks are dated snapshots in
 [HANDOFF.md](../HANDOFF.md); an open PR is not a merged release or a verified phone fix.
 
-Inventoried Markdown files: **46**.
+Inventoried Markdown files: **49**.
 
 | File | Role/status | November 1 review |
 | --- | --- | --- |
@@ -24,12 +24,12 @@ Inventoried Markdown files: **46**.
 | [MODIFICATIONS.md](../MODIFICATIONS.md) | Current + provenance | FUTO modifications and current feature scope; retired component facts identified |
 | [PLAN.md](../PLAN.md) | Current plan | Task scope, intended/completed changes and remaining acceptance work |
 | [README.md](../README.md) | Current | Entry point, setup, supported features and handoff links |
-| [alter-agent/README.md](../alter-agent/README.md) | Current | Text-only agent boundary; LFM only; no retired routing/editor claims |
+| [alter-agent/README.md](../alter-agent/README.md) | Current | Text-only agent boundary; Qwen3 only, live cleanup off in host; no retired routing/editor claims |
 | [alter-voice/native-handy/SOURCE.md](../alter-voice/native-handy/SOURCE.md) | Archived provenance | Handy excluded from APK; source/license/rebuild facts retained |
 | [alter-voice/native-handy/llama/vendor/hash/rotate-bits/LICENSE.md](../alter-voice/native-handy/llama/vendor/hash/rotate-bits/LICENSE.md) | Legal/vendor, preserved | Reviewed scope; copyright, legal and bundled dependency notices intentionally unchanged |
 | [alter-voice/native-nemotron/SOURCE.md](../alter-voice/native-nemotron/SOURCE.md) | Current provenance | Active native adapter/source pin, rebuild and diagnostic behavior |
 | [alter-voice/native-nemotron/transcribe/THIRD-PARTY-LICENSES.md](../alter-voice/native-nemotron/transcribe/THIRD-PARTY-LICENSES.md) | Legal/vendor, preserved | Reviewed scope; copyright, legal and bundled dependency notices intentionally unchanged |
-| [alter-voice/native/SOURCE.md](../alter-voice/native/SOURCE.md) | Archived provenance | Whisper/Oriserve bridge excluded from APK; original source/license facts retained |
+| [alter-voice/native/SOURCE.md](../alter-voice/native/SOURCE.md) | Current provenance | Whisper bridge for Oriserve Apex; three arm64 feature-level builds via build_whisper_native.sh |
 | [app/libs/README.md](../app/libs/README.md) | Upstream/reference, preserved | Reviewed scope; typing/layout/theme/translation/library reference unaffected by ALTER voice changes |
 | [app/src/main/assets/futo-swipe/LICENSE.md](../app/src/main/assets/futo-swipe/LICENSE.md) | Legal/vendor, preserved | Reviewed scope; copyright, legal and bundled dependency notices intentionally unchanged |
 | [app/src/main/assets/futo-swipe/README.md](../app/src/main/assets/futo-swipe/README.md) | Upstream/reference, preserved | Reviewed scope; typing/layout/theme/translation/library reference unaffected by ALTER voice changes |
@@ -40,6 +40,7 @@ Inventoried Markdown files: **46**.
 | [app/tools/make-keyboard-text-py/README.md](../app/tools/make-keyboard-text-py/README.md) | Upstream/reference, preserved | Reviewed scope; typing/layout/theme/translation/library reference unaffected by ALTER voice changes |
 | [app/translations/README.md](../app/translations/README.md) | Upstream/reference, preserved | Reviewed scope; typing/layout/theme/translation/library reference unaffected by ALTER voice changes |
 | [docs/AUTOMATIC_LANGUAGE_ROUTING.md](../docs/AUTOMATIC_LANGUAGE_ROUTING.md) | Retired experiment | Existing retirement banner retained; former behavior is historical, not active setup |
+| [docs/BACKTRACK.md](../docs/BACKTRACK.md) | Current | Added with Backtrack: correction rules, never-changed cases, validator change and limits |
 | [docs/DESIGN.md](../docs/DESIGN.md) | Current | Compact voice UI, shared spacing, visible errors and preserved upstream behavior |
 | [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) | Current | Portable build/native/test setup; no local-script dependency |
 | [docs/FUTO_README.md](../docs/FUTO_README.md) | Upstream/reference, preserved | Reviewed scope; typing/layout/theme/translation/library reference unaffected by ALTER voice changes |
@@ -52,16 +53,18 @@ Inventoried Markdown files: **46**.
 | [docs/SIGNING.md](../docs/SIGNING.md) | Current, reviewed unchanged | Shared-key/update constraints and CI one-off-key limitation remain accurate |
 | [docs/SITEMAP.md](../docs/SITEMAP.md) | Current | Navigation, voice flow and supported model controls |
 | [docs/STREAMING_RECOGNIZER_CHECKS.md](../docs/STREAMING_RECOGNIZER_CHECKS.md) | Current branch checks | PR #31 adapter/probe details; host success is not device acceptance |
-| [docs/VOICE_MODELS.md](../docs/VOICE_MODELS.md) | Current | Retained recognizers, LFM conditions, upgrade/recovery and provider-tone limits |
-| [docs/dictation-cleanup-instructions.md](../docs/dictation-cleanup-instructions.md) | Reference + current status | Designer prompt reference preserved; implementation/LFM/bypass limits stated |
+| [docs/VOICE_MODELS.md](../docs/VOICE_MODELS.md) | Current | Retained recognizers incl. Apex and its speed settings, Qwen3 cleanup, upgrade/recovery and provider-tone limits |
+| [docs/dictation-cleanup-instructions.md](../docs/dictation-cleanup-instructions.md) | Reference + current status | Designer prompt reference preserved; Qwen3, Hindi cleanup and live-cleanup status stated |
 | [licenses/Automatic-Routing-PROVENANCE.md](../licenses/Automatic-Routing-PROVENANCE.md) | Retired provenance | Added explicit app-retirement context; original artifact/source/license facts preserved |
 | [licenses/Handy-Editor-PROVENANCE.md](../licenses/Handy-Editor-PROVENANCE.md) | Retired provenance | Added explicit app-retirement context; original artifact/source/license facts preserved |
 | [licenses/IndicConformer-Hindi-PROVENANCE.md](../licenses/IndicConformer-Hindi-PROVENANCE.md) | Retired provenance | Added explicit app-retirement context; original artifact/source/license facts preserved |
 | [licenses/IndicXlit-PROVENANCE.md](../licenses/IndicXlit-PROVENANCE.md) | Retired provenance | Added explicit app-retirement context; original artifact/source/license facts preserved |
 | [licenses/Nemotron-3.5-PROVENANCE.md](../licenses/Nemotron-3.5-PROVENANCE.md) | Active provenance, preserved | Reviewed model/source/hash facts; retained model bytes and licensing unchanged |
+| [licenses/Oriserve-Hinglish-Apex-PROVENANCE.md](../licenses/Oriserve-Hinglish-Apex-PROVENANCE.md) | Active provenance | Added for PR #32: Apex Q8 source, conversion pin, hash and Q8-vs-FP16 decision |
 | [licenses/Oriserve-Hinglish-Swift-PROVENANCE.md](../licenses/Oriserve-Hinglish-Swift-PROVENANCE.md) | Retired provenance | Added explicit app-retirement context; original artifact/source/license facts preserved |
 | [licenses/Parakeet-110M-PROVENANCE.md](../licenses/Parakeet-110M-PROVENANCE.md) | Active provenance, preserved | Reviewed model/source/hash facts; retained model bytes and licensing unchanged |
 | [licenses/Parakeet-TDT-PROVENANCE.md](../licenses/Parakeet-TDT-PROVENANCE.md) | Active provenance, preserved | Reviewed model/source/hash facts; retained model bytes and licensing unchanged |
+| [licenses/Qwen3-1.7B-PROVENANCE.md](../licenses/Qwen3-1.7B-PROVENANCE.md) | Active provenance | Added for PR #32: Qwen3 LiteRT-LM source, pin, hash and why it replaced LFM2.5 |
 
 ## Preserved local-link exceptions
 

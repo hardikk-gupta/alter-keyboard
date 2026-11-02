@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * ALTER's LiteRT runtime, reduced to the dictation editor. One LiteRT engine at a time; LiteRT 0.18 has a reported
- * recurrent-state reuse issue for LFM2, so every cleanup chunk gets a fresh engine that is released afterwards.
+ * recurrent-state reuse issue (seen with LFM2), so every cleanup chunk gets a fresh engine that is released afterwards.
  */
 internal class CleanupEngine(private val context: Context, private val store: ModelStore) {
     private val mutex = Mutex()

@@ -149,9 +149,10 @@ class VoicePackRegressionTest {
         for (edit in listOf("Send Rohit 5000 tomorrow.", "Send Rahul 500 tonight.", "I sent Rahul 5000 tomorrow.")) {
             assertEquals(formatDictation(raw), AlterDictationAgent.process(raw) { edit })
         }
-        // Broad semantic backtracking is still rejected; instructions alone do not relax the validator.
-        assertEquals("Send it tomorrow actually tonight.",
-            AlterDictationAgent.process("send it tomorrow actually tonight") { "Send it tonight." })
+        // Backtrack: a cue correction between values of the same kind is resolved before the editor runs.
+        assertEquals("Send it tonight.", AlterDictationAgent.process("send it tomorrow actually tonight") { "Send it tonight." })
+        // Other value changes stay rejected; instructions alone do not relax the validator.
+        assertEquals("Send it tonight.", AlterDictationAgent.process("send it tomorrow actually tonight") { "Send it tomorrow." })
     }
 
     @Test fun longTranscriptsAreChunkedWithoutLossAndTimeoutsKeepAllTailText() = runTest {
@@ -201,13 +202,36 @@ class VoicePackRegressionTest {
     @Test fun keyboardCatalogHoldsOnlyPinnedVoicePipelineModels() {
         val json = File("src/main/assets/alter_voice_models.json").readText()
         val ids = Regex("\"id\": \"([^\"]+)\"").findAll(json).map { it.groupValues[1] }.toList()
-        assertTrue("lfm25-350m-cleanup" in ids)
-        assertEquals(12, ids.size)
+        assertTrue(VoicePack.CLEANUP_MODEL in ids && APEX_HINGLISH_MODEL in ids)
+        assertFalse("lfm25-350m-cleanup" in ids)
+        assertEquals(13, ids.size)
         assertTrue(ids.all { it in retainedSpeechIds || it == VoicePack.CLEANUP_MODEL || it.startsWith("moonshine-en-medium-") })
         assertFalse(json.contains("IndicXlit"))
-        assertFalse(json.contains("Whisper"))
+        // Whisper appears only as Oriserve Apex's runtime family.
+        assertEquals(1, Regex("\"family\": \"Whisper\"").findAll(json).count())
         assertFalse(json.contains("Handy"))
         assertEquals(ids.size, Regex("\"sha256\": \"[a-f0-9]{64}\"").findAll(json).count())
         assertEquals(ids.size, Regex("\"downloadUrl\": \"https://").findAll(json).count())
+    }
+
+    @Test fun whisperLoadsTheFastestBuildTheCpuSupports() {
+        val v82 = setOf("fp", "asimd", "asimdhp", "asimddp")
+        assertEquals("alter_whisper", whisperLibrary(setOf("fp", "asimd"), "arm64-v8a"))
+        assertEquals("alter_whisper", whisperLibrary(setOf("fp", "asimd", "asimddp"), "arm64-v8a"))
+        assertEquals("alter_whisper_dotprod", whisperLibrary(v82, "arm64-v8a"))
+        assertEquals("alter_whisper_i8mm", whisperLibrary(v82 + "i8mm", "arm64-v8a"))
+        assertEquals("alter_whisper", whisperLibrary(v82 + "i8mm", "x86_64"))
+        assertEquals("alter_whisper", whisperLibrary(emptySet(), null))
+    }
+
+    @Test fun apexAlwaysDecodesHindiForRomanHinglish() {
+        assertEquals("hi", whisperDecodeLanguage(APEX_HINGLISH_MODEL, "auto"))
+        assertEquals("hi", whisperDecodeLanguage(APEX_HINGLISH_MODEL, "en-IN"))
+        assertEquals("en", whisperDecodeLanguage("other", "en-IN"))
+    }
+
+    @Test fun cleanupDropsStrayThinkingBlocks() {
+        assertEquals("Kya tum free ho?", stripThinking("<think>\n\n</think>\n\nKya tum free ho?"))
+        assertEquals("Hi.", stripThinking("Hi."))
     }
 }

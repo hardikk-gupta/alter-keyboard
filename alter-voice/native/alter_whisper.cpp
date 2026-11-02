@@ -7,6 +7,7 @@ struct SpeechContext { whisper_context * model; std::atomic<bool> cancelled{fals
 extern "C" JNIEXPORT jlong JNICALL Java_com_aistudio_altermind_voice_WhisperNative_load(JNIEnv *env, jobject, jstring path) {
     const char *filename = env->GetStringUTFChars(path, nullptr);
     auto params = whisper_context_default_params(); params.use_gpu = false;
+    params.flash_attn = true; // Same text on Apex test clips, about half the CPU time.
     auto *model = whisper_init_from_file_with_params(filename, params);
     env->ReleaseStringUTFChars(path, filename);
     return model ? reinterpret_cast<jlong>(new SpeechContext{model}) : 0;
@@ -32,6 +33,8 @@ extern "C" JNIEXPORT jstring JNICALL Java_com_aistudio_altermind_voice_WhisperNa
     params.no_timestamps = true; params.print_realtime = false; params.print_progress = false;
     params.print_timestamps = false; params.print_special = false; params.suppress_blank = true;
     params.language = code.c_str(); params.detect_language = false; // "auto" still detects language before transcribing.
+    // One greedy pass: temperature fallback re-decodes the window and doubled Apex time without better text.
+    params.temperature_inc = 0.0f;
     params.abort_callback = [](void *data) { return reinterpret_cast<SpeechContext *>(data)->cancelled.load(); };
     params.abort_callback_user_data = ctx;
     if (whisper_full(ctx->model, params, pcm.data(), length) != 0 || ctx->cancelled.load()) return nullptr;

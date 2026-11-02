@@ -7,12 +7,42 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
 
+/** whisper.cpp bridge. ggml picks its int8/fp16 kernels at compile time, so one build per ARM feature level ships. */
+internal object WhisperNative {
+    init {
+        val best = whisperLibrary(cpuFeatures())
+        try { System.loadLibrary(best) } catch (e: UnsatisfiedLinkError) { if (best == "alter_whisper") throw e; System.loadLibrary("alter_whisper") }
+    }
+    external fun load(path: String): Long
+    external fun transcribe(handle: Long, audio: FloatArray, language: String, threads: Int): String?
+    external fun prepare(handle: Long)
+    external fun cancel(handle: Long)
+    external fun close(handle: Long)
+    private fun cpuFeatures(): Set<String> = runCatching {
+        File("/proc/cpuinfo").readLines().filter { it.startsWith("Features") }
+            .map { it.substringAfter(':').trim().split(Regex("\\s+")).toSet() }
+            // Android requires one ISA across cores; use what every listed core reports.
+            .reduceOrNull { all, core -> all intersect core }
+    }.getOrNull().orEmpty()
+}
+
+/** The fastest bundled whisper build this CPU can run (x86_64 has only the baseline). */
+internal fun whisperLibrary(features: Set<String>, abi: String? = Build.SUPPORTED_ABIS?.firstOrNull()): String {
+    if (abi != "arm64-v8a") return "alter_whisper"
+    val dotprod = "asimddp" in features && "asimdhp" in features
+    return when {
+        dotprod && "i8mm" in features -> "alter_whisper_i8mm"
+        dotprod -> "alter_whisper_dotprod"
+        else -> "alter_whisper"
+    }
+}
+
 data class SpeechChoice(val id: String, val name: String, val description: String, val files: List<ModelSpec>) {
     val bytes get() = files.sumOf { it.downloadBytes }
     fun installed(store: ModelStore) = files.all(store::installed)
 }
 fun speechChoices(catalog: ModelCatalog): List<SpeechChoice> {
-    val standalone = catalog.models.filter { it.modelType == ModelType.SPEECH && it.family in setOf("Nemotron", "ParakeetCTC", "ParakeetTDT") }
+    val standalone = catalog.models.filter { it.modelType == ModelType.SPEECH && it.family in setOf("Whisper", "Nemotron", "ParakeetCTC", "ParakeetTDT") }
         .map { SpeechChoice(it.id, it.displayName, it.description, listOf(it)) }
     val files = catalog.models.filter { it.family == "Moonshine" && "MOONSHINE_MEDIUM_STREAMING" in it.capabilities }
     val moonshine = if (files.isEmpty()) emptyList() else listOf(SpeechChoice("moonshine-en-medium",
@@ -26,6 +56,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     private val prefs = voicePrefs(context)
     val catalog by lazy { ModelCatalog.load(context) }
     val store by lazy { ModelStore(context) }
+    @Volatile private var whisper = 0L
     @Volatile private var nemotron = 0L
     @Volatile private var parakeetTdt = 0L
     private var parakeet: ParakeetSpeech? = null
@@ -70,6 +101,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     suspend fun release() = withContext(Dispatchers.IO) { mutex.withLock { closeLocked() } }
     @Synchronized override fun cancel(owner: Any) {
         if (activeOwner === owner) {
+            if (whisper != 0L) WhisperNative.cancel(whisper)
             if (nemotron != 0L) NemotronNative.cancel(nemotron)
             if (parakeetTdt != 0L) NemotronNative.cancel(parakeetTdt)
         }
@@ -87,6 +119,9 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         } else if (choice.files.singleOrNull()?.family == "ParakeetCTC") {
             parakeet = ParakeetSpeech.open(store.file(choice.files.single()),
                 File(context.noBackupFilesDir, "speech-parakeet/${choice.files.single().version}"))
+        } else if (choice.files.singleOrNull()?.family == "Whisper") {
+            whisper = WhisperNative.load(store.file(choice.files.single()).absolutePath)
+            check(whisper != 0L) { "Whisper could not open this verified model on your device." }
         } else if (choice.files.singleOrNull()?.family == "Nemotron") {
             require(Build.VERSION.SDK_INT >= 26) { "Nemotron requires Android 8 or later." }
             nemotron = NemotronNative.load(store.file(choice.files.single()).absolutePath)
@@ -116,7 +151,9 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 load()
                 // Nemotron keeps its native streaming context over the whole saved recording.
                 if (nemotron != 0L) return@withLock decodeLoadedWindow(audio).ifBlank { "[NO_SPEECH_DETECTED]" }
-                transcribeSpeechWindows(audio, decode = ::decodeLoadedWindow).ifBlank { "[NO_SPEECH_DETECTED]" }
+                // Whisper always encodes a full 30 s window, so use nearly all of it.
+                transcribeSpeechWindows(audio, decode = ::decodeLoadedWindow,
+                    windowSeconds = if (whisper != 0L) 28 else 20).ifBlank { "[NO_SPEECH_DETECTED]" }
             } finally { activeOwner = null }
         }
     }
@@ -140,7 +177,11 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 "Parakeet TDT transcription failed. Your recording is saved."
             }.decodeToString()
         } else if (parakeet != null) parakeet!!.decode(audio)
-        else moonshine!!.decode(audio)
+        else if (whisper != 0L) {
+            WhisperNative.prepare(whisper)
+            requireNotNull(WhisperNative.transcribe(whisper, audio, whisperDecodeLanguage(loaded, prefs.getString("voice_language", "auto")),
+                minOf(4, Runtime.getRuntime().availableProcessors()).coerceAtLeast(1))) { "Whisper transcription failed. Your recording is saved." }
+        } else moonshine!!.decode(audio)
         currentCoroutineContext().ensureActive()
         return cleanDictation(raw)
     }
@@ -179,6 +220,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         File(context.noBackupFilesDir, "speech-indicconformer").deleteRecursively()
     }
     @Synchronized private fun closeDecoderLocked() {
+        if (whisper != 0L) { WhisperNative.close(whisper); whisper = 0L }
         if (nemotron != 0L) { NemotronNative.close(nemotron); nemotron = 0L }
         if (parakeetTdt != 0L) { NemotronNative.close(parakeetTdt); parakeetTdt = 0L }
         parakeet?.close(); parakeet = null
@@ -219,3 +261,10 @@ internal fun wavSamples(wav: ByteArray): FloatArray {
     val shorts = java.nio.ByteBuffer.wrap(wav, 44, wav.size - 44).order(java.nio.ByteOrder.LITTLE_ENDIAN).asShortBuffer()
     return FloatArray(shorts.remaining()) { shorts.get() / 32768f }
 }
+
+/**
+ * Oriserve's Hindi2Hinglish models are fine-tuned for Hindi decoding and write Roman-letter Hinglish. "auto" adds a
+ * second encoder pass for language detection and gave worse Apex output on its own sample clips.
+ */
+internal fun whisperDecodeLanguage(model: String?, language: String?): String =
+    if (model == APEX_HINGLISH_MODEL) "hi" else when (language) { "en-IN" -> "en"; "hi-IN" -> "hi"; else -> "auto" }

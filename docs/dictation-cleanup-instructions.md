@@ -5,10 +5,11 @@
 This is the designer-supplied reference, not a guarantee that every operation below is implemented.
 Runtime instructions and validation live in `alter-agent`; see its [integration guide](../alter-agent/README.md).
 Simple eligible phrases skip model inference; other requests use bounded compact/full instructions.
-LFM2.5 350M is the only optional cleanup model; Handy and its alternate prompt protocol are retired.
-Live cleanup is provisional until final ASR text is available. Explicit Hindi mode bypasses model cleanup.
+Qwen3 1.7B INT8 is the only optional cleanup model (LFM2.5 350M and Handy are retired). It also cleans Hindi and
+Hinglish; the old Hindi bypass is removed. Cleanup runs once after recording; live cleanup is turned off in the host.
 App/screen/style/snippet context is not collected, and tags inside dictated text never become instructions.
-General semantic corrections, entity normalization and Hinglish cleanup remain constrained by validation.
+Spoken corrections of days, months, times and numbers are handled by [Backtrack](BACKTRACK.md); other semantic
+corrections, entity normalization and Hinglish cleanup remain constrained by validation.
 The transcription model (including experimental Nemotron) does not change these policy boundaries.
 
 ## Role
