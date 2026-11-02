@@ -149,9 +149,10 @@ class VoicePackRegressionTest {
         for (edit in listOf("Send Rohit 5000 tomorrow.", "Send Rahul 500 tonight.", "I sent Rahul 5000 tomorrow.")) {
             assertEquals(formatDictation(raw), AlterDictationAgent.process(raw) { edit })
         }
-        // Broad semantic backtracking is still rejected; instructions alone do not relax the validator.
-        assertEquals("Send it tomorrow actually tonight.",
-            AlterDictationAgent.process("send it tomorrow actually tonight") { "Send it tonight." })
+        // Backtrack: a cue correction between values of the same kind is resolved before the editor runs.
+        assertEquals("Send it tonight.", AlterDictationAgent.process("send it tomorrow actually tonight") { "Send it tonight." })
+        // Other value changes stay rejected; instructions alone do not relax the validator.
+        assertEquals("Send it tonight.", AlterDictationAgent.process("send it tomorrow actually tonight") { "Send it tomorrow." })
     }
 
     @Test fun longTranscriptsAreChunkedWithoutLossAndTimeoutsKeepAllTailText() = runTest {

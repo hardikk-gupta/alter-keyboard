@@ -12,7 +12,7 @@ The classifications below record that decision. New task-specific audit details 
 Current guides describe this branch. Main/PR state and runtime checks are dated snapshots in
 [HANDOFF.md](../HANDOFF.md); an open PR is not a merged release or a verified phone fix.
 
-Inventoried Markdown files: **48**.
+Inventoried Markdown files: **49**.
 
 | File | Role/status | November 1 review |
 | --- | --- | --- |
@@ -40,6 +40,7 @@ Inventoried Markdown files: **48**.
 | [app/tools/make-keyboard-text-py/README.md](../app/tools/make-keyboard-text-py/README.md) | Upstream/reference, preserved | Reviewed scope; typing/layout/theme/translation/library reference unaffected by ALTER voice changes |
 | [app/translations/README.md](../app/translations/README.md) | Upstream/reference, preserved | Reviewed scope; typing/layout/theme/translation/library reference unaffected by ALTER voice changes |
 | [docs/AUTOMATIC_LANGUAGE_ROUTING.md](../docs/AUTOMATIC_LANGUAGE_ROUTING.md) | Retired experiment | Existing retirement banner retained; former behavior is historical, not active setup |
+| [docs/BACKTRACK.md](../docs/BACKTRACK.md) | Current | Added with Backtrack: correction rules, never-changed cases, validator change and limits |
 | [docs/DESIGN.md](../docs/DESIGN.md) | Current | Compact voice UI, shared spacing, visible errors and preserved upstream behavior |
 | [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) | Current | Portable build/native/test setup; no local-script dependency |
 | [docs/FUTO_README.md](../docs/FUTO_README.md) | Upstream/reference, preserved | Reviewed scope; typing/layout/theme/translation/library reference unaffected by ALTER voice changes |

@@ -50,13 +50,12 @@ still requires matching recording identity. Keep the FUTO attribution, license, 
   bypass is removed and live cleanup during recording is turned off (`VoicePack.LIVE_CLEANUP`).
 - Host evidence and limits are in CHANGES.md; nothing was measured on a phone.
 
-Proposed next step (not started): Wispr-style Backtrack. Today `safeDictationEdit` rejects any edit that drops a
-content word or number, so "Monday, Tuesday" → "Tuesday" or "2 actually 3" → "3" can never pass; only
-`resolveSpokenCorrections` handles weekdays after an explicit cue. Plan: deterministic cue resolvers for
-days/times/numbers/dates/names with English and Hinglish cues ("actually", "I mean", "nahi nahi", "matlab",
-"galat bola"), "scratch that"/"rehne do" deletion, correction-aware validation that accepts a removed word only
-when a same-type replacement follows it (never across "and/or/aur/ya" lists), an undo-cleanup action and a
-50+ sentence English/Hinglish test set.
+Backtrack (Wispr-style spoken corrections) is implemented on top of PR #32: deterministic cue corrections for days,
+months, relative days, times and numbers in English and Hinglish, no-cue restatements ("Monday, Tuesday" → Tuesday),
+"scratch that", a validator guard against added "and/or/aur/ya", and no editor call when the corrected text is
+simple. Qwen3 1.7B turned restatements into lists on the host, so they are deterministic. Rules, never-changed
+cases and limits: [docs/BACKTRACK.md](docs/BACKTRACK.md). Not handled: a cue after a verb ("Monday ko rakho nahi
+nahi Tuesday ko"), names, "never mind"/"rehne do", undo after insertion.
 
 ## PR #31 (merged): streaming recognizer fixes
 

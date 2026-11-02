@@ -53,6 +53,9 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
   recognized text only for Android's recognizer (Android does not expose its source audio). It survives process restarts
   and is removed after accepted insertion or an explicit ✕ discard, with a fifteen-minute audio limit. Resume uses the
   same speech model; reselect it if changed. No recording history is kept. Errors preserve the draft for retry.
+- Backtrack: spoken corrections keep what you meant. "Friday actually Monday" → Monday, "coffee at 2 actually 3" → 3,
+  "kal nahi nahi parso" → parso, "meeting for Monday, Tuesday" → Tuesday, "…scratch that…" drops the clause before it.
+  Instant, with or without cleanup. Rules and limits: [docs/BACKTRACK.md](docs/BACKTRACK.md).
 - Speech models: Oriserve Hinglish Apex (Hindi + English in Roman letters), Parakeet 110M CTC INT8, Parakeet 110M
   TDT FP16, Nemotron Q4, Moonshine Medium, or Android on-device recognition (Android 12+). Optional cleanup uses
   only Qwen3 1.7B, which also cleans Hindi and Hinglish.
@@ -143,7 +146,7 @@ upstream README is kept as [docs/FUTO_README.md](docs/FUTO_README.md).
 ### Shared ALTER dictation core
 
 The voice pipeline is audio → transcription → `alter-agent` dictation policy → optional local cleanup model →
-validated text output. The reusable core owns instructions/examples, explicit weekday correction handling,
+validated text output. The reusable core owns instructions/examples, Backtrack correction handling,
 formatting, edit validation, bounded processing and full-transcript fallback. The keyboard supplies model inference
 and handles insertion/clipboard delivery. No main-app installation, chat history, memories, tools or cloud fallback
 is required. Cleanup remains opt-in and now also covers Hindi and Hinglish. This is a dictation-specific core,
@@ -152,9 +155,8 @@ not the main app's full chat/action agent; the main app has not yet migrated to 
 Dictation instructions now explicitly cover fillers, false starts, repetition, latest explicit corrections,
 faithful grammar/formatting, Hindi/Hinglish language preservation, and protection of names, code and numbers.
 They forbid answering/executing spoken requests or inventing context/preferences. This is an instruction update,
-not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
-semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
-limited correction class. Formatting remains bounded by the current formatter.
+not new cleanup levels, context collection or a new model. [Backtrack](docs/BACKTRACK.md) resolves spoken corrections of days,
+months, times and numbers; validation still rejects every other semantic deletion. Formatting remains bounded by the current formatter.
 
 Bounded Parakeet preview scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
 or download), targets its first preview after two seconds of captured audio, and spaces later previews according

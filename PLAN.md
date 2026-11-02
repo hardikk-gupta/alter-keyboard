@@ -19,7 +19,8 @@ model that handles Hindi (Qwen3 1.7B was chosen over LFM2.5 350M).
 | Merge `main` (PR #31) into PR #32 | Done | Conflicts in SpeechModels.kt and docs resolved |
 | Phone test of the PR #32 APK | Pending, user | Apex seconds after stop, Hinglish accuracy, cleanup quality/time, RAM |
 | Merge PR #32 | Owner action pending | Hardikk or Chirag merges |
-| Backtrack / Wispr-style corrections | Proposed, awaiting go-ahead | Plan in HANDOFF.md; needs correction-aware validation (next PR) |
+| Backtrack / Wispr-style corrections | Implemented on top of PR #32, not yet pushed to a PR | Deterministic cues (EN + Hinglish), restatements, "scratch that", conjunction guard; [docs/BACKTRACK.md](docs/BACKTRACK.md) |
+| Backtrack follow-ups | Not started | Cue after a verb, names, "never mind"/"rehne do", undo cleanup after insertion |
 
 ## Previous documentation task (PR #31, merged)
 
@@ -57,6 +58,8 @@ must live in this GitHub repository. Documentation must stay synchronized immedi
   to test a different model; use the explicit saved-audio recovery path.
 - Keep model rows concise. Only actionable error/progress text belongs in that flow.
 - Cleanup stays optional and uses Qwen3 1.7B; short/simple phrases skip inference; Hindi is cleaned too.
+- Backtrack is deterministic, not left to Qwen3 1.7B (it turned "Monday, Tuesday" into a list). Relative days
+  collapse only with a cue ("kal parso" and "aaj kal" are idioms).
 - Apex keeps the full 30 s encoder window: shorter `audio_ctx` windows made it loop on tokens.
 - Do not describe host success as a phone fix, phone accuracy score or measured mobile latency.
 

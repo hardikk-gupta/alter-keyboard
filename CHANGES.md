@@ -614,3 +614,28 @@ Checks run (cloud host, 4-core x86, no phone):
   the mechanism and its tests are unchanged.
 - PR #31's new documents updated for Apex/Qwen3: PLAN, HANDOFF, Markdown inventory (48 files, two new
   provenance files), dictation-cleanup status, Nemotron guide and the Whisper SOURCE note.
+
+## Backtrack: spoken corrections (Nov 2, 2026)
+
+- Generalize `resolveSpokenCorrections` from weekdays to days (English and Roman Hindi), months, relative days and
+  numbers/times with currency or units, with English and Hinglish cues (actually, sorry, I mean, no wait, nahi nahi,
+  matlab, galat bola …), Hindi postpositions before the cue, chains and unit inheritance ("5 pm sorry 6" → 6 pm).
+- Add `collapseRestatements` ("Monday, Tuesday" → Tuesday; days, months and clock times only, never lists,
+  ranges or the "kal parso"/"aaj kal" idioms) and `applyScratchThat` ("scratch that", "strike that", paused
+  "delete that"). `quickDictation` applies them when cleanup is off or the phrase is simple.
+- Validator: rejects edits that add "and/or/aur/ya". Corrected text that becomes simple skips the editor.
+  English day/month names are capitalized (not "may"/"march"). Cleanup instructions/examples are unchanged.
+- Changed one older assertion on purpose: "send it tomorrow actually tonight" now gives "Send it tonight." (the
+  user asked for Wispr-style Backtrack); a reverted "Send it tomorrow." edit is still rejected.
+- New docs/BACKTRACK.md; README, MODIFICATIONS, DESIGN, SITEMAP, alter-agent README, cleanup-instructions status,
+  PLAN, HANDOFF and the Markdown inventory (49 files) updated; stale "tomorrow, actually tonight" claims removed.
+
+Checks run (cloud host, no phone):
+
+- `./gradlew :alter-voice:testDebugUnitTest`: 63 tests passed, including the new BacktrackTest (about 70 English
+  and Hinglish cases for corrections, never-changed text, lists, "scratch that", validation and model-free paths).
+- Qwen3 1.7B through `litertlm-jvm` 0.18.0 with the app pipeline on 15 sentences, before the redesign: it turned
+  "Monday, Tuesday" and "5 pm 6 pm" into "and" lists (accepted by the old validator) and produced unrelated text on
+  one short input. After the redesign: all restatement and cue cases corrected, lists and idioms kept, 6 of 15 with
+  no model call. "meeting Monday ko rakho nahi nahi Tuesday ko" (cue after the verb) is still unchanged.
+- Not run: phone checks of any kind.

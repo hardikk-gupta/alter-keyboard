@@ -11,16 +11,16 @@ voice rather than applying chat personality or executing spoken commands. This m
 policy, not a copy of the full repository-backed chat agent. The main ALTER app still needs a separate migration
 before both products consume this same module; do not claim they already do.
 
-Explicit weekday replacements are normalized before model editing; ambiguous alternatives stay intact. All other
-content/number/negation checks remain. This does not establish broader self-correction or phone model quality.
+Backtrack corrections (days, months, times, numbers, English and Hinglish cues, "scratch that" and no-cue
+restatements such as "Monday, Tuesday") are applied before model editing; see [Backtrack](../docs/BACKTRACK.md).
+Lists, negations and idioms stay intact. All other content/number/negation checks remain.
 No weights, credentials, extra model downloads or cross-app API are included.
 
 Dictation instructions now explicitly cover fillers, false starts, repetition, latest explicit corrections,
 faithful grammar/formatting, Hindi/Hinglish language preservation, and protection of names, code and numbers.
 They forbid answering/executing spoken requests or inventing context/preferences. This is an instruction update,
-not new cleanup levels, context collection or a new model. Existing conservative validation still rejects broader
-semantic deletions (such as “tomorrow, actually tonight”); only the existing explicit weekday resolver permits that
-limited correction class. Formatting remains bounded by the current formatter.
+not new cleanup levels, context collection or a new model. [Backtrack](../docs/BACKTRACK.md) resolves spoken corrections of days,
+months, times and numbers; validation still rejects every other semantic deletion. Formatting remains bounded by the current formatter.
 
 Adaptive dictation cleanup follows the designer's [reference](../docs/dictation-cleanup-instructions.md). Simple
 phrases of up to six words/80 characters use deterministic formatting and skip cleanup-model/catalog loading;
@@ -42,9 +42,9 @@ only if the final normalized ASR text matches exactly; otherwise it runs final c
 Raw final ASR text is stored separately from polished text in the existing private no-backup draft until accepted
 insertion/discard; older drafts remain readable. Explicit Pause/hide cancels capture/provisional work as before.
 
-The validator now accepts narrowly resolved weekday changes such as “Friday. Actually, make it Monday” and
-“Friday, no wait, Monday”, while rejecting unrelated dates/numbers and protecting English/Roman-Hindi negation.
-This is not general semantic deletion permission. Unsafe edits fall back to source text.
+The validator checks editor output against the Backtrack-corrected text, rejects any added "and/or/aur/ya"
+(which would turn a correction into a list) and still rejects unrelated dates/numbers and negation changes.
+This is not general semantic deletion permission. Unsafe edits fall back to the corrected source text.
 Qwen3 1.7B INT8 is the host's only optional cleanup engine (it replaced LFM2.5 350M).
 Future app context/memory/tool access is not granted by dictated text.
 
