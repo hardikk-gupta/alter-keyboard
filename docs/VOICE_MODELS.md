@@ -19,7 +19,8 @@ All Whisper/Oriserve variants, Moonshine Tiny/Small, Handy, IndicConformer, Whis
 are removed from selection/downloads and execution. ICU4J/full ONNX Java dependencies are removed.
 The obsolete Handy/Whisper voice JNI libraries are excluded from packaging; their archived native sources
 and license notices remain in the repository. Moonshine retains its own original reduced ONNX runtime;
-Parakeet's separately linked sherpa runtime and Nemotron native runtime are unchanged.
+Parakeet retains its separately linked sherpa runtime. PR #31 updates Nemotron JNI failure reporting
+without changing decoder weights, architectures or language mapping.
 
 ## Settings and upgrade behavior
 
@@ -52,3 +53,10 @@ Check both merged ABI directories exclude `libalter_handy.so`, `libalter_whisper
 Verify retained catalog file hashes have not changed, retired downloads are removed without affecting drafts,
 and removed-model saved audio can be reprocessed without opening the microphone.
 The cloud environment lacks the shared signing key, so signed APK/install acceptance remains separate.
+
+## Repository handoff
+
+[HANDOFF.md](../HANDOFF.md) records the dated main/PR state, actual validation and open phone issues;
+[PLAN.md](../PLAN.md) records intended work and remaining actions. Streaming implementation details are in
+[STREAMING_RECOGNIZER_CHECKS.md](STREAMING_RECOGNIZER_CHECKS.md). Do not treat an open PR's host checks
+as a merged build or a confirmed device fix.

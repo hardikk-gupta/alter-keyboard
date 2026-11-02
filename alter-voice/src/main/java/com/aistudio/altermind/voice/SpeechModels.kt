@@ -29,7 +29,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     @Volatile private var nemotron = 0L
     @Volatile private var parakeetTdt = 0L
     private var parakeet: ParakeetSpeech? = null
-    private var moonshine: ai.moonshine.voice.Transcriber? = null
+    private var moonshine: MoonshineSpeech? = null
     private var loaded: String? = null
     @Volatile private var activeOwner: Any? = null
     fun clearSelection() { prefs.edit().remove("speech_model").apply() }
@@ -97,8 +97,8 @@ class SpeechModels(private val context: Context) : DictationSpeech {
             choice.files.forEach { spec ->
                 copySpeechComponent(store, spec, File(directory, spec.filename))
             }
-            val candidate = ai.moonshine.voice.Transcriber()
-            try { candidate.loadFromFiles(directory.absolutePath, ai.moonshine.voice.JNI.MOONSHINE_MODEL_ARCH_MEDIUM_STREAMING); candidate.setKeyterms(keyterms()); moonshine = candidate }
+            val candidate = MoonshineSpeech.open(directory.absolutePath)
+            try { candidate.setKeyterms(keyterms()); moonshine = candidate }
             catch (e: Throwable) { candidate.close(); throw e }
         }
         loaded = choice.id
@@ -140,7 +140,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
                 "Parakeet TDT transcription failed. Your recording is saved."
             }.decodeToString()
         } else if (parakeet != null) parakeet!!.decode(audio)
-        else moonshine!!.transcribeWithoutStreaming(audio, 16000).text()
+        else moonshine!!.decode(audio)
         currentCoroutineContext().ensureActive()
         return cleanDictation(raw)
     }
@@ -156,22 +156,8 @@ class SpeechModels(private val context: Context) : DictationSpeech {
             }
             val engine = moonshine ?: return@withLock false
             activeOwner = owner
-            val lines = linkedMapOf<Long, String>()
-            val listener = java.util.function.Consumer<ai.moonshine.voice.TranscriptEvent> { event ->
-                val line = when (event) {
-                    is ai.moonshine.voice.TranscriptEvent.LineStarted -> event.line
-                    is ai.moonshine.voice.TranscriptEvent.LineUpdated -> event.line
-                    is ai.moonshine.voice.TranscriptEvent.LineTextChanged -> event.line
-                    is ai.moonshine.voice.TranscriptEvent.LineCompleted -> event.line
-                    else -> null
-                }
-                if (line != null) { lines[line.id] = line.text; update(cleanDictation(lines.values.joinToString(" "))) }
-            }
-            engine.addListener(listener)
-            val stream = engine.createStream()
-            engine.startStream(stream)
-            try { while (true) { currentCoroutineContext().ensureActive(); val chunk = read() ?: break; engine.addAudioToStream(stream, chunk, 16000) }; engine.stopStream(stream); true }
-            finally { engine.removeListener(listener); runCatching { engine.stopStream(stream) }; engine.freeStream(stream); activeOwner = null }
+            try { engine.stream(read, update); true }
+            finally { activeOwner = null }
         }
     }
     private suspend fun streamNemotron(read: suspend () -> FloatArray?, update: (String) -> Unit) {

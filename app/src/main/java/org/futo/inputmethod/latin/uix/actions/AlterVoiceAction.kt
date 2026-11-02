@@ -4,8 +4,10 @@ import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.widget.Toast
 import android.content.pm.PackageManager
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -134,6 +136,9 @@ class AlterDictationSession(
         val paused by controller.paused.collectAsState()
         val processing by controller.processing.collectAsState()
         val error by controller.error.collectAsState()
+        LaunchedEffect(error, disabled) {
+            if (!disabled && error != null) Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+        }
         val level by controller.level.collectAsState()
         val state = voicePillState(disabled, starting, recording, paused, processing, error)
         val description = when (state) {

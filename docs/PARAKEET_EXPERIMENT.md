@@ -20,8 +20,8 @@ accurate in our app. Provenance: [CTC](../licenses/Parakeet-110M-PROVENANCE.md) 
 
 ## Use
 
-Open ALTER voice → All speech models, download either variant, then select it explicitly.
-Existing selections stay unchanged. This is English-only; use Oriserve/Nemotron for Hindi/Hinglish.
+Open ALTER voice → Speech, download either variant, then tap its row to select it.
+Existing selections stay unchanged. This is English-only; use Nemotron or Android recognition for Hindi.
 The model runs offline. No weights are bundled in the APK, and no cloud fallback is added.
 
 For CTC, the verified archive remains in private model storage. Only model.int8.onnx and tokens.txt are
@@ -45,13 +45,13 @@ The existing model downloader's 1 GB free-space buffer remains in effect.
   is reused and serialized with other speech inference. Native CTC decode has no abort API;
   cancellation is checked before and after each bounded window, so late results are discarded.
   Cancelling waits for the current decode before the recognizer can be released or reused.
-- No extra VAD or FST decoder is added. A separate language-routing layer can choose the Hindi engine.
+- No extra VAD or FST decoder is added. No external language-routing layer or Hindi helper is active.
 
 The static-ORT Android runtime avoids shared ONNX Runtime collisions with Moonshine. Its
 prebuilt JAR/JNI entries are pinned by the original AAR checksum; no NDK/CMake is required by Gradle.
 ICU transliteration in the separate Nemotron PR does not affect this English-only model.
 
-## Validation and acceptance
+## Historical PR #26 validation and phone acceptance
 
 Host sherpa-onnx 2.0.1 decoded both WAVs from the exact INT8 package using two CPU threads and
 greedy CTC; silence returned empty text and consecutive streams worked. These are host functional
@@ -61,7 +61,7 @@ All 45 voice regressions passed; assembly compiled/dexed and failed only at miss
 and Nemotron on the phone: cold/warm startup, first text, final tail, names/numbers, long speech,
 interruptions, silence, memory, heat and battery. These settings are not a proven best configuration.
 
-## FP16 TDT configuration and validation
+## FP16 TDT configuration and historical validation
 
 The TDT model uses the existing pinned transcribe.cpp CPU library with a separate offline JNI
 entry point. The GGUF downloads directly into verified private model storage; it needs no archive
@@ -82,10 +82,10 @@ tests passed; Android compilation/dexing passed and signing failed only at the m
 No alternate signing key was generated. Cancellation is checked natively and by the caller; failed
 or cancelled native runs return no output and preserve the private draft for retry.
 
-## Hindi mode
+## Current language behavior
 
-Both Parakeet decoders remain English-only. With the IndicConformer Hindi download installed,
-explicit Hindi mode uses that separate recognizer and rule-based Romanization while remembering
-the Parakeet choice for English/Automatic mode. Parakeet's learned weights remain unchanged. [Automatic language routing](AUTOMATIC_LANGUAGE_ROUTING.md)
-now adds a separately downloaded language detector for either variant. See also
-[Hindi pipeline](INDIC_HINDI_PIPELINE.md).
+Both Parakeet decoders remain English-only. The former IndicConformer Hindi routing, external Whisper
+language detector and Romanization layers are removed. Choosing a Parakeet variant selects that engine
+without requiring any helper download. For Hindi, explicitly choose Nemotron or Android recognition.
+The host language selector is shown only for those multilingual choices.
+See [current model scope](VOICE_MODELS.md) and [handoff/validation status](../HANDOFF.md).

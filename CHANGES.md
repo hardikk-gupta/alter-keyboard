@@ -1,6 +1,7 @@
 # Changes
 
-Append-only log, one entry per PR, with the checks actually run.
+Append-only log, one entry per PR, with the checks actually run. Entries describe their original
+version, not the current feature list. See [HANDOFF.md](HANDOFF.md) and [PLAN.md](PLAN.md) for current state.
 
 ## PR 1: FUTO import, ALTER voice and pill mode (Oct 19, 2026)
 
@@ -528,3 +529,48 @@ raw Hindi/English stream output and removed-model draft reprocessing without ope
 Android Kotlin/Java, resources, dex and native merging passed; both ABI merge directories exclude Handy,
 ALTER Whisper and ONNX Java JNI. Retained model artifact hashes/lengths are unchanged. `assembleStableDebug`
 stops only at the missing shared signing keystore; no signed APK, phone UI or silent-provider claim.
+
+## Check Moonshine streaming and expose recognizer failures (Oct 28, 2026)
+
+- Replace Moonshine's convenience transcriber with checked calls to the same 0.1.5 JNI runtime:
+  one fresh stream, full transcript snapshots, adaptive previews, one stop/final flush, and reliable
+  release on errors/cancellation. Avoid the extra default stream and ignored start/feed/stop statuses.
+- Show foreground failure text in a short Toast instead of only an error icon; keep saved recordings
+  and the compact settings UI. Nemotron JNI failures now carry operation, locale at start, and native
+  status reason. Do not force English or restore the removed Hindi helper layers.
+- Add a host probe for the actual Kotlin/JNI paths. Moonshine repeated streaming and saved decoding
+  pass. Nemotron produces results for English and Hindi clips in English/Automatic/Hindi; deliberate
+  unsupported-language errors retain their reason and subsequent sessions work. The user's phone-only
+  failure has not been reproduced or diagnosed as a specific native stage yet.
+
+Checks: 53 voice tests passed. Exact downloaded model hashes/sizes verified. Both Nemotron Android ABI
+libraries rebuilt; host JNI integration probe passed. Android compilation/resources/dex/native merging
+pass; final `assembleStableDebug` signing remains blocked by the missing shared key. No phone success,
+latency or accuracy claim, and no model weights committed.
+
+The shared Parakeet TDT host regression also passes sample decoding, input bounds, streaming-loader
+rejection, abort and session reuse after the native diagnostic change.
+
+## Repository documentation and agent handoff synchronization (November 1, 2026; PR #31)
+
+- Add canonical HANDOFF.md, PLAN.md and AGENT_INSTRUCTIONS.md, linked from README/AGENTS.
+  Keep task goals/plans, implemented changes, decisions, blockers, actual verification and next steps in GitHub.
+- Make immediate documentation maintenance mandatory for each logical code/config/planning change:
+  review all Markdown, update every affected first-party file in the same commit/PR, and keep plan,
+  handoff and append-only changelog current. Preserve immutable legal/upstream/history files intentionally.
+- Add the complete Markdown inventory and portable development/reproduction instructions. No essential
+  setup/handoff state depends on this chat, a local activation script or temporary host logs/models.
+- Correct active shared-agent/cleanup/Nemotron/Parakeet docs that still advertised Handy, Oriserve,
+  Hindi routing or Romanization; mark retained source/provenance documents as retired where applicable.
+- Record that PR #30 is merged and PR #31 is pending at this dated snapshot. Preserve the last 53-test
+  host/native evidence as October 28 results; do not claim a phone fix or a new runtime verification.
+
+Documentation-only validation: complete Markdown inventory coverage, first-party link/path checks,
+active model/policy consistency and `git diff --check`. Runtime/configuration/model/native binary files
+are unchanged by this documentation update; Android tests were not rerun for it.
+
+The complete scan covers 46 Markdown files. Four pre-existing unresolved relative links inside
+preserved upstream/legal copies are explicitly documented in the inventory; current first-party
+file links resolve. Root legal and preserved upstream content remain byte-identical.
+
+Design/sitemap guides now link the repository handoff workflow separately from product UI navigation.

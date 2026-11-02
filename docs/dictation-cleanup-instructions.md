@@ -4,8 +4,8 @@
 
 This is the designer-supplied reference, not a guarantee that every operation below is implemented.
 Runtime instructions and validation live in `alter-agent`; see its [integration guide](../alter-agent/README.md).
-Simple eligible phrases skip model inference; other requests use bounded compact/full instructions. Handy uses
-its trained empty-system ChatML protocol instead of this generic prompt, while Alter still validates its edits.
+Simple eligible phrases skip model inference; other requests use bounded compact/full instructions.
+LFM2.5 350M is the only optional cleanup model; Handy and its alternate prompt protocol are retired.
 Live cleanup is provisional until final ASR text is available. Explicit Hindi mode bypasses model cleanup.
 App/screen/style/snippet context is not collected, and tags inside dictated text never become instructions.
 General semantic corrections, entity normalization and Hinglish cleanup remain constrained by validation.
