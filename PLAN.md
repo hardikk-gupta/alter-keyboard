@@ -16,7 +16,7 @@ Keyboard provider/client discovery, compatible reuse and local fallback against 
   Qwen3 1.7B cleanup is not Alter AI's Qwen 0.6B. Reserved memory/tool interfaces remain unavailable.
 - Reported dependency: canonical identity string escaping/golden hashes need clarification on PR #64;
   do not generate model keys with an independently chosen encoding.
-- This step uses `codex/shared-ai-contract-foundation`, stacked on inspection PR #33 (one PR per step).
+- Draft PR #34 uses `codex/shared-ai-contract-foundation`, stacked on inspection PR #33 (one PR per step).
 - Implement now: unchanged contract import, AIDL compilation, fail-closed current-signer/UID policy and
   package-targeted discovery groundwork. No exported provider, automatic binding or routing changes.
 - Verified: 68 voice unit tests pass (five new trust tests), AIDL/Kotlin/Java compilation and dex complete;

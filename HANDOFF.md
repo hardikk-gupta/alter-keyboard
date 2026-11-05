@@ -22,7 +22,7 @@ are historical, not instructions to revert Apex/Qwen changes.
 
 [Shared AI inspection](docs/SHARED_LOCAL_AI.md) records the published protocol **1.0** at Alter AI
 `13b3fcd3802849751dc12793ee32a05ab1c9768d` (PR #64), copied unchanged with four verified checksums.
-PR #33 remains the inspection-only dependency. This step uses `codex/shared-ai-contract-foundation`
+PR #33 remains the inspection-only dependency. [Draft PR #34](https://github.com/hardikk-gupta/alter-keyboard/pull/34) uses `codex/shared-ai-contract-foundation`
 and adds AIDL compilation and inactive targeted
 provider discovery/current-signer/exclusive-UID checks only. No active Binder endpoint, handshake, inventory,
 shared inference, coordinator routing, download avoidance or memory/tool operations are implemented.

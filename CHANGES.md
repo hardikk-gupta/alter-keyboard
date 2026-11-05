@@ -658,7 +658,7 @@ architecture only. Alter AI owns publishing the exact SHA/PR/file paths. Keyboar
 complete and IPC waits; the next agent must inspect that revision and report compatibility issues before
 implementation. Updated rules/plan/handoff/dependency report; Markdown-only, no runtime tests claimed.
 
-## November 6, 2026 — shared contract foundation (separate step after PR #33), inactive trust/discovery foundation
+## November 6, 2026 — PR #34: shared contract foundation (separate step after PR #33), inactive trust/discovery foundation
 
 - Consumed the complete unchanged protocol 1.0 directory from Alter AI PR #64 at
   `13b3fcd3802849751dc12793ee32a05ab1c9768d`; all four published SHA256SUMS entries verified.
@@ -677,3 +677,4 @@ implementation. Updated rules/plan/handoff/dependency report; Markdown-only, no 
 - Final documentation checks: all 52 Markdown files inventoried; relative links resolve except the four
   already documented preserved upstream exceptions; all five imported files match the pinned download byte-for-byte;
   `git diff --check` passes. FUTO legal/payment/IME/runtime and native binary files are unchanged.
+- Opened draft PR #34 against inspection branch PR #33; neither is merged. Contract gap remains reported on Alter AI PR #64.
