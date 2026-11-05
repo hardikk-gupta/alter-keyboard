@@ -177,3 +177,6 @@ Streaming diagnostics: Moonshine uses checked native calls with one fresh stream
 foreground failures show a short error message as well as the pill icon. Nemotron retains native
 English/Hindi/Automatic choices and reports the native failure stage and reason. Both modes worked in
 host checks; device-specific failures and phone accuracy remain unverified. See [recognizer checks](docs/STREAMING_RECOGNIZER_CHECKS.md).
+
+Optional shared local AI is an inspected integration dependency, not an implemented feature. No IPC is added
+until the Alter AI agent supplies its exact contract revision. See [Keyboard inspection and pickup](docs/SHARED_LOCAL_AI.md).

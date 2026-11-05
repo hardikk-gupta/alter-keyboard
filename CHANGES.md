@@ -639,3 +639,16 @@ Checks run (cloud host, no phone):
   one short input. After the redesign: all restatement and cue cases corrected, lists and idioms kept, 6 of 15 with
   no model call. "meeting Monday ko rakho nahi nahi Tuesday ko" (cue after the verb) is still unchanged.
 - Not run: phone checks of any kind.
+
+## Shared local AI baseline and contract dependency (November 6, 2026)
+
+Keyboard-only inspection based on merged PR #32 main `f5b05d1bc`; preserve Apex/Qwen3 and current standalone
+behavior. Read companion main code without editing it. All eight Moonshine Medium artifacts match Alter AI
+by file/revision/size/SHA; cleanup Qwen3 1.7B is not its Qwen 0.6B. Fitdrobe's inspected AI interfaces remain
+heuristic; no Gemma inference or learned segmentation is claimed. Installed certificate trust is unverified.
+
+No authoritative Alter AI shared contract revision was found/supplied. Per the explicit user gate, add no
+cross-app IPC, speculative schema, provider UI, permissions or inference rerouting. Commit the architecture,
+adapter seams, exact dependency/pickup, companion work and acceptance matrix in docs/SHARED_LOCAL_AI.md.
+Update plan/handoff/agent rules and document the stale PR #32 snapshot. Checks: source/Git/PR inspection,
+catalog equality and documentation validation only; no runtime change, cross-app tests, APK publish or merge.

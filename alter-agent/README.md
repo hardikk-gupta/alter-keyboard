@@ -71,3 +71,6 @@ unconfirmed by host-only checks; [HANDOFF.md](../HANDOFF.md) records branch/PR a
 Update this guide whenever the module contract, prompt policy, supported cleanup engine or host boundary changes.
 Follow [AGENTS.md](../AGENTS.md) and [AGENT_INSTRUCTIONS.md](../AGENT_INSTRUCTIONS.md): update the plan,
 handoff, changelog and all affected documentation alongside each implementation change.
+
+Optional shared local AI is an inspected integration dependency, not an implemented feature. No IPC is added
+until the Alter AI agent supplies its exact contract revision. See [Keyboard inspection and pickup](../docs/SHARED_LOCAL_AI.md).

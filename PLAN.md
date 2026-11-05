@@ -1,7 +1,23 @@
 # Current plan
 
-Updated: November 2, 2026. Read [HANDOFF.md](HANDOFF.md) and verify live Git/PR state before continuing.
+Updated: November 6, 2026. Read [HANDOFF.md](HANDOFF.md) and verify live Git/PR state before continuing.
 This records task-level plans and decisions, not private reasoning or a transcript of the chat.
+
+## Current task: optional shared local AI (Keyboard only)
+
+Scope: inspect current standalone implementation, retrieve the Alter AI agent's exact contract, then implement
+Keyboard provider/client discovery, compatible reuse and local fallback against that contract. Do not edit companions.
+
+- Completed: read current source/rules, fetch main and inspect open work; PR #32 is merged at `f5b05d1bc`.
+- Completed: read companion main sources read-only; compare actual artifacts and runtime capabilities.
+- Blocked: no authoritative shared contract revision published/found or supplied. No AIDL, endpoint, trust pins,
+  sharing setting or IPC adapter is invented. See [inspection/pickup](docs/SHARED_LOCAL_AI.md).
+- Completed: record Keyboard seams, signing uncertainty, companion gaps and device/security acceptance matrix.
+- Next: obtain exact contract SHA/path/version from Alter AI agent, record source hashes, then implement secure
+  inventory/discovery before one real inference path; add trust/model/version/lifecycle/isolation tests.
+- Validation now: documentation links/inventory/whitespace and catalog comparison only; no new runtime claims.
+
+The following November 2 task record is historical; its PR is now merged.
 
 ## Current task: Hinglish speech and cleanup (PR #32)
 

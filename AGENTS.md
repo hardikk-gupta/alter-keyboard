@@ -144,3 +144,11 @@ is kept. Do not rely on older releases existing.
   Removed-model PCM may be explicitly reprocessed, never appended under a different recording policy.
 - The system recognizer owns its tones. Avoid redundant cancel after successful results; never claim silent
   phone behavior from host tests or globally mute other phone audio to hide a provider beep.
+
+## Optional shared AI contract gate
+
+Only implement Keyboard's side. Before cross-app IPC, retrieve and pin the Alter AI agent's exact contract
+revision; never invent a second AIDL/schema. If unavailable, document inspection/dependency instead.
+Keep standalone operation, FUTO policy, private fields/drafts and local settings intact. Dictation gains no
+memory/tool scopes. Signer configuration is not installed-certificate evidence; fail closed without approved
+trust. Do not copy FUTO-derived code into companions. Current dependency: docs/SHARED_LOCAL_AI.md.

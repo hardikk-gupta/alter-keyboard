@@ -12,7 +12,7 @@ The classifications below record that decision. New task-specific audit details 
 Current guides describe this branch. Main/PR state and runtime checks are dated snapshots in
 [HANDOFF.md](../HANDOFF.md); an open PR is not a merged release or a verified phone fix.
 
-Inventoried Markdown files: **49**.
+Inventoried Markdown files: **50**.
 
 | File | Role/status | November 1 review |
 | --- | --- | --- |
@@ -88,3 +88,12 @@ upstream exceptions against its new pin and retain the original license/notices.
 constraints still apply. The append-only changelog and retired experiment/provenance documents intentionally
 contain old model names and earlier test counts. They must not be searched-and-replaced into fictitious current
 history. No raw dictation, downloaded model weight, signing secret or private crash dump is a handoff artifact.
+
+## November 6 integration review
+
+| File | Role/status | Review |
+| --- | --- | --- |
+| [docs/SHARED_LOCAL_AI.md](SHARED_LOCAL_AI.md) | Current inspection; contract blocked | Exact baselines, adapter points, overlap, trust gaps, companion work and acceptance criteria; no implemented IPC |
+
+All existing inventory entries were reviewed for scope. Current runtime/retired/legal records remain valid;
+plan/handoff and affected entry/module/rule documents now distinguish the new dependency from shipped code.

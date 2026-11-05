@@ -1,6 +1,6 @@
 # ALTER Keyboard handoff
 
-Updated: November 2, 2026. Repository: [hardikk-gupta/alter-keyboard](https://github.com/hardikk-gupta/alter-keyboard).
+Updated: November 6, 2026. Repository: [hardikk-gupta/alter-keyboard](https://github.com/hardikk-gupta/alter-keyboard).
 This file, [PLAN.md](PLAN.md), [CHANGES.md](CHANGES.md) and the linked guides are the handoff;
 no essential task state should exist only in chat, a local worktree note or `/tmp`.
 
@@ -14,24 +14,24 @@ no essential task state should exist only in chat, a local worktree note or `/tm
    [development setup](docs/DEVELOPMENT.md) and [signing](docs/SIGNING.md).
 6. [Markdown inventory](docs/MARKDOWN_INDEX.md): every tracked Markdown file and its maintenance status.
 
-## Branch and review snapshot
+## Current pickup: shared local AI
 
-At the November 2 inspection:
+Verified main is `f5b05d1bc`, merging PR #32; PR #31 is also merged. No open Keyboard PR existed at
+inspection. This task uses `codex/shared-ai-inspection` based on that main. Previous PR #32-open claims below
+are historical, not instructions to revert Apex/Qwen changes.
 
-- `main`: `9145b9dfc`, merge of [PR #31](https://github.com/hardikk-gupta/alter-keyboard/pull/31)
-  (checked Moonshine streaming, visible errors, Nemotron error reasons, documentation handoff).
-- Active branch: `claude/eloquent-keller-ma91d7`, with `main` merged in.
-- Open [PR #32](https://github.com/hardikk-gupta/alter-keyboard/pull/32): Oriserve Hinglish Apex speech,
-  feature-level Whisper builds and Qwen3 1.7B cleanup. The owner is testing its APK before merging.
-- These are snapshots, not permanent assertions. Fetch/inspect Git and PR status at the next session.
-  Do not merge, close or replace PR #32 automatically; the repository owner merges.
+[Shared AI inspection](docs/SHARED_LOCAL_AI.md) records exact companion revisions, artifact overlap, adapter
+points, security limits and the acceptance plan. The Alter AI agent's exact shared contract SHA/path is unavailable
+after the documented search and has been requested. Per the user's explicit gate, do not invent IPC/AIDL or
+claim cross-app reuse. Standalone behavior is untouched. Next pickup: retrieve that immutable contract, then
+implement Keyboard only, with peer/coordinator trust, lifecycle tests and local fallback. No companion files changed.
 
 ## Product state
 
 The app is a FUTO-derived full Android keyboard with ALTER voice UI and a shared restricted dictation agent.
 It does not require the main ALTER app and does not execute dictated commands or send messages automatically.
-On `main`, the speech choices are Parakeet CTC INT8, Parakeet TDT FP16, Nemotron Q4, Moonshine Medium and
-Android on-device recognition, with LFM2.5 350M as the only optional cleanup model. PR #32 adds Oriserve
+Before PR #32, the speech choices were Parakeet CTC INT8, Parakeet TDT FP16, Nemotron Q4, Moonshine Medium and
+Android on-device recognition, with LFM2.5 350M as the only optional cleanup model. The merged PR #32 adds Oriserve
 Hinglish Apex (Roman-letter Hindi + English) and replaces LFM2.5 with Qwen3 1.7B INT8, which also cleans Hindi.
 Parakeet/Moonshine are English-only. Nemotron and Android retain their own supported language modes.
 No external language detector, Hindi recognizer routing or Romanization is active.
@@ -100,10 +100,10 @@ rewriting those source notices. Root license/NOTICE and preserved upstream conte
 This update changes Markdown only. Runtime files, native binaries and model metadata are unchanged;
 no new Android build, inference run, signing or phone verification is claimed for November 1.
 
-## Next agent actions
+## Earlier runtime acceptance actions (still unverified on device)
 
 1. Verify current branch/main/PR state and read the plan before edits.
-2. Keep PR #32 mergeable; collect the owner's phone results for Apex and Qwen3 before tuning further.
+2. Collect the owner's phone results for the merged Apex and Qwen3 work before tuning further.
 3. After the matching APK is available, obtain the visible failure message, selected model/language,
    APK version and reproduction steps from the phone. Do not claim an unseen failure is diagnosed.
 4. Test English, Hindi and mixed speech as applicable, pause/resume, interruption, saved-audio recovery,
