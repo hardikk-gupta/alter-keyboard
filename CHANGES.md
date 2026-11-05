@@ -652,3 +652,8 @@ cross-app IPC, speculative schema, provider UI, permissions or inference rerouti
 adapter seams, exact dependency/pickup, companion work and acceptance matrix in docs/SHARED_LOCAL_AI.md.
 Update plan/handoff/agent rules and document the stale PR #32 snapshot. Checks: source/Git/PR inspection,
 catalog equality and documentation validation only; no runtime change, cross-app tests, APK publish or merge.
+
+November 6 follow-up: user confirms the shared contract is not published; the earlier prompt is intended
+architecture only. Alter AI owns publishing the exact SHA/PR/file paths. Keyboard inspection remains
+complete and IPC waits; the next agent must inspect that revision and report compatibility issues before
+implementation. Updated rules/plan/handoff/dependency report; Markdown-only, no runtime tests claimed.

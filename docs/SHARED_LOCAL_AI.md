@@ -21,12 +21,16 @@ The authoritative shared-local-AI contract was not found in Alter AI's main tree
 open PR list, local workspace/shared locations, or the published candidate shared-work branches
 `codex/shared-design-and-handoff`, `codex/shared-river-and-notes` and `claude/serene-curie-g5j25x`.
 The published branch list was enumerated, but this is not a claim to have audited every historical branch.
-The exact contract SHA/path or PR was requested from the user; none was supplied during this inspection.
+The user subsequently confirmed on November 6 that no shared contract has been published: the master
+prompt is intended architecture, not an existing protocol. The Alter AI agent has been asked to publish
+the contract and return its exact commit SHA, PR URL and file paths.
 
 **Contract revision: unavailable.** Before implementing, retrieve the Alter AI agent's immutable commit SHA,
 contract path, protocol/version rules, reproducible distribution files and trust policy. Record their source hashes
 here. Do not infer an interface from class names, create another AIDL schema or export a placeholder service.
-A contract found later must be verified against current source; branch names alone are not a revision pin.
+Once those references arrive, inspect that exact revision and report compatibility issues before implementing
+against it. Check artifact/runtime overlap, signing/trust rules, transport bounds, lifecycle, coordinator delegation
+and the restricted dictation boundary. Branch names alone are not a revision pin.
 
 ## Actual Keyboard boundary
 

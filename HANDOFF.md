@@ -22,9 +22,10 @@ are historical, not instructions to revert Apex/Qwen changes.
 
 [Shared AI inspection](docs/SHARED_LOCAL_AI.md) records exact companion revisions, artifact overlap, adapter
 points, security limits and the acceptance plan. The Alter AI agent's exact shared contract SHA/path is unavailable
-after the documented search and has been requested. Per the user's explicit gate, do not invent IPC/AIDL or
-claim cross-app reuse. Standalone behavior is untouched. Next pickup: retrieve that immutable contract, then
-implement Keyboard only, with peer/coordinator trust, lifecycle tests and local fallback. No companion files changed.
+and the user has confirmed it is not yet published; Alter AI owns publishing it. Per the user's explicit gate, do not invent IPC/AIDL or
+claim cross-app reuse. Standalone behavior is untouched. PR #33 records this inspection. Next pickup: obtain the exact SHA, PR URL
+and file paths; inspect that revision and report compatibility issues before implementing Keyboard adapters.
+Then preserve peer/coordinator trust, lifecycle guarantees and standalone fallback. No companion files changed.
 
 ## Product state
 

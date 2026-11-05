@@ -10,11 +10,12 @@ Keyboard provider/client discovery, compatible reuse and local fallback against 
 
 - Completed: read current source/rules, fetch main and inspect open work; PR #32 is merged at `f5b05d1bc`.
 - Completed: read companion main sources read-only; compare actual artifacts and runtime capabilities.
-- Blocked: no authoritative shared contract revision published/found or supplied. No AIDL, endpoint, trust pins,
+- Waiting: user confirmed the contract is not yet published; Alter AI owns publishing it. No AIDL, endpoint, trust pins,
   sharing setting or IPC adapter is invented. See [inspection/pickup](docs/SHARED_LOCAL_AI.md).
 - Completed: record Keyboard seams, signing uncertainty, companion gaps and device/security acceptance matrix.
-- Next: obtain exact contract SHA/path/version from Alter AI agent, record source hashes, then implement secure
-  inventory/discovery before one real inference path; add trust/model/version/lifecycle/isolation tests.
+- Next: obtain exact commit SHA, PR URL and file paths from Alter AI; inspect that revision, record source hashes
+  and report compatibility issues before implementation. Only then implement Keyboard adapters against that contract
+  with trust/model/version/lifecycle/isolation tests. No separate protocol.
 - Validation now: documentation links/inventory/whitespace and catalog comparison only; no new runtime claims.
 
 The following November 2 task record is historical; its PR is now merged.

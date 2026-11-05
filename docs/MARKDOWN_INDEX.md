@@ -97,3 +97,7 @@ history. No raw dictation, downloaded model weight, signing secret or private cr
 
 All existing inventory entries were reviewed for scope. Current runtime/retired/legal records remain valid;
 plan/handoff and affected entry/module/rule documents now distinguish the new dependency from shipped code.
+
+November 6 contract clarification: affected instructions, plan, handoff and shared-AI inspection now
+record the user's confirmation and require a compatibility report on the published revision before code.
+Inventory paths/count and preserved-document decisions are unchanged.
