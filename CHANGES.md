@@ -657,3 +657,23 @@ November 6 follow-up: user confirms the shared contract is not published; the ea
 architecture only. Alter AI owns publishing the exact SHA/PR/file paths. Keyboard inspection remains
 complete and IPC waits; the next agent must inspect that revision and report compatibility issues before
 implementation. Updated rules/plan/handoff/dependency report; Markdown-only, no runtime tests claimed.
+
+## November 6, 2026 — shared contract foundation (separate step after PR #33), inactive trust/discovery foundation
+
+- Consumed the complete unchanged protocol 1.0 directory from Alter AI PR #64 at
+  `13b3fcd3802849751dc12793ee32a05ab1c9768d`; all four published SHA256SUMS entries verified.
+- Enabled AIDL compilation from that single source directory. Added exact-package visibility and inactive
+  targeted service discovery with installed-current-signer/exclusive-UID validation and future Binder caller checks.
+  No deployment pins, active service/binding, inventory, reuse, coordinator or memory/tool grants are implemented.
+- Reported canonical identity escaping/reference-vector gap to the contract owner; identity generation and
+  inference adapter work remain pending clarification. Moonshine's matching eight artifacts do not imply remote
+  streaming support; Qwen 1.7B and Alter's 0.6B are distinct. Standalone behavior and signing keys remain unchanged.
+- Added focused pure trust-policy tests. Required combined `assembleStableDebug :alter-voice:testDebugUnitTest --continue` run: **68 tests
+  passed**, including five new trust tests; pinned AIDL, Kotlin/Java compilation and dex tasks completed.
+  Overall build failed only at `:app:validateSigningStableDebug` because `debug.keystore` is absent.
+  APK signature/install checks cannot run without that existing shared key. Initial sandbox socket failure
+  was resolved by running Gradle outside the sandbox. No phone/cross-app acceptance claims.
+- Updated affected first-party documentation and the complete Markdown inventory; legal/upstream/history preserved.
+- Final documentation checks: all 52 Markdown files inventoried; relative links resolve except the four
+  already documented preserved upstream exceptions; all five imported files match the pinned download byte-for-byte;
+  `git diff --check` passes. FUTO legal/payment/IME/runtime and native binary files are unchanged.

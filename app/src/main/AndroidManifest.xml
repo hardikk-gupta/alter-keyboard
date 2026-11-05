@@ -16,6 +16,11 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- Exact ecosystem visibility only; no broad installed-app scanning. -->
+    <queries>
+        <package android:name="com.aistudio.altermind.ai" />
+        <package android:name="com.aistudio.fitdrobe.wkbvca" />
+    </queries>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!--<uses-permission android:name="android.permission.READ_PROFILE"/>--> <!-- ? -->
     <uses-permission android:name="android.permission.READ_USER_DICTIONARY"/>

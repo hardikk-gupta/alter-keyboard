@@ -152,4 +152,6 @@ revision; never invent a second AIDL/schema. If unavailable, document inspection
 exact revision and report compatibility issues before implementing against it.
 Keep standalone operation, FUTO policy, private fields/drafts and local settings intact. Dictation gains no
 memory/tool scopes. Signer configuration is not installed-certificate evidence; fail closed without approved
-trust. Do not copy FUTO-derived code into companions. Current dependency: docs/SHARED_LOCAL_AI.md.
+trust. Do not copy FUTO-derived code into companions. Pinned contract: `13b3fcd3802849751dc12793ee32a05ab1c9768d` (protocol 1.0). Preserve the full
+`shared-local-ai/v1` directory unchanged. Current model-identity clarification and adapter status:
+docs/SHARED_LOCAL_AI.md. No active inference service is implemented by the trust groundwork.

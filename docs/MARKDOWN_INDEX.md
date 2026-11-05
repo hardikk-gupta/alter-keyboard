@@ -1,6 +1,6 @@
 # Repository Markdown inventory
 
-Reviewed: November 1, 2026. Scope: every Git-tracked `.md`/`.MD` file, plus the new canonical handoff files
+Reviewed: November 6, 2026 (initial table classifications retained). Scope: every Git-tracked `.md`/`.MD` file, plus the new canonical handoff files
 included in this documentation change. Keep this inventory complete whenever a Markdown file is added,
 removed or changes role. Read [AGENTS.md](../AGENTS.md) and [agent instructions](../AGENT_INSTRUCTIONS.md).
 
@@ -12,7 +12,7 @@ The classifications below record that decision. New task-specific audit details 
 Current guides describe this branch. Main/PR state and runtime checks are dated snapshots in
 [HANDOFF.md](../HANDOFF.md); an open PR is not a merged release or a verified phone fix.
 
-Inventoried Markdown files: **50**.
+Inventoried Markdown files: **52**.
 
 | File | Role/status | November 1 review |
 | --- | --- | --- |
@@ -93,7 +93,7 @@ history. No raw dictation, downloaded model weight, signing secret or private cr
 
 | File | Role/status | Review |
 | --- | --- | --- |
-| [docs/SHARED_LOCAL_AI.md](SHARED_LOCAL_AI.md) | Current inspection; contract blocked | Exact baselines, adapter points, overlap, trust gaps, companion work and acceptance criteria; no implemented IPC |
+| [docs/SHARED_LOCAL_AI.md](SHARED_LOCAL_AI.md) | Current compatibility review; identity clarification pending | Exact baselines, adapter points, overlap, trust gaps, companion work and acceptance criteria; inactive trust/discovery groundwork only |
 
 All existing inventory entries were reviewed for scope. Current runtime/retired/legal records remain valid;
 plan/handoff and affected entry/module/rule documents now distinguish the new dependency from shipped code.
@@ -101,3 +101,15 @@ plan/handoff and affected entry/module/rule documents now distinguish the new de
 November 6 contract clarification: affected instructions, plan, handoff and shared-AI inspection now
 record the user's confirmation and require a compatibility report on the published revision before code.
 Inventory paths/count and preserved-document decisions are unchanged.
+
+## Published contract consumption (November 6)
+
+| File | Role/status | Review |
+| --- | --- | --- |
+| [shared-local-ai/CONSUMED.md](../shared-local-ai/CONSUMED.md) | Current provenance | Immutable source, checksum verification, compatibility gap and implementation limits |
+| [shared-local-ai/v1/README.md](../shared-local-ai/v1/README.md) | Normative upstream, preserved | Complete pinned protocol imported verbatim; never edit this copy independently |
+
+All prior entries reviewed for this scope. Current agent/entry/modifications/plan/handoff/integration guides
+are updated; runtime UI/model/design/navigation guides remain valid because no active behavior changes.
+Legal, retired experiment, source provenance and historical records remain preserved. Shared protocol import
+contains no FUTO implementation. SHA256SUMS also covers its JSON/AIDL; these are not Markdown entries.

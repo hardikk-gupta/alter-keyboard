@@ -1,0 +1,23 @@
+{
+  "protocol": "com.alter.localai",
+  "major": 1,
+  "minor": 0,
+  "action": "com.alter.localai.v1.BIND",
+  "packages": {
+    "alter": "com.aistudio.altermind.ai",
+    "keyboard": "com.aistudio.altermind.keyboard",
+    "fitdrobe": "com.aistudio.fitdrobe.wkbvca"
+  },
+  "limits": {
+    "controlUtf8Bytes": 49152,
+    "textInputBytes": 65536,
+    "pcmInputBytes": 28800000,
+    "outputBytes": 65536,
+    "maxDeadlineMs": 120000,
+    "maxPending": 8,
+    "maxVisited": 2,
+    "maxInventoryModels": 64
+  },
+  "operations": ["text.generate", "asr.transcribe", "memory.retrieve", "tools.read"],
+  "errors": ["UNTRUSTED", "DISABLED", "NOT_INITIALIZED", "INCOMPATIBLE", "INVALID_REQUEST", "MODEL_MISMATCH", "NOT_AVAILABLE", "BUSY", "DUPLICATE", "CANCELLED", "TIMEOUT", "PROVIDER_GONE", "PERMISSION_DENIED", "UNSUPPORTED", "FAILED"]
+}

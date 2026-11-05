@@ -24,7 +24,9 @@ android {
     targetCompatibility = JavaVersion.VERSION_1_8
   }
   packaging { jniLibs.excludes += setOf("**/libalter_handy.so") }
-  buildFeatures { compose = true }
+  buildFeatures { compose = true; aidl = true }
+  // Exact published contract; never maintain another copy of these interfaces.
+  sourceSets["main"].aidl.srcDir(rootProject.file("shared-local-ai/v1/aidl"))
   testOptions { unitTests.isReturnDefaultValues = true }
 }
 

@@ -1,36 +1,45 @@
 # Optional ecosystem AI: Keyboard inspection and dependency
 
-Inspected November 6, 2026 (client date). **Inspection complete; cross-app implementation is blocked on the
-Alter AI agent's exact contract revision. No IPC, service discovery, sharing toggle or remote inference is
-implemented by this change.** This is an integration assessment and acceptance checklist, not a competing protocol.
+Inspected November 6, 2026 (client date). **Contract imported; only discovery/trust groundwork is
+implemented. Cross-app inference, opt-in settings and coordinator routing are not active.**
 
-## Source baselines and contract search
+## Baselines and pinned contract
 
-| Repository | Inspected main commit | Identity from source |
+| Repository | Inspected source commit | Identity from source |
 | --- | --- | --- |
-| Keyboard | `f5b05d1bc` (PR #32 merged) | `com.aistudio.altermind.keyboard` |
-| Alter AI | `99964498359c115dbd49c6a1bd3e291768a35a50` | `com.aistudio.altermind.ai` |
-| Fitdrobe | `fdeff851b4499ecb3ba9c123be119686c47a73dd` | `com.aistudio.fitdrobe.wkbvca` |
+| Keyboard main | `f5b05d1bc` (PR #32 merged) | `com.aistudio.altermind.keyboard` |
+| Alter AI baseline | `99964498359c115dbd49c6a1bd3e291768a35a50` | `com.aistudio.altermind.ai` |
+| Fitdrobe baseline | `fdeff851b4499ecb3ba9c123be119686c47a73dd` | `com.aistudio.fitdrobe.wkbvca` |
+| Alter AI contract | `13b3fcd3802849751dc12793ee32a05ab1c9768d` (PR #64) | Protocol 1.0 |
 
-Keyboard's previous handoff described PR #32 as open. Source/GitHub inspection confirms it is merged;
-there were no open Keyboard or Alter AI PRs at inspection. The local Alter AI checkout is an older clean
-snapshot, so companion facts below were checked against remote main read-only. No companion files were edited.
-Fitdrobe's remote tree has no AGENTS.md; its source was inspected without creating a local product checkout.
+The user supplied the unmerged publication revision after the initial inspection. All four SHA256SUMS
+entries verify. [Provenance](../shared-local-ai/CONSUMED.md) records the exact revision and reviewed
+CONTRACT_HANDOFF/BASELINE files. The complete [normative contract](../shared-local-ai/v1/README.md)
+is unchanged and compiles directly as alter-voice's AIDL source. No companion repository is edited.
 
-The authoritative shared-local-AI contract was not found in Alter AI's main tree, CURRENT_HANDOFF.md,
-open PR list, local workspace/shared locations, or the published candidate shared-work branches
-`codex/shared-design-and-handoff`, `codex/shared-river-and-notes` and `claude/serene-curie-g5j25x`.
-The published branch list was enumerated, but this is not a claim to have audited every historical branch.
-The user subsequently confirmed on November 6 that no shared contract has been published: the master
-prompt is intended architecture, not an existing protocol. The Alter AI agent has been asked to publish
-the contract and return its exact commit SHA, PR URL and file paths.
+### Compatibility report and implementation boundary
 
-**Contract revision: unavailable.** Before implementing, retrieve the Alter AI agent's immutable commit SHA,
-contract path, protocol/version rules, reproducible distribution files and trust policy. Record their source hashes
-here. Do not infer an interface from class names, create another AIDL schema or export a placeholder service.
-Once those references arrive, inspect that exact revision and report compatibility issues before implementing
-against it. Check artifact/runtime overlap, signing/trust rules, transport bounds, lifecycle, coordinator delegation
-and the restricted dictation boundary. Branch names alone are not a revision pin.
+- All eight Moonshine Medium files match the inspected Alter catalog. The declared `moonshine / 0.1.5 /
+  offline-16khz-v1` contract is offline ASR, not native streaming; preserve current local streaming.
+- Qwen3 1.7B is not Alter's Qwen 0.6B. Runtime equality alone cannot authorize reuse. Parakeet formats differ.
+- Fingerprint serialization needs an exact string escape policy/reference hashes. Equivalent JSON can encode
+  slashes and Unicode differently. [Reported to the contract owner](https://github.com/hardikk-gupta/ALTER-AI-code-base/pull/64#issuecomment-6669304540).
+  No modelKey generation, model inventory advertisement or remote download suppression is implemented until
+  that clarification is pinned. Do not alter the imported protocol to resolve it locally.
+- `PeerTrust` and `InstalledPeerDiscovery` implement the inactive security boundary: query only the exact
+  ecosystem packages, reject ambiguous/unavailable services, check current installed signer sets and exclusive
+  package UIDs, and provide a Binder caller check for each future endpoint. Android API26/27 uses current
+  signatures; API28+ uses `apkContentsSigners`, never history. No deployment pins are configured.
+- Manifest queries add only Alter AI and Fitdrobe visibility. There is no exported service, automatic bind,
+  model/file access, ecosystem preference or routing change in this step. Discovery candidates are not
+  initialized/compatible providers until a successful future handshake.
+- Reserved memory/tools remain unavailable, including through a coordinator. Dictation never gains them.
+
+Next: consume the owner's canonicalizer clarification at an exact revision; implement descriptors plus
+strict version/JSON negotiation, explicit opt-in/initialization gates and bounded provider/client queues.
+Use existing engine locks and request-scoped ownership, scoped PCM/text pipes, cancellation/timeouts/death
+cleanup and safe session-boundary routing. Verify local fallback and duplicate-download checks without
+changing selections or consuming audio twice. Only then expose a service/settings and test with companions.
 
 ## Actual Keyboard boundary
 
@@ -89,7 +98,7 @@ claim a style-reference collection, or freeze its evolving v1 to provide this in
    Prefer the matching eight-file speech installation; cleanup reuse requires a separately negotiated exact artifact.
 2. Consult negotiated inventory before `ModelDownloads.start`, without changing the local model selection, moving files,
    deleting duplicates or blocking standalone downloads when providers are absent. Keep UI status concise and distinguish
-   disconnect from local delete. Coordinate remote downloads only through the owner's contract-defined operation.
+   disconnect from local delete. v1 has no remote download command: preserve explicit local downloads and reconcile races without deleting duplicates.
 3. A provider adapter must enter existing model-use/setup and engine locks; do not open a second independent engine
    or call raw internal cleanup with chat permissions. Inventory contains artifact facts, never private paths or drafts.
    Hosting a compatible engine must not export FUTO-derived policy code to other repositories.
@@ -118,11 +127,11 @@ sharing must fail closed without them, while standalone remains usable.
 
 ## Contract-owner and companion pickup
 
-Alter AI agent must publish: exact versioned AIDL/schema/distribution revision, component discovery/handshake rules,
-artifact-set/runtime identity, transport bounds, caller/provider certificate policy, request/session/cancel/death lifecycle,
-queue/priority/delete-use semantics, delegation/deduplication controls, and stable errors/fallback rules. This Keyboard
-inspection deliberately supplies no alternative wire contract. Then implement its provider/client sides and coordinator
-without bypassing Local/Gemini selection or the local engine lock.
+Alter AI has published the AIDL/schema/distribution at the pinned revision above. The contract-owner
+pickup is now the canonicalizer clarification and its provider/client/coordinator runtime, which the publication
+handoff explicitly marks unimplemented. Preserve Local/Gemini selection and the local engine lock. Do not
+infer a working coordinator from the presence of contract files. Keyboard's later adapter steps need the
+same versioned model identity and real handshake/cancellation support to validate interoperability.
 
 Fitdrobe owner must adapt its existing AI interfaces and settings to the same pinned contract, retain its standalone
 heuristics/Room data, and expose only consent-scoped read-only wardrobe search/item/outfit reads with bounded image
@@ -145,6 +154,7 @@ nor host those capabilities. Never collect keystrokes, private fields, recording
 - Upgrade each signed app over installed data; check certificate rotation, selections, Room/backup and model ownership.
 
 Inspection checks: current Git/PR status and source review; eight-component catalog equality; companion capabilities,
-IDs/runtime declarations and manifest review. No runtime code changed, no APK built/published, and no cross-app tests
-were run. Trust rejection/protocol mismatch/provider selection/cancellation/timeout/death/isolation tests must accompany
-the actual adapters after the contract is available. Host or one-app results cannot establish ecosystem completion.
+IDs/runtime declarations and manifest review. This step adds trust/discovery code and compiles the pinned AIDL;
+actual build/test outcomes are recorded in CHANGES.md. No APK is published and no device/cross-app tests were run.
+Protocol mismatch/model mismatch/provider selection/cancellation/timeout/death/isolation tests remain required
+with the request adapters. Host or one-app results cannot establish ecosystem completion.

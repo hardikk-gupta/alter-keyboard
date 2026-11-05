@@ -10,13 +10,21 @@ Keyboard provider/client discovery, compatible reuse and local fallback against 
 
 - Completed: read current source/rules, fetch main and inspect open work; PR #32 is merged at `f5b05d1bc`.
 - Completed: read companion main sources read-only; compare actual artifacts and runtime capabilities.
-- Waiting: user confirmed the contract is not yet published; Alter AI owns publishing it. No AIDL, endpoint, trust pins,
-  sharing setting or IPC adapter is invented. See [inspection/pickup](docs/SHARED_LOCAL_AI.md).
-- Completed: record Keyboard seams, signing uncertainty, companion gaps and device/security acceptance matrix.
-- Next: obtain exact commit SHA, PR URL and file paths from Alter AI; inspect that revision, record source hashes
-  and report compatibility issues before implementation. Only then implement Keyboard adapters against that contract
-  with trust/model/version/lifecycle/isolation tests. No separate protocol.
-- Validation now: documentation links/inventory/whitespace and catalog comparison only; no new runtime claims.
+- Contract received: Alter AI PR #64, exact `13b3fcd3802849751dc12793ee32a05ab1c9768d`, protocol 1.0.
+  Entire `shared-local-ai/v1/` snapshot verified against its four SHA256SUMS entries.
+- Compatibility reviewed: all eight Moonshine Medium artifacts overlap; v1 ASR is offline, not streaming.
+  Qwen3 1.7B cleanup is not Alter AI's Qwen 0.6B. Reserved memory/tool interfaces remain unavailable.
+- Reported dependency: canonical identity string escaping/golden hashes need clarification on PR #64;
+  do not generate model keys with an independently chosen encoding.
+- This step uses `codex/shared-ai-contract-foundation`, stacked on inspection PR #33 (one PR per step).
+- Implement now: unchanged contract import, AIDL compilation, fail-closed current-signer/UID policy and
+  package-targeted discovery groundwork. No exported provider, automatic binding or routing changes.
+- Verified: 68 voice unit tests pass (five new trust tests), AIDL/Kotlin/Java compilation and dex complete;
+  required assemble fails only at missing shared `debug.keystore`. All four pinned hashes verify.
+  Signature/device/cross-app checks remain unrun. MD inventory/link/whitespace checks required before commit.
+- Next after clarification: exact model descriptors/inventory, opt-in and initialized gates, bounded asynchronous
+  provider/client requests under existing engine locks, cancellation/death/timeout tests, then safe session routing.
+  Runtime sharing, duplicate-download avoidance and coordinator/fallback acceptance remain unimplemented.
 
 The following November 2 task record is historical; its PR is now merged.
 

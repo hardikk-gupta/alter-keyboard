@@ -72,5 +72,7 @@ Update this guide whenever the module contract, prompt policy, supported cleanup
 Follow [AGENTS.md](../AGENTS.md) and [AGENT_INSTRUCTIONS.md](../AGENT_INSTRUCTIONS.md): update the plan,
 handoff, changelog and all affected documentation alongside each implementation change.
 
-Optional shared local AI is an inspected integration dependency, not an implemented feature. No IPC is added
-until the Alter AI agent supplies its exact contract revision. See [Keyboard inspection and pickup](../docs/SHARED_LOCAL_AI.md).
+Optional shared local AI consumes protocol 1.0 at Alter AI commit
+`13b3fcd3802849751dc12793ee32a05ab1c9768d`. This step imports the unchanged AIDL and adds inactive
+current-signer/UID discovery checks; remote inference is not implemented. Standalone dictation and its
+text-only agent policy remain unchanged. See [Keyboard inspection and pickup](../docs/SHARED_LOCAL_AI.md).

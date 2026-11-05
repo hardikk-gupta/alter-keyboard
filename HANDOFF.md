@@ -20,12 +20,23 @@ Verified main is `f5b05d1bc`, merging PR #32; PR #31 is also merged. No open Key
 inspection. This task uses `codex/shared-ai-inspection` based on that main. Previous PR #32-open claims below
 are historical, not instructions to revert Apex/Qwen changes.
 
-[Shared AI inspection](docs/SHARED_LOCAL_AI.md) records exact companion revisions, artifact overlap, adapter
-points, security limits and the acceptance plan. The Alter AI agent's exact shared contract SHA/path is unavailable
-and the user has confirmed it is not yet published; Alter AI owns publishing it. Per the user's explicit gate, do not invent IPC/AIDL or
-claim cross-app reuse. Standalone behavior is untouched. PR #33 records this inspection. Next pickup: obtain the exact SHA, PR URL
-and file paths; inspect that revision and report compatibility issues before implementing Keyboard adapters.
-Then preserve peer/coordinator trust, lifecycle guarantees and standalone fallback. No companion files changed.
+[Shared AI inspection](docs/SHARED_LOCAL_AI.md) records the published protocol **1.0** at Alter AI
+`13b3fcd3802849751dc12793ee32a05ab1c9768d` (PR #64), copied unchanged with four verified checksums.
+PR #33 remains the inspection-only dependency. This step uses `codex/shared-ai-contract-foundation`
+and adds AIDL compilation and inactive targeted
+provider discovery/current-signer/exclusive-UID checks only. No active Binder endpoint, handshake, inventory,
+shared inference, coordinator routing, download avoidance or memory/tool operations are implemented.
+Standalone typing/dictation/drafts/cleanup and signing identities are untouched; no companion files changed.
+
+Dependency: [model identity serializer clarification](https://github.com/hardikk-gupta/ALTER-AI-code-base/pull/64#issuecomment-6669304540)
+reported to the contract owner. Next pickup: consume that exact clarification revision, then implement model
+identity/version checks, initialized opt-in, bounded inference/cancel/timeout/death cleanup under existing locks,
+and local fallback before exposing sharing settings. The contract publication itself has no verified companion
+runtime. Do not equate the matching Moonshine artifacts with a working remote streaming path.
+
+Validation: all 68 voice unit tests pass (five new trust tests); AIDL/Kotlin/Java compilation and dex
+complete. Required assemble fails at signing because the existing shared `debug.keystore` is absent.
+No signature/device/cross-app acceptance was run. See CHANGES.md for the exact scope.
 
 ## Product state
 

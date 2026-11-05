@@ -41,3 +41,7 @@ licensing, signing, privacy or review rules. Read [HANDOFF.md](HANDOFF.md) and [
 No credentials, signing keys, downloaded model weights or private recordings belong in these documents.
 Canonical filenames are uppercase `CHANGES.md`, `HANDOFF.md`, `PLAN.md`, `AGENTS.md` and
 `AGENT_INSTRUCTIONS.md`; do not create competing case-only copies such as `changes.md` or `handoff.md`.
+
+Shared AI pickup: protocol 1.0 is imported at `13b3fcd3802849751dc12793ee32a05ab1c9768d`.
+Preserve `shared-local-ai/v1` byte-for-byte. Discovery/trust groundwork is inactive; no IPC inference works yet.
+Resolve the reported canonicalizer dependency before generating identities; see docs/SHARED_LOCAL_AI.md.

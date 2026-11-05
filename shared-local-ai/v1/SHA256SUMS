@@ -1,0 +1,4 @@
+a4ef5887cc2d94a25916b1f2baecc8d46f9dd3d2941ba5b8b1ec5cb7eba0774b  README.md
+690b3254bc2f2249d04acbafa96506e403cc466b6ff77427d9fb6499b6c70c6d  aidl/com/alter/localai/v1/ILocalAiCallback.aidl
+bdc0755ee013c2f359699699e922dd8b1cc3e57218b604d7151ae5f455e38685  aidl/com/alter/localai/v1/ILocalAiProvider.aidl
+7a4169cbcef3822cb1dc1cb7b11c87ad69c9f74a3c0b8628eed49f2788068e58  protocol.json
