@@ -45,3 +45,9 @@ Canonical filenames are uppercase `CHANGES.md`, `HANDOFF.md`, `PLAN.md`, `AGENTS
 Shared AI pickup: protocol 1.0 is imported at `13b3fcd3802849751dc12793ee32a05ab1c9768d`.
 Preserve `shared-local-ai/v1` byte-for-byte. Discovery/trust groundwork is inactive; no IPC inference works yet.
 Resolve the reported canonicalizer dependency before generating identities; see docs/SHARED_LOCAL_AI.md.
+
+PR #34 continuation gate: retain draft state and dependency/base on PR #33 while fingerprint clarification
+is pending. Consume the owner's exact clarification revision and verify checksums before continuing inventory,
+inference, cancellation, provider-disconnection handling and safe standalone fallback. Sharing stays inactive
+until trust validation and required integration checks pass. Separate host tests from device acceptance;
+record absent signing material as a limitation without changing signing identity. Never merge either PR automatically.

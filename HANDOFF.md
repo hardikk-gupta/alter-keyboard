@@ -34,6 +34,15 @@ identity/version checks, initialized opt-in, bounded inference/cancel/timeout/de
 and local fallback before exposing sharing settings. The contract publication itself has no verified companion
 runtime. Do not equate the matching Moonshine artifacts with a working remote streaming path.
 
+Continuation instructions: PR #34 must remain draft and retain its PR #33 base while the fingerprint
+clarification is pending. Do not merge either automatically. Alter AI PR #64 is now merged, but no newer
+v1 clarification commit or open clarification PR was found on the latest check; its merged publication does
+not change the consumed revision or unblock identity generation. Once the owner publishes the clarification,
+consume its exact revision and verify checksums before continuing inventory, inference, cancellation,
+provider-disconnection handling and safe standalone fallback. Keep sharing inactive until trust validation
+and required integration checks pass. Host tests are separate from real-device acceptance; missing signing
+material remains a validation limitation, never a reason to replace signing identity or weaken trust.
+
 Validation: all 68 voice unit tests pass (five new trust tests); AIDL/Kotlin/Java compilation and dex
 complete. Required assemble fails at signing because the existing shared `debug.keystore` is absent.
 No signature/device/cross-app acceptance was run. See CHANGES.md for the exact scope.

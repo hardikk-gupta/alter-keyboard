@@ -113,3 +113,7 @@ All prior entries reviewed for this scope. Current agent/entry/modifications/pla
 are updated; runtime UI/model/design/navigation guides remain valid because no active behavior changes.
 Legal, retired experiment, source provenance and historical records remain preserved. Shared protocol import
 contains no FUTO implementation. SHA256SUMS also covers its JSON/AIDL; these are not Markdown entries.
+
+Continuation-gate review: PLAN, HANDOFF, AGENT_INSTRUCTIONS and CHANGES now record draft/dependency,
+activation, exact-revision pickup and signing/device validation gates. Other inventoried documents remain
+accurate and unchanged; no new Markdown paths or runtime capabilities were introduced.

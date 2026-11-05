@@ -678,3 +678,16 @@ implementation. Updated rules/plan/handoff/dependency report; Markdown-only, no 
   already documented preserved upstream exceptions; all five imported files match the pinned download byte-for-byte;
   `git diff --check` passes. FUTO legal/payment/IME/runtime and native binary files are unchanged.
 - Opened draft PR #34 against inspection branch PR #33; neither is merged. Contract gap remains reported on Alter AI PR #64.
+
+## November 6, 2026 — PR #34 continuation and activation gates
+
+- Recorded the user's instruction to keep PR #34 draft, preserve its PR #33 dependency, and never merge either automatically.
+- Read-only GitHub checks confirm PR #34 is open/draft with base `codex/shared-ai-inspection`. Alter AI PR #64
+  is merged at its original publication head; no newer v1 path commit or open clarification PR was found.
+  Fingerprint clarification remains pending; no contract or runtime code changed.
+- Next pickup must consume the exact clarification revision and verify checksums before inventory, inference,
+  cancellation, provider-disconnection handling and safe standalone fallback. Sharing remains inactive until
+  trust validation and required integration checks pass. Host/device evidence stays separate; absent existing
+  signing material is a validation limitation and cannot be bypassed by changing signing identity.
+- Documentation-only update: Markdown inventory/local-link and whitespace checks; no runtime tests rerun.
+  The prior 68 passing host tests and missing-keystore assemble limitation remain historical evidence for the code step.

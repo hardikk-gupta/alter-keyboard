@@ -22,6 +22,14 @@ Keyboard provider/client discovery, compatible reuse and local fallback against 
 - Verified: 68 voice unit tests pass (five new trust tests), AIDL/Kotlin/Java compilation and dex complete;
   required assemble fails only at missing shared `debug.keystore`. All four pinned hashes verify.
   Signature/device/cross-app checks remain unrun. MD inventory/link/whitespace checks required before commit.
+- User continuation gates: keep PR #34 draft and based on PR #33 while clarification is pending; never
+  merge either PR automatically. Sharing stays inactive until trust validation and required integration checks pass.
+- Latest remote check: Alter AI PR #64 is merged, but its head is still the consumed revision and no newer
+  v1 path commit/open clarification PR was found. Merging the original contract does not resolve the fingerprint gap.
+- Once published: consume the clarification at its exact immutable revision, reverify its complete checksum manifest,
+  then continue inventory, inference, cancellation, provider-disconnection cleanup and safe standalone fallback.
+- Keep host test evidence separate from real-device acceptance. Missing existing signing material is a validation
+  limitation; never change application identity, signing keys or trust policy to bypass it.
 - Next after clarification: exact model descriptors/inventory, opt-in and initialized gates, bounded asynchronous
   provider/client requests under existing engine locks, cancellation/death/timeout tests, then safe session routing.
   Runtime sharing, duplicate-download avoidance and coordinator/fallback acceptance remain unimplemented.
