@@ -16,6 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -95,9 +99,18 @@ internal fun animationsEnabled(context: android.content.Context) =
     val renderer = remember { AsciiVoiceWaveRenderer() }
     val target = if (level.isFinite()) level.coerceIn(0f, 1f) else 0f
     val intensity = animateFloatAsState(target, tween(32, easing = LinearEasing), label = "Voice intensity")
+    val context = LocalContext.current
+    val tape = remember(context) { if (animationsEnabled(context)) VoiceTape() else null }
+    val revision = remember { mutableIntStateOf(0) }
+    LaunchedEffect(tape) {
+        if (tape != null) while (true) withFrameNanos { time ->
+            if (tape.record(time, intensity.value)) revision.intValue++
+        }
+    }
     Canvas(modifier) {
+        revision.intValue // Invalidate drawing as the tape advances, even during a pause in speech.
         renderer.draw(drawContext.canvas.nativeCanvas, size.width, size.height,
-            density, intensity.value, AlterColors.AlterYellow.toArgb(), AlterColors.MutedText.toArgb())
+            density, intensity.value, AlterColors.AlterYellow.toArgb(), AlterColors.MutedText.toArgb(), tape)
     }
 }
 

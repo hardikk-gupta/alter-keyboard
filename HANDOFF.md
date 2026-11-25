@@ -126,3 +126,5 @@ there is no supported per-app mute switch, and no global phone audio muting is i
 The listening pill follows quiet sounds in yellow. Keyboard compilation and the voice suite passed. A host render at four input levels showed progressively taller columns. Real microphone behavior on a physical phone remains unverified.
 
 PR #36 now includes the grey-to-yellow shading. Reviewed a host render at four input levels and ran all 66 voice tests. Phone appearance remains unverified.
+
+The scrolling ASCII tape builds on merged PR #36. The Android keyboard compiled and the voice suite passed, including a ring-buffer test for partial peaks, pauses, travel and expiry. A host animation uses simulated speech levels. Physical-phone verification remains pending.

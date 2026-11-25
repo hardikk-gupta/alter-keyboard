@@ -16,12 +16,13 @@ internal class AsciiVoiceWaveRenderer {
         fontFeatureSettings = "liga=0"
     }
     private val heights = IntArray(MAX_COLUMNS)
+    private val glyphColumns = IntArray(MAX_COLUMNS)
     private val glyphs = Array(MAX_ROWS) { row ->
         CharArray(MAX_COLUMNS) { column -> glyph(column, row) }
     }
 
     /** Draw in local pixel coordinates. The caller owns the canvas origin and microphone. */
-    fun draw(canvas: Canvas, width: Float, height: Float, density: Float, level: Float, ink: Int, baseInk: Int) {
+    fun draw(canvas: Canvas, width: Float, height: Float, density: Float, level: Float, ink: Int, baseInk: Int, tape: VoiceTape? = null) {
         if (width <= 0f || height <= 0f || density <= 0f) return
         val intensity = displayIntensity(level)
         // Compact pills and tablet panels share one grid; bound work on very wide canvases.
@@ -35,17 +36,34 @@ internal class AsciiVoiceWaveRenderer {
         var peakRows = 1
         for (column in 0 until columns) {
             val x = column.toFloat() / (columns - 1).coerceAtLeast(1)
-            heights[column] = visibleRows(x, rows, intensity)
+            if (tape == null) {
+                heights[column] = visibleRows(x, rows, intensity)
+                glyphColumns[column] = column
+            } else {
+                val tick = tape.tickAt(column, columns)
+                heights[column] = 1 + ((rows - 1) * displayIntensity(tape.levelAt(tick))).roundToInt()
+                glyphColumns[column] = Math.floorMod(tick, MAX_COLUMNS.toLong()).toInt()
+            }
             peakRows = maxOf(peakRows, heights[column])
         }
         // Fit the fade to the visible wave so even a quiet two-row bump has a yellow crest.
         val fadeRows = maxOf(1f, (peakRows - 1) * .65f)
         for (row in 0 until peakRows) {
             paint.color = ColorUtils.blendARGB(baseInk, ink, minOf(1f, row / fadeRows))
-            paint.alpha = (Color.alpha(ink) * (.40f + .40f * intensity + .15f * row / rows)).roundToInt()
+            val alpha = Color.alpha(ink) * (.40f + .40f * intensity + .15f * row / rows)
             val y = baseline - row * fontSize
             for (column in 0 until columns) {
-                if (row < heights[column]) canvas.drawText(glyphs[row], column, 1, left + column * pitch, y, paint)
+                if (row >= heights[column]) continue
+                val x = left + column * pitch
+                if (tape != null) {
+                    val freshness = column.toFloat() / (columns - 1).coerceAtLeast(1)
+                    paint.alpha = (Color.alpha(ink) * (.32f + .62f * freshness)).roundToInt()
+                    if (row == 0) {
+                        canvas.drawText(".", x, y, paint)
+                        continue
+                    }
+                } else paint.alpha = alpha.roundToInt()
+                canvas.drawText(glyphs[row], glyphColumns[column], 1, x, y, paint)
             }
         }
     }

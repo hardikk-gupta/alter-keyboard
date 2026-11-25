@@ -1,10 +1,26 @@
 package com.aistudio.altermind.voice
 
 import com.aistudio.altermind.voice.ui.AsciiVoiceWaveRenderer
+import com.aistudio.altermind.voice.ui.VoiceTape
 import org.junit.Assert.*
 import org.junit.Test
 
 class AsciiVoiceWaveTest {
+    @Test fun tapeMovesSpeechLeftAndKeepsSilentIntervals() {
+        val tape = VoiceTape()
+        fun level(column: Int) = tape.levelAt(tape.tickAt(column, 50))
+        tape.record(0L, .8f)
+        tape.record(5_000_000L, .2f)
+        assertEquals(.8f, level(49), 0f)
+        tape.record(400_000_000L, .5f)
+        assertEquals(.8f, level(29), 0f)
+        assertEquals(0f, level(40), 0f)
+        assertEquals(.5f, level(49), 0f)
+        tape.record(1_500_000_000L, 0f)
+        assertTrue((0 until 50).all { level(it) == 0f })
+        assertFalse(tape.record(1_520_000_000L, 0f))
+    }
+
     @Test fun quietSpeechLiftsTheCompactPillAndLouderLevelsStayDistinct() {
         fun height(rms: Float) = AsciiVoiceWaveRenderer.visibleRows(
             .45f, 9, AsciiVoiceWaveRenderer.displayIntensity(microphoneLevel(rms)))

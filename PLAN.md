@@ -79,3 +79,6 @@ Implemented and verified the four-level response, including a short syllable wit
 
 ## Gradient for the listening pill
 Blend the bottom glyph row from muted grey into ALTER yellow over the visible wave height. Check quiet and loud levels in the compact pill and run the voice tests.
+
+## November 26 — scrolling ASCII tape
+Display the last second of microphone levels in the listening pill. Verify right-edge input, leftward travel, silence gaps, aging and reduced-motion behavior.
