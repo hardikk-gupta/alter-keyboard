@@ -9,7 +9,20 @@ plugins {
   id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val streamingNoticeDir = layout.buildDirectory.dir("generated/streamingNotices")
+val streamingNotices = tasks.register<Sync>("stageStreamingNotices") {
+  from(rootProject.file("licenses")) {
+    include("Needle-LICENSE.txt", "akshar-v4-*.txt", "shruti-hindi-*.txt",
+      "Parakeet-Unified-*.txt", "sherpa-onnx-Apache-2.0.txt", "Parakeet-ONNXRuntime-*.txt")
+    into("licenses")
+  }
+  into(streamingNoticeDir)
+}
+
+tasks.named("preBuild") { dependsOn(streamingNotices) }
+
 android {
+  sourceSets["main"].assets.srcDir(streamingNoticeDir)
   namespace = "com.aistudio.altermind.voice"
   compileSdk = 35
 

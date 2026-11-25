@@ -70,3 +70,5 @@ After each logical change, update status and the related handoff/changelog immed
 Port the pinned ASCII renderer to the listening pill. Check the published Parakeet Unified and native Hindi model assets, integrate compatible downloads, then run the Android build and voice regressions. Record device measurements separately.
 
 The listening renderer and three streaming choices are implemented. Verified model bytes, both sherpa ABIs, the ARM64 Needle build, compiled host decoding and 64 voice tests. Physical-device performance and interaction checks remain open.
+
+Matched-clip host checks favor Akshar for Hindi speed and the existing 110M CTC model for English speed. Keep legacy choices ahead of Unified when auto-selecting an installed model. See docs/VOICE_MODELS.md for the timings and sample limitations.

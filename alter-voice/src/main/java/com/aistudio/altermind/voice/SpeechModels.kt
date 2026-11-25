@@ -53,7 +53,8 @@ fun speechChoices(catalog: ModelCatalog): List<SpeechChoice> {
     val needle = if (Build.SUPPORTED_ABIS?.firstOrNull() == "arm64-v8a") {
         catalog.models.filter { it.family == "Needle" }.map { SpeechChoice(it.id, it.displayName, it.description, listOf(it)) }
     } else emptyList()
-    return unified + needle + standalone + moonshine
+    // When settings must select an installed model, retain the previous choices’ priority.
+    return standalone + moonshine + needle + unified
 }
 
 /** Downloaded ASR beside the brain, plus an explicit live-device selector. No cloud/Gemma speech fallback. */

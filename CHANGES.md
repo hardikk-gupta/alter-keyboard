@@ -644,3 +644,7 @@ Checks run (cloud host, no phone):
 ## November 25, 2026 — listening wave and streaming ASR
 
 Ported the pinned ASCII recording renderer. Added English Parakeet Unified INT8 on sherpa-onnx 2.0.3 and ARM64 Akshar v4 / Shruti on native Needle. Each choice downloads verified weights privately and uses the existing capture, draft and insertion paths. Host rendering at levels 0, 0.25 and 1 produced repeatable frames with increasing glyph counts. All 64 voice tests passed. Host decoding covered two successive sessions per model. Local APK signing requires the shared keystore. See [Voice configuration](docs/VOICE_MODELS.md) for device acceptance status.
+
+A matched-clip CPU comparison found that Akshar decoded the short Hindi sample faster than Apex. The retained CTC model decoded the English sample faster than Unified. Preserve the order of existing models for automatic selection. Timings and methodology are recorded in the voice configuration guide.
+
+On ten FLEURS Hindi test clips, Akshar made 54 word errors and Shruti made 63 across 267 reference words. The APK assets also carry the new models’ and runtimes’ license notices. Verified the notices in the merged Android assets.
