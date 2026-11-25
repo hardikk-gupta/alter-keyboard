@@ -76,3 +76,6 @@ Matched-clip host checks favor Akshar for Hindi speed and the existing 110M CTC 
 ## November 25 — yellow listening wave
 Use the ALTER yellow accent for recording. Extend the displayed PCM range to quiet sounds, shorten the visual response and check that quiet, conversational and loud inputs occupy distinct heights.
 Implemented and verified the four-level response, including a short syllable within a longer buffer. The new sensitivity applies to the visual meter. Speech detection continues using its existing thresholds.
+
+## Gradient for the listening pill
+Blend the bottom glyph row from muted grey into ALTER yellow over the visible wave height. Check quiet and loud levels in the compact pill and run the voice tests.

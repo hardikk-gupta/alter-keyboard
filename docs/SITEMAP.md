@@ -158,7 +158,7 @@ to measured decoder cost. Full windows and the final tail are always decoded; sl
 This reduces redundant work but does not guarantee real-time inference. Native CPU binaries and model
 weights are unchanged; on-phone speed and thermal behavior still require measurement.
 
-Voice startup shows a still white line while the microphone opens, then the yellow microphone-driven ASCII wave; it does not
+Voice startup shows a still white line while the microphone opens, then the microphone-driven ASCII wave with a grey baseline and yellow crest; it does not
 show the processing animation. Processing is reserved for finished audio. Errors take precedence over saved-draft
 pause/processing state and hide the Play/Pause control. Ten seconds with no audible speech stops capture with the
 error icon, including while the model warms up; the draft remains private and saved. Tapping a no-speech error

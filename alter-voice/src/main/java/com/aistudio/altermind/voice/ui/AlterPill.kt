@@ -97,7 +97,7 @@ internal fun animationsEnabled(context: android.content.Context) =
     val intensity = animateFloatAsState(target, tween(32, easing = LinearEasing), label = "Voice intensity")
     Canvas(modifier) {
         renderer.draw(drawContext.canvas.nativeCanvas, size.width, size.height,
-            density, intensity.value, AlterColors.AlterYellow.toArgb())
+            density, intensity.value, AlterColors.AlterYellow.toArgb(), AlterColors.MutedText.toArgb())
     }
 }
 

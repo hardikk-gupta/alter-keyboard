@@ -651,3 +651,5 @@ On ten FLEURS Hindi test clips, Akshar made 54 word errors and Shruti made 63 ac
 
 ## Yellow microphone wave
 The listening glyphs use ALTER yellow. For downloaded speech models the meter now uses the strongest 10 ms RMS window in each capture buffer and displays levels down to −84 dBFS. A 32 ms transition and a gentle lift at low input make brief, soft sounds visible while leaving headroom for louder speech. Silence shows one row. Android system recognition uses the provider’s reported levels. Voice tests cover the quiet-to-loud response and a brief sound at the end of a buffer.
+
+The listening wave now grades from muted grey at its baseline into yellow across the upper glyphs. The transition scales with the currently visible rows, so quiet bumps also reach yellow.
