@@ -128,3 +128,5 @@ The listening pill follows quiet sounds in yellow. Keyboard compilation and the 
 PR #36 now includes the grey-to-yellow shading. Reviewed a host render at four input levels and ran all 66 voice tests. Phone appearance remains unverified.
 
 The scrolling ASCII tape builds on merged PR #36. The Android keyboard compiled and the voice suite passed, including a ring-buffer test for partial peaks, pauses, travel and expiry. A host animation uses simulated speech levels. Physical-phone verification remains pending.
+
+PR #37 now displays a live frequency spectrogram for downloaded recognizers. Android system recognition uses a horizontal level meter. The keyboard compiled, the voice tests passed, and a host preview used the analyzer on recorded speech. Physical-phone microphone testing is pending.

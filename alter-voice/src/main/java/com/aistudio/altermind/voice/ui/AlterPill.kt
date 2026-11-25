@@ -1,9 +1,6 @@
 package com.aistudio.altermind.voice.ui
 
 import android.provider.Settings
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,9 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -39,6 +32,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.aistudio.altermind.voice.SpeechSpectrum
 import com.aistudio.altermind.voice.R
 
 /** ALTER design tokens used by the voice surfaces (ui/theme/Color.kt in the ALTER app). */
@@ -95,28 +89,27 @@ object LucidePill {
 internal fun animationsEnabled(context: android.content.Context) =
     Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f
 
-@Composable fun VoiceWave(level: Float, modifier: Modifier = Modifier) {
-    val renderer = remember { AsciiVoiceWaveRenderer() }
-    val target = if (level.isFinite()) level.coerceIn(0f, 1f) else 0f
-    val intensity = animateFloatAsState(target, tween(32, easing = LinearEasing), label = "Voice intensity")
+@Composable fun VoiceWave(level: Float, modifier: Modifier = Modifier, spectrum: SpeechSpectrum? = null) {
     val context = LocalContext.current
-    val tape = remember(context) { if (animationsEnabled(context)) VoiceTape() else null }
-    val revision = remember { mutableIntStateOf(0) }
-    LaunchedEffect(tape) {
-        if (tape != null) while (true) withFrameNanos { time ->
-            if (tape.record(time, intensity.value)) revision.intValue++
-        }
-    }
+    val scroll = remember(context) { animationsEnabled(context) }
+    val renderer = remember { SpectrogramRenderer() }
     Canvas(modifier) {
-        revision.intValue // Invalidate drawing as the tape advances, even during a pause in speech.
-        renderer.draw(drawContext.canvas.nativeCanvas, size.width, size.height,
-            density, intensity.value, AlterColors.AlterYellow.toArgb(), AlterColors.MutedText.toArgb(), tape)
+        if (spectrum != null) {
+            renderer.draw(drawContext.canvas.nativeCanvas, size.width, size.height, spectrum, scroll)
+        } else {
+            // Android's on-device recognition service exposes a level, not frequency samples.
+            val amount = level.coerceIn(0f, 1f)
+            val y = size.height / 2
+            drawLine(AlterColors.MutedText, Offset(0f, y), Offset(size.width, y), 1.dp.toPx())
+            if (amount > 0f) drawLine(AlterColors.AlterYellow, Offset(0f, y),
+                Offset(size.width * amount, y), 2.dp.toPx())
+        }
     }
 }
 
 /** The bounded voice surface contains only status; its caller places controls outside the border. */
 @Composable fun AlterVoicePill(state: PillState, level: Float, onTap: () -> Unit, modifier: Modifier = Modifier,
-    description: String = "") {
+    description: String = "", spectrum: SpeechSpectrum? = null) {
     val shape = RoundedCornerShape(12.dp)
     Box(modifier.clip(shape).background(AlterColors.SlateGrayCard)
         .border(1.dp, AlterColors.AlterYellow.copy(alpha = if (state == PillState.Disabled) .25f else .6f), shape)
@@ -129,7 +122,7 @@ internal fun animationsEnabled(context: android.content.Context) =
                 Icon(painterResource(R.drawable.ic_alter_ai_doodle_closed), null, Modifier.size(22.dp), tint = ink)
                 Icon(if (state == PillState.Disabled) LucidePill.MicOff else LucidePill.Mic, null, Modifier.size(20.dp), tint = ink)
             }
-            PillState.Listening -> VoiceWave(level, Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 6.dp))
+            PillState.Listening -> VoiceWave(level, Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 6.dp), spectrum)
             PillState.Starting, PillState.Paused -> Canvas(Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 6.dp)) {
                 drawLine(AlterColors.LightText, Offset(0f, size.height / 2), Offset(size.width, size.height / 2),
                     strokeWidth = 2.dp.toPx(), cap = StrokeCap.Round)

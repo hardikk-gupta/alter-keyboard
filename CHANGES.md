@@ -656,3 +656,5 @@ The listening wave now grades from muted grey at its baseline into yellow across
 
 ## November 26 — scrolling ASCII tape
 The listening pill shows one second of microphone-level history. Syllables enter at the bright right edge, scroll left and fade. Silence leaves grey dots. Each listening session owns a fresh history and reduced-motion mode uses the stationary meter.
+
+Replaced the listening tape with a grey-to-yellow spectrogram of the captured 16 kHz PCM. A Hann-windowed FFT fills 16 frequency bands over about one second. Reduced motion shows current bands in place. Tests cover low/high tones, quiet speech levels, silence, partial reads and snapshot isolation.

@@ -83,7 +83,7 @@ flowchart TD
 flowchart TD
     A[Tap ALTER flat-eye icon in the action bar] --> B{Voice ready?}
     B -- no --> S[Opens Settings → ALTER voice at the setup steps]
-    B -- yes --> C[Suggestions become the voice strip; wave follows the real mic level]
+    B -- yes --> C[Suggestions become the voice strip; live microphone visualization]
     C -- tap strip or flat-eye icon --> D[Full-width original orb animation: transcribe and clean up]
     C -- Pause / interrupted microphone / keyboard hides --> P[Private draft saved; paused pill on return]
     P -- Play --> C
@@ -158,7 +158,7 @@ to measured decoder cost. Full windows and the final tail are always decoded; sl
 This reduces redundant work but does not guarantee real-time inference. Native CPU binaries and model
 weights are unchanged; on-phone speed and thermal behavior still require measurement.
 
-Voice startup shows a still white line while the microphone opens, then the scrolling ASCII tape with grey silence gaps and yellow speech peaks; it does not
+Voice startup shows a still white line while the microphone opens, then the live spectrogram (a level meter for Android system recognition); it does not
 show the processing animation. Processing is reserved for finished audio. Errors take precedence over saved-draft
 pause/processing state and hide the Play/Pause control. Ten seconds with no audible speech stops capture with the
 error icon, including while the model warms up; the draft remains private and saved. Tapping a no-speech error

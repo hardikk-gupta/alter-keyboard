@@ -140,6 +140,7 @@ class AlterDictationSession(
             if (!disabled && error != null) Toast.makeText(context, error, Toast.LENGTH_LONG).show()
         }
         val level by controller.level.collectAsState()
+        val spectrum by controller.spectrum.collectAsState()
         val state = voicePillState(disabled, starting, recording, paused, processing, error)
         val description = when (state) {
             PillState.Starting -> stringResource(R.string.alter_pill_starting)
@@ -151,7 +152,7 @@ class AlterDictationSession(
             PillState.Disabled -> stringResource(R.string.alter_pill_disabled)
         }
         Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-            AlterVoicePill(state, level, onTap = { tap() }, modifier = Modifier.weight(1f).fillMaxHeight().then(pillModifier),
+            AlterVoicePill(state, level, spectrum = spectrum, onTap = { tap() }, modifier = Modifier.weight(1f).fillMaxHeight().then(pillModifier),
                 description = description)
             if (!disabled && error == null && (starting || recording || paused || processing)) {
                 VoiceControlButton(rememberVectorPainter(if (paused) LucidePill.Play else LucidePill.Pause),

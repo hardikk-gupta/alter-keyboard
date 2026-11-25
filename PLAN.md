@@ -82,3 +82,6 @@ Blend the bottom glyph row from muted grey into ALTER yellow over the visible wa
 
 ## November 26 — scrolling ASCII tape
 Display the last second of microphone levels in the listening pill. Verify right-edge input, leftward travel, silence gaps, aging and reduced-motion behavior.
+
+## November 26 — live spectrogram
+Replace amplitude silhouettes with measured frequency energy over time. Verify frequency separation, silence, capture boundaries and the level-only Android provider fallback.

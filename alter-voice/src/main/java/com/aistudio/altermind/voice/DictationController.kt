@@ -35,6 +35,8 @@ class DictationController internal constructor(private val context: Context, pri
     private val mutableError = MutableStateFlow<String?>(null)
     val error = mutableError.asStateFlow()
     private val mutableLevel = MutableStateFlow(0f)
+    private val mutableSpectrum = MutableStateFlow<SpeechSpectrum?>(null)
+    val spectrum = mutableSpectrum.asStateFlow()
     val level = mutableLevel.asStateFlow()
     private val mutableBackend = MutableStateFlow("")
     val backend = mutableBackend.asStateFlow()
@@ -77,6 +79,7 @@ class DictationController internal constructor(private val context: Context, pri
         try { validateSpeechSelection() }
         catch (e: Exception) { mutableError.value = e.message; return }
         val previous = job
+        mutableSpectrum.value = null
         val generation = ++epoch
         stopRequested = false
         captureRequested = capture
@@ -139,6 +142,7 @@ class DictationController internal constructor(private val context: Context, pri
                                 mutableStarting.value = false
                                 mutableRecording.value = true; mutableStatus.value = "Listening · preparing speech model…"
                             }
+                            val analyzer = SpectrumAnalyzer()
                             val buffer = ShortArray(1600)
                             var total = draft.samples; var quiet = 0; var spoken = false
                             var lastSamplesAt = System.nanoTime()
@@ -159,7 +163,11 @@ class DictationController internal constructor(private val context: Context, pri
                                 total += accepted
                                 val audio = FloatArray(accepted) { buffer[it] / 32768f }
                                 val rms = kotlin.math.sqrt(audio.sumOf { (it * it).toDouble() } / accepted).toFloat()
-                                if (generation == epoch) mutableLevel.value = microphoneDisplayLevel(audio)
+                                analyzer.accept(audio)?.let { frame ->
+                                    synchronized(this@DictationController) {
+                                        if (generation == epoch) mutableSpectrum.value = frame
+                                    }
+                                }
                                 if (rms > .003f) { spoken = true; quiet = 0 } else quiet += accepted
                                 chunks.send(audio)
                                 if ((endAfterSilence && spoken && quiet > 16000 * 1.6) || (!spoken && total - draft.samples >= 10 * 16000)) break
@@ -224,6 +232,7 @@ class DictationController internal constructor(private val context: Context, pri
     }
     @Synchronized private fun finishSession(generation: Int, sessionClaim: Any) {
         owner.compareAndSet(sessionClaim, null)
+        if (generation == epoch) mutableSpectrum.value = null
         if (generation == epoch) { mutableStarting.value = false; mutableRecording.value = false; mutableLevel.value = 0f; mutableStatus.value = null; mutableProcessing.value = false }
     }
     fun stop() { stopRequested = true; deviceSession?.stop() }
@@ -237,7 +246,7 @@ class DictationController internal constructor(private val context: Context, pri
 
     /** Freeze both capture and decoding; the next controller restores this draft without recording or inserting. */
     @Synchronized fun pause() {
-        epoch++; stopRequested = true
+        epoch++; mutableSpectrum.value = null; stopRequested = true
         speech.cancel(this); job?.cancel(); deviceSession?.stop(); deviceSession = null
         mutableStarting.value = false; mutableRecording.value = false; mutableProcessing.value = false; mutableCompletedText.value = null; mutableLevel.value = 0f
         try { drafts.sync(); mutablePaused.value = drafts.load()?.hasContent == true }
@@ -266,19 +275,6 @@ class DictationController internal constructor(private val context: Context, pri
             try { return action() } finally { owner.compareAndSet(claim, null) }
         }
     }
-}
-
-/** A decibel meter makes quieter real input visible; zero PCM remains a flat wave. */
-// Keep brief syllables visible within a capture buffer. 160 samples = 10 ms at 16 kHz.
-internal fun microphoneDisplayLevel(audio: FloatArray): Float {
-    var peakMeanSquare = 0f
-    for (start in audio.indices step 160) {
-        val end = minOf(start + 160, audio.size)
-        var sum = 0f
-        for (i in start until end) sum += audio[i] * audio[i]
-        peakMeanSquare = maxOf(peakMeanSquare, sum / (end - start))
-    }
-    return microphoneLevel(kotlin.math.sqrt(peakMeanSquare))
 }
 
 // Display-only dBFS scale. Keep a floor above single-count PCM noise.
