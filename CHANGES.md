@@ -639,3 +639,8 @@ Checks run (cloud host, no phone):
   one short input. After the redesign: all restatement and cue cases corrected, lists and idioms kept, 6 of 15 with
   no model call. "meeting Monday ko rakho nahi nahi Tuesday ko" (cue after the verb) is still unchanged.
 - Not run: phone checks of any kind.
+
+
+## November 25, 2026 — listening wave and streaming ASR
+
+Ported the pinned ASCII recording renderer. Added English Parakeet Unified INT8 on sherpa-onnx 2.0.3 and ARM64 Akshar v4 / Shruti on native Needle. Each choice downloads verified weights privately and uses the existing capture, draft and insertion paths. Host rendering at levels 0, 0.25 and 1 produced repeatable frames with increasing glyph counts. All 64 voice tests passed. Host decoding covered two successive sessions per model. Local APK signing requires the shared keystore. See [Voice configuration](docs/VOICE_MODELS.md) for device acceptance status.

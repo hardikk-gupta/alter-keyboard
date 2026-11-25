@@ -1,11 +1,7 @@
 package com.aistudio.altermind.voice.ui
 
 import android.provider.Settings
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -20,29 +16,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.aistudio.altermind.voice.R
-import kotlin.math.PI
-import kotlin.math.sin
 
 /** ALTER design tokens used by the voice surfaces (ui/theme/Color.kt in the ALTER app). */
 object AlterColors {
@@ -98,29 +90,13 @@ object LucidePill {
 internal fun animationsEnabled(context: android.content.Context) =
     Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f
 
-/** Decorative carrier follows real RMS amplitude. With no audio the line is flat (ALTER's voiceWavePoints). */
-internal fun voiceWavePoints(level: Float, phase: Float, strand: Int): List<Offset> = (0..72).map { i ->
-    val x = i / 72f
-    val envelope = sin(PI * x).toFloat()
-    val carrier = sin(x * PI * (3.5 + strand * .4) - phase + strand * .9).toFloat()
-    Offset(x, .5f + level.coerceIn(0f, 1f) * envelope * carrier * (.35f - strand * .045f))
-}
-
-/** One AlterYellow line driven by the real microphone level; a still frame when animations are off. */
 @Composable fun VoiceWave(level: Float, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    val motion = remember { animationsEnabled(context) }
-    val live by animateFloatAsState(level.coerceIn(0f, 1f), if (motion) tween(80) else tween(0), label = "wave-level")
-    val phase = if (motion) rememberInfiniteTransition(label = "wave").animateFloat(0f, (2 * PI).toFloat(),
-        infiniteRepeatable(tween(1200, easing = LinearEasing)), label = "wave-phase").value else 0f
+    val renderer = remember { AsciiVoiceWaveRenderer() }
+    val target = if (level.isFinite()) level.coerceIn(0f, 1f) else 0f
+    val intensity = animateFloatAsState(target, tween(80), label = "Voice intensity")
     Canvas(modifier) {
-        val points = voiceWavePoints(live, phase, 0)
-        val path = Path()
-        points.forEachIndexed { i, p ->
-            val x = p.x * size.width; val y = p.y * size.height
-            if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
-        }
-        drawPath(path, AlterColors.AlterYellow, style = Stroke(2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
+        renderer.draw(drawContext.canvas.nativeCanvas, size.width, size.height,
+            density, intensity.value, AlterColors.OrbInk.toArgb())
     }
 }
 

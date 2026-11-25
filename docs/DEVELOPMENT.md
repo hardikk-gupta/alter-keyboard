@@ -43,6 +43,7 @@ This rebuilds both ABI libraries for Nemotron and the shared offline Parakeet TD
 binaries with the native source change; retain source pins and license notices. The aggregate
 `scripts/build_native_libs.sh` also includes typing and archived Whisper/Handy runtimes. Those archived
 voice libraries are excluded from the current APK and must not be re-enabled accidentally.
+The ARM64 Needle JNI bridge and engine rebuild with `scripts/build_needle_native.sh` using the same NDK.
 The pinned sherpa JAR/JNI pair is imported together by `scripts/import_sherpa_runtime.py` when that runtime changes.
 
 ## Model and host checks

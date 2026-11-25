@@ -47,7 +47,13 @@ fun speechChoices(catalog: ModelCatalog): List<SpeechChoice> {
     val files = catalog.models.filter { it.family == "Moonshine" && "MOONSHINE_MEDIUM_STREAMING" in it.capabilities }
     val moonshine = if (files.isEmpty()) emptyList() else listOf(SpeechChoice("moonshine-en-medium",
         "Moonshine Medium", "English", files))
-    return standalone + moonshine
+    val unifiedFiles = catalog.models.filter { it.family == "ParakeetUnified" }
+    val unified = if (unifiedFiles.isEmpty()) emptyList() else listOf(
+        SpeechChoice(UNIFIED_MODEL, "Parakeet Unified · English", "Streaming English", unifiedFiles))
+    val needle = if (Build.SUPPORTED_ABIS?.firstOrNull() == "arm64-v8a") {
+        catalog.models.filter { it.family == "Needle" }.map { SpeechChoice(it.id, it.displayName, it.description, listOf(it)) }
+    } else emptyList()
+    return unified + needle + standalone + moonshine
 }
 
 /** Downloaded ASR beside the brain, plus an explicit live-device selector. No cloud/Gemma speech fallback. */
@@ -60,6 +66,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
     @Volatile private var nemotron = 0L
     @Volatile private var parakeetTdt = 0L
     private var parakeet: ParakeetSpeech? = null
+    private var streaming: StreamingSpeech? = null
     private var moonshine: MoonshineSpeech? = null
     private var loaded: String? = null
     @Volatile private var activeOwner: Any? = null
@@ -113,7 +120,11 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         closeDecoderLocked()
         choice.files.forEach { store.verify(it) }
         try {
-        if (choice.files.singleOrNull()?.family == "ParakeetTDT") {
+        if (choice.id == UNIFIED_MODEL) {
+            streaming = SherpaParakeetEngine(choice.files.associate { it.filename to store.file(it) })
+        } else if (choice.files.singleOrNull()?.family == "Needle") {
+            streaming = NeedleEngine(store.file(choice.files.single()), hindi = choice.id == AKSHAR_MODEL)
+        } else if (choice.files.singleOrNull()?.family == "ParakeetTDT") {
             parakeetTdt = ParakeetTdtNative.load(store.file(choice.files.single()).absolutePath)
             check(parakeetTdt != 0L) { "Parakeet TDT could not load this verified model on your device." }
         } else if (choice.files.singleOrNull()?.family == "ParakeetCTC") {
@@ -149,6 +160,17 @@ class SpeechModels(private val context: Context) : DictationSpeech {
             activeOwner = owner
             try {
                 load()
+                streaming?.let { engine ->
+                    var offset = 0
+                    var text = ""
+                    engine.recognize({
+                        if (offset == audio.size) null else {
+                            val end = minOf(offset + 16000, audio.size)
+                            audio.copyOfRange(offset, end).also { offset = end }
+                        }
+                    }, { text = it })
+                    return@withLock cleanDictation(text).ifBlank { "[NO_SPEECH_DETECTED]" }
+                }
                 // Nemotron keeps its native streaming context over the whole saved recording.
                 if (nemotron != 0L) return@withLock decodeLoadedWindow(audio).ifBlank { "[NO_SPEECH_DETECTED]" }
                 // Whisper always encodes a full 30 s window, so use nearly all of it.
@@ -186,10 +208,14 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         return cleanDictation(raw)
     }
     suspend fun transcribe(audio: FloatArray): String = transcribe(audio, Any())
-    /** Stream Moonshine or Nemotron while collecting from AudioRecord; return false for Parakeet's bounded clip mode. */
+    /** Native streaming consumes capture chunks directly. Other decoders use the controller’s bounded clip mode. */
     override suspend fun stream(owner: Any, read: suspend () -> FloatArray?, update: (String) -> Unit): Boolean = withContext(Dispatchers.IO) {
         mutex.withLock {
             load()
+            streaming?.let { engine ->
+                engine.recognize(read, update)
+                return@withLock true
+            }
             if (nemotron != 0L) {
                 activeOwner = owner
                 try { streamNemotron(read, update); return@withLock true }
@@ -220,6 +246,7 @@ class SpeechModels(private val context: Context) : DictationSpeech {
         File(context.noBackupFilesDir, "speech-indicconformer").deleteRecursively()
     }
     @Synchronized private fun closeDecoderLocked() {
+        streaming?.close(); streaming = null
         if (whisper != 0L) { WhisperNative.close(whisper); whisper = 0L }
         if (nemotron != 0L) { NemotronNative.close(nemotron); nemotron = 0L }
         if (parakeetTdt != 0L) { NemotronNative.close(parakeetTdt); parakeetTdt = 0L }

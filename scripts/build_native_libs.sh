@@ -43,3 +43,6 @@ done
 
 # Nemotron streaming ASR has an isolated CPU runtime.
 "$ROOT/scripts/build_nemotron_native.sh"
+
+# Needle publishes its Android engine for ARM64.
+"$ROOT/scripts/build_needle_native.sh"

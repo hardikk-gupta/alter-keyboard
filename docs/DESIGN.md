@@ -42,14 +42,14 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 | SlateGrayCard | `#18181B` | Pill body |
 | LightText | `#ECECEC` | Pill bar icons |
 | DisabledText | `#71717A` | Disabled mic (password fields) |
-| AlterYellow | `#FFBD00` | The one accent: the live voice wave |
+| AlterYellow | `#FFBD00` | Pill border and processing highlights |
 | ErrorRed | `#EF4444` | Voice error triangle only |
 | Orb ink | `#F5F5F5` | Monochrome logo and idle icons |
 
 - Pill: 12 dp corners, SlateGrayCard body inside a thin (1 dp) AlterYellow boundary at 60% (25% when disabled), the
   ALTER mark of every voice surface. No glass, blur or gradients. Touch targets 48 dp.
 - Idle: the flat-eyes ALTER mark (`ic_alter_ai_doodle_closed`) tinted `#F5F5F5`, plus the Lucide mic.
-- Listening: one AlterYellow line driven by the real microphone RMS, flat in silence (ALTER's `voiceWavePoints`).
+- Listening: stable OrbInk letters and symbols rise and brighten with microphone RMS. Silence shows one row.
 - Listening/paused/thinking: Pause/Play is outside the right-hand curve; the discard cross is outside the left.
   Both controls use 20dp icons to match the toolbar, with 2-unit strokes, 12dp ripple corners and keyboard-theme tint
   (light ink on the fixed black pill-mode bar). Like the discard cross, Pause is two single vertical strokes and Play
@@ -62,7 +62,7 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
   as they light. The column count adapts to fill the pill; the small orb on other screens keeps its original 3×3 shape.
 - Error: the red Lucide triangle-alert; TalkBack reads the error and "Tap to try again". A short
   foreground Toast also shows the reason, without expanding the pill or adding model descriptions.
-- Animations off: the waveform is still and the processing field shows static centre dots lit against dim white dots.
+- Animations off: the wave follows new levels immediately and the processing field shows static centre dots lit against dim white dots.
 
 ## Keyboard UX
 
@@ -107,13 +107,13 @@ They forbid answering/executing spoken requests or inventing context/preferences
 not new cleanup levels, context collection or a new model. [Backtrack](BACKTRACK.md) resolves spoken corrections of days,
 months, times and numbers; validation still rejects every other semantic deletion. Formatting remains bounded by the current formatter.
 
-Bounded Parakeet preview scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
+Bounded Parakeet 110M preview scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
 or download), targets its first preview after two seconds of captured audio, and spaces later previews according
 to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.
 This reduces redundant work but does not guarantee real-time inference. Native CPU binaries and model
 weights are unchanged; on-phone speed and thermal behavior still require measurement.
 
-Voice startup shows a still white line while the microphone opens, then the real-RMS yellow wave; it does not
+Voice startup shows a still white line while the microphone opens, then the microphone-driven ASCII wave; it does not
 show the processing animation. Processing is reserved for finished audio. Errors take precedence over saved-draft
 pause/processing state and hide the Play/Pause control. Ten seconds with no audible speech stops capture with the
 error icon, including while the model warms up; the draft remains private and saved. Tapping a no-speech error
@@ -140,7 +140,8 @@ when inappropriate. This is visible correction memory, not model training, edito
 
 ## Current voice models
 
-Oriserve Hinglish Apex (Hindi + English in Roman letters; the choice for Hinglish), Parakeet 110M CTC INT8 or TDT
+Parakeet Unified (streaming English), Akshar v4 and Shruti (ARM64 Hindi/Hinglish),
+Oriserve Hinglish Apex (Roman Hinglish), Parakeet 110M CTC INT8 or TDT
 FP16 (English), Nemotron Q4 (multilingual), Moonshine Medium (English), or Android on-device recognition (Android
 12+ when available). Qwen3 1.7B INT8 is the only optional cleanup model and also cleans Hindi and Hinglish.
 Models download on demand with pinned size/hash checks. There is no external language detector, automatic engine

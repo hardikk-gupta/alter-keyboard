@@ -34,7 +34,7 @@ kotlin {
 
 dependencies {
   api(project(":alter-agent"))
-  implementation(files("libs/sherpa-onnx-2.0.1.jar"))
+  implementation(files("libs/sherpa-onnx-2.0.3.jar"))
   implementation("org.apache.commons:commons-compress:1.27.1")
 
   implementation("androidx.core:core-ktx:1.13.1")
