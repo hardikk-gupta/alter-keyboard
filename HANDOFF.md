@@ -1,8 +1,12 @@
 # ALTER Keyboard handoff
 
-Updated: November 2, 2026. Repository: [hardikk-gupta/alter-keyboard](https://github.com/hardikk-gupta/alter-keyboard).
+Updated: November 25, 2026. Repository: [hardikk-gupta/alter-keyboard](https://github.com/hardikk-gupta/alter-keyboard).
 This file, [PLAN.md](PLAN.md), [CHANGES.md](CHANGES.md) and the linked guides are the handoff;
 no essential task state should exist only in chat, a local worktree note or `/tmp`.
+
+## November 25 keyboard changes
+
+Starting revision `f5b05d1bc` includes the earlier Apex and Backtrack work. [PR #35](https://github.com/hardikk-gupta/alter-keyboard/pull/35) adds the ASCII listening pill, English Parakeet Unified, and ARM64 Akshar and Shruti. Model pins, host results and outstanding phone measurements are in [Voice configuration](docs/VOICE_MODELS.md). The voice suite passed 64 tests. The local Android build reached signing and requires the shared debug keystore. The sections below are historical snapshots.
 
 ## Read first
 

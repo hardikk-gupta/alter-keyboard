@@ -1,0 +1,2 @@
+Licensed by NVIDIA Corporation under the NVIDIA Open Model License
+NVIDIA Parakeet Unified English 0.6B, converted to the sherpa-onnx INT8 streaming 560 ms profile.

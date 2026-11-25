@@ -15,6 +15,7 @@ Android launcher: ALTER Keyboard icon
     │   └── ALTER voice ...................... subtitle: "Ready · <model>" or the missing step
     │       ├── Speech ....................... allow microphone when needed
     │       │   ├── Oriserve Hinglish Apex ... Hindi + English in Roman letters
+    │       │   ├── Parakeet Unified (English), Akshar v4 / Shruti (Hindi on ARM64)
     │       │   ├── Parakeet CTC / TDT ....... each: name, size/selection, download/delete
     │       │   ├── Nemotron / Moonshine Medium
     │       │   ├── Android on-device ........ select when available
@@ -151,13 +152,13 @@ They forbid answering/executing spoken requests or inventing context/preferences
 not new cleanup levels, context collection or a new model. [Backtrack](BACKTRACK.md) resolves spoken corrections of days,
 months, times and numbers; validation still rejects every other semantic deletion. Formatting remains bounded by the current formatter.
 
-Bounded Parakeet preview scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
+Bounded Parakeet 110M preview scheduling warms the selected downloaded model when a non-sensitive text field opens (no microphone
 or download), targets its first preview after two seconds of captured audio, and spaces later previews according
 to measured decoder cost. Full windows and the final tail are always decoded; slow previews never drop audio.
 This reduces redundant work but does not guarantee real-time inference. Native CPU binaries and model
 weights are unchanged; on-phone speed and thermal behavior still require measurement.
 
-Voice startup shows a still white line while the microphone opens, then the real-RMS yellow wave; it does not
+Voice startup shows a still white line while the microphone opens, then the microphone-driven ASCII wave; it does not
 show the processing animation. Processing is reserved for finished audio. Errors take precedence over saved-draft
 pause/processing state and hide the Play/Pause control. Ten seconds with no audible speech stops capture with the
 error icon, including while the model warms up; the draft remains private and saved. Tapping a no-speech error
@@ -184,7 +185,8 @@ when inappropriate. This is visible correction memory, not model training, edito
 
 ## Current voice models
 
-Oriserve Hinglish Apex (Hindi + English in Roman letters; the choice for Hinglish), Parakeet 110M CTC INT8 or TDT
+Parakeet Unified (streaming English), Akshar v4 and Shruti (ARM64 Hindi/Hinglish),
+Oriserve Hinglish Apex (Roman Hinglish), Parakeet 110M CTC INT8 or TDT
 FP16 (English), Nemotron Q4 (multilingual), Moonshine Medium (English), or Android on-device recognition (Android
 12+ when available). Qwen3 1.7B INT8 is the only optional cleanup model and also cleans Hindi and Hinglish.
 Models download on demand with pinned size/hash checks. There is no external language detector, automatic engine

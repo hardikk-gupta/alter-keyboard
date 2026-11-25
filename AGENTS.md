@@ -131,7 +131,7 @@ is kept. Do not rely on older releases existing.
 
 ## Retained voice models
 
-- Offer only Oriserve Hinglish Apex, Parakeet CTC/TDT, Nemotron, Moonshine Medium and Android on-device
+- Offer Akshar v4 and Shruti on ARM64, Oriserve Hinglish Apex, Parakeet Unified, Parakeet CTC/TDT, Nemotron, Moonshine Medium and Android on-device
   recognition. Qwen3 1.7B INT8 is the only optional editor (it also cleans Hindi); ignore retired cleanup preferences.
 - Do not restore external language routing, Hindi helper assets or either Romanization layer.
   Preserve the selected recognizer's native script. Parakeet/Moonshine remain English-only.

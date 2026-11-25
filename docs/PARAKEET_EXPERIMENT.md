@@ -1,6 +1,6 @@
 # Parakeet 110M English experiment
 
-> Current scope: both Parakeets remain available for English. The separate Hindi recognizer, external
+> Current scope: both 110M variants remain available for English. The old IndicConformer pipeline, external
 > language detector and Romanization experiments described historically are retired.
 > See [current voice configuration](VOICE_MODELS.md).
 
@@ -34,7 +34,7 @@ The existing model downloader's 1 GB free-space buffer remains in effect.
 
 ## Configuration and behavior
 
-- sherpa-onnx 2.0.1, INT8 NeMo CTC, CPU, at most two threads.
+- sherpa-onnx 2.0.3, INT8 NeMo CTC, CPU, at most two threads.
 - 16 kHz mono PCM, 80-dimensional features, zero dither and greedy decoding.
 - Offline inference with existing bounded 20-second/one-second-overlap audio windows.
   Periodic previews start after about two seconds of audio when the decoder can keep up;

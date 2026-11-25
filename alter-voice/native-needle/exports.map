@@ -1,0 +1,1 @@
+{ global: needle_load; needle_models; needle_last_error; needle_stream_transcribe_process; needle_stream_transcribe_stop; local: *; };

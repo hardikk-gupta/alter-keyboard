@@ -7,16 +7,16 @@ import urllib.request
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-URL = "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-static-link-onnxruntime-2.0.1.aar"
-SHA256 = "07e042d97f3a6bd5b7fe74d4eef0513dc01a714b16c15a903250095aba43a575"
+URL = "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.3/sherpa-onnx-static-link-onnxruntime-2.0.3.aar"
+SHA256 = "7744a3a8f08f017d59c2d8ed8d9b700345561f5abe9f4e06dc6eaef3a0b977b4"
 
 if __name__ == "__main__":
     with urllib.request.urlopen(URL) as response:
-        data = response.read(38_577_051)
-    if len(data) != 38_577_050 or hashlib.sha256(data).hexdigest() != SHA256:
+        data = response.read(39_999_116)
+    if len(data) != 39_999_115 or hashlib.sha256(data).hexdigest() != SHA256:
         raise SystemExit("Upstream Android runtime size/checksum mismatch")
     with zipfile.ZipFile(io.BytesIO(data)) as archive:
-        entries = {"classes.jar": "alter-voice/libs/sherpa-onnx-2.0.1.jar"}
+        entries = {"classes.jar": "alter-voice/libs/sherpa-onnx-2.0.3.jar"}
         for abi in ("arm64-v8a", "x86_64"):
             entries[f"jni/{abi}/libsherpa-onnx-jni.so"] = f"alter-voice/src/main/jniLibs/{abi}/libsherpa-onnx-jni.so"
         for source, destination in entries.items():

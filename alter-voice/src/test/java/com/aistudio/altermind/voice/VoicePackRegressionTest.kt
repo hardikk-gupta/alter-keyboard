@@ -204,8 +204,10 @@ class VoicePackRegressionTest {
         val ids = Regex("\"id\": \"([^\"]+)\"").findAll(json).map { it.groupValues[1] }.toList()
         assertTrue(VoicePack.CLEANUP_MODEL in ids && APEX_HINGLISH_MODEL in ids)
         assertFalse("lfm25-350m-cleanup" in ids)
-        assertEquals(13, ids.size)
-        assertTrue(ids.all { it in retainedSpeechIds || it == VoicePack.CLEANUP_MODEL || it.startsWith("moonshine-en-medium-") })
+        assertEquals(19, ids.size)
+        assertEquals(4, ids.count { it.startsWith("$UNIFIED_MODEL-") })
+        assertTrue(ids.containsAll(listOf(AKSHAR_MODEL, "shruti-hindi")))
+        assertTrue(ids.all { it in retainedSpeechIds || it == VoicePack.CLEANUP_MODEL || it.startsWith("moonshine-en-medium-") || it.startsWith("$UNIFIED_MODEL-") })
         assertFalse(json.contains("IndicXlit"))
         // Whisper appears only as Oriserve Apex's runtime family.
         assertEquals(1, Regex("\"family\": \"Whisper\"").findAll(json).count())

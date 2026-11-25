@@ -4,6 +4,9 @@ Settings → ALTER voice offers:
 
 | Speech model | Language | Download |
 | --- | --- | --- |
+| Parakeet Unified 0.6B INT8, 560 ms profile | Streaming English with punctuation | ~663 MB |
+| AksharSTT v4 | Hindi/Hinglish, mixed Devanagari and Latin, ARM64 | ~29.5 MB |
+| Shruti | Hindi/Hinglish, mixed Devanagari and Latin, ARM64 | ~29.5 MB |
 | Oriserve Hinglish Apex | Hindi + English, Roman letters ("kya tum free ho") | ~874 MB |
 | Parakeet CTC INT8 | English | ~104 MB |
 | Parakeet TDT FP16 | English | ~229 MB |
@@ -81,3 +84,30 @@ The cloud environment lacks the shared signing key, so signed APK/install accept
 [PLAN.md](../PLAN.md) records intended work and remaining actions. Streaming implementation details are in
 [STREAMING_RECOGNIZER_CHECKS.md](STREAMING_RECOGNIZER_CHECKS.md). Do not treat an open PR's host checks
 as a merged build or a confirmed device fix.
+
+
+## November 25 streaming models and validation
+
+For fast English decoding, choose Parakeet CTC INT8. **Parakeet Unified · English** offers native streaming. On ARM64, choose **Akshar v4 · Hindi / Hinglish** for mixed script. Shruti is an alternative on the same runtime. Apex remains the Roman Hinglish choice. Existing selections and saved recording identities survive the update.
+
+The Unified decoder reads the encoder, decoder, joiner and token files directly from their verified private locations. The 560 ms label identifies the export profile. sherpa-onnx 2.0.3 includes the buffered-context and endpoint changes from [PR 4133](https://github.com/k2-fsa/sherpa-onnx/pull/4133). The decoder keeps committed segments across silence and drains the final partial window. [Upstream export](https://huggingface.co/csukuangfj2/sherpa-onnx-nemo-parakeet-unified-en-0.6b-int8-streaming-560ms)
+
+Akshar and Shruti use the Android ARM64 static Needle engine from revision `d6c7d6a2e9655505e0f8e23339356dd1705900eb`. The JNI bridge batches 16 kHz mono PCM into one-second chunks and flushes the remaining samples on stop. Only committed words persist across updates. The Kotlin session uses the local C API directly. Rebuild the ARM64 libraries with `scripts/build_needle_native.sh`. [Akshar model card](https://huggingface.co/byteknotlabs/AksharSTT-V4) · [Shruti model card](https://huggingface.co/udgamlabs/Shruti)
+
+**Host evidence.** All six new catalog files matched their pinned sizes and SHA-256 digests. The compiled Kotlin adapters produced nonempty, repeatable final text in consecutive sessions with each model. Parakeet also transcribed both copies of a sentence separated by three seconds of silence, retaining its final word both times. On Oriserve’s 2.66-second sample ending in `3227568.wav`, both Hindi models wrote “rate” in Latin script where the published sample transcript says “dekh”. This clip alone cannot establish a WER ranking. [Sample and transcript](https://huggingface.co/Oriserve/Whisper-Hindi2Hinglish-Apex)
+
+**Hindi accuracy check.** On the first ten WAVs in the FLEURS Hindi test archive (267 reference words), Akshar made 54 word errors (20.2% WER) and Shruti made 63 (23.6% WER). Both used the keyboard’s streaming adapter on identical PCM. References and transcripts were Unicode NFKC-normalized, case-folded and stripped of punctuation before word-level edit distance. This small read-speech sample covers Hindi. Hinglish, names and noisy phone recordings require separate evaluation. [Pinned test split](https://huggingface.co/datasets/google/fleurs/tree/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/hi_in)
+
+**Host timings.** Median wall time for three passes of the same preloaded clip on an Intel Xeon Platinum 8573C, excluding file I/O and model load. Streaming adapters received PCM in 100 ms blocks without real-time delays. These are total decode times.
+
+| Clip | Model | Decode time |
+| --- | --- | ---: |
+| 7.44 s English | Parakeet 110M CTC | 0.33 s |
+| Same English clip | Parakeet Unified 560 ms INT8 | 19.75 s |
+| 2.66 s Hindi | Oriserve Apex Q8 | 22.31 s |
+| Same Hindi clip | Akshar v4 | 0.31 s |
+| Same Hindi clip | Shruti | 0.32 s |
+
+The English models produced the same words on this clip. CTC included the final period. The model picker preserves the earlier installed models’ priority when recovering a missing selection.
+
+**Nothing Phone (2).** No physical device was connected. Airplane-mode capture, first partial, stop-to-final latency, WER on representative recordings, peak RAM and sustained thermal performance remain unmeasured. The 560 ms context and one-second batch sizes are configuration values.

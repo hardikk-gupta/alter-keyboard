@@ -25,10 +25,10 @@ No source tar paths, symlinks or test WAVs are written by the app.
 
 ## Android runtime
 
-sherpa-onnx v2.0.1, source commit af2d8d81dbfa61c4cea4c568da78f3982edca005 (Apache-2.0).
-Upstream artifact: sherpa-onnx-static-link-onnxruntime-2.0.1.aar
-Bytes: 38577050
-SHA-256: 07e042d97f3a6bd5b7fe74d4eef0513dc01a714b16c15a903250095aba43a575
+sherpa-onnx v2.0.3, source commit 38016c6e0622e90bf417c35e8b47e0eb805af417 (Apache-2.0).
+Upstream artifact: sherpa-onnx-static-link-onnxruntime-2.0.3.aar
+Bytes: 39999115
+SHA-256: 7744a3a8f08f017d59c2d8ed8d9b700345561f5abe9f4e06dc6eaef3a0b977b4
 Retained entries: classes.jar and arm64-v8a/x86_64 libsherpa-onnx-jni.so only.
 Refresh from the pinned artifact with `python3 scripts/import_sherpa_runtime.py`.
 Gradle uses the committed JAR and JNI libraries and performs no native compilation/download.

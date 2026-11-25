@@ -3,7 +3,7 @@
 Updated: November 2, 2026. Read [HANDOFF.md](HANDOFF.md) and verify live Git/PR state before continuing.
 This records task-level plans and decisions, not private reasoning or a transcript of the chat.
 
-## Current task: Hinglish speech and cleanup (PR #32)
+## November 2 task: Hinglish speech and cleanup (PR #32)
 
 The user's requirement: the retained models are good for English but not Hinglish. Add Oriserve's
 Hindi2Hinglish Apex with as little compression as still runs well on a phone, and pair it with a cleanup
@@ -65,3 +65,10 @@ must live in this GitHub repository. Documentation must stay synchronized immedi
 
 Before implementation, update this file with scope, intended changes, dependencies and validation.
 After each logical change, update status and the related handoff/changelog immediately, in the same commit.
+
+## November 25 — recording wave and on-device ASR
+Port the pinned ASCII renderer to the listening pill. Check the published Parakeet Unified and native Hindi model assets, integrate compatible downloads, then run the Android build and voice regressions. Record device measurements separately.
+
+The listening renderer and three streaming choices are implemented. Verified model bytes, both sherpa ABIs, the ARM64 Needle build, compiled host decoding and 64 voice tests. Physical-device performance and interaction checks remain open.
+
+Matched-clip host checks favor Akshar for Hindi speed and the existing 110M CTC model for English speed. Keep legacy choices ahead of Unified when auto-selecting an installed model. See docs/VOICE_MODELS.md for the timings and sample limitations.

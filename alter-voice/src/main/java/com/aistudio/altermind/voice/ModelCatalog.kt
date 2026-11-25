@@ -37,6 +37,8 @@ class ModelCatalog(val models: List<ModelSpec>) {
                         require(spec.downloadBytes in 1..20_000_000_000L)
                         val validFormat = when (spec.modelType) {
                             ModelType.SPEECH -> "SPEECH_TRANSCRIPTION" in spec.capabilities && when (spec.family) {
+                                "Needle" -> spec.filename.endsWith(".cact")
+                                "ParakeetUnified" -> spec.filename in setOf("encoder.int8.onnx", "decoder.int8.onnx", "joiner.int8.onnx", "tokens.txt")
                                 "Whisper" -> spec.filename.endsWith(".bin")
                                 "ParakeetTDT" -> spec.filename.endsWith(".gguf") && "OFFLINE_TDT" in spec.capabilities
                                 "ParakeetCTC" -> spec.filename.endsWith(".tar.bz2") && "OFFLINE_CTC" in spec.capabilities
