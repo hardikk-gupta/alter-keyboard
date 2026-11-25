@@ -121,3 +121,8 @@ Google's exact current Android recognizer weights are not verified as publicly d
 recognition provider varies by device. Android output already goes through Alter's cleanup policy, with the
 existing opt-in/short-phrase conditions (PR #32 removes the explicit-Hindi bypass). The system provider can play its own recording tone;
 there is no supported per-app mute switch, and no global phone audio muting is implemented.
+
+## Yellow microphone wave follow-up
+The listening pill follows quiet sounds in yellow. Keyboard compilation and the voice suite passed. A host render at four input levels showed progressively taller columns. Real microphone behavior on a physical phone remains unverified.
+
+PR #36 now includes the grey-to-yellow shading. Reviewed a host render at four input levels and ran all 66 voice tests. Phone appearance remains unverified.

@@ -1,6 +1,7 @@
 package com.aistudio.altermind.voice.ui
 
 import android.provider.Settings
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -93,10 +94,10 @@ internal fun animationsEnabled(context: android.content.Context) =
 @Composable fun VoiceWave(level: Float, modifier: Modifier = Modifier) {
     val renderer = remember { AsciiVoiceWaveRenderer() }
     val target = if (level.isFinite()) level.coerceIn(0f, 1f) else 0f
-    val intensity = animateFloatAsState(target, tween(80), label = "Voice intensity")
+    val intensity = animateFloatAsState(target, tween(32, easing = LinearEasing), label = "Voice intensity")
     Canvas(modifier) {
         renderer.draw(drawContext.canvas.nativeCanvas, size.width, size.height,
-            density, intensity.value, AlterColors.OrbInk.toArgb())
+            density, intensity.value, AlterColors.AlterYellow.toArgb(), AlterColors.MutedText.toArgb())
     }
 }
 

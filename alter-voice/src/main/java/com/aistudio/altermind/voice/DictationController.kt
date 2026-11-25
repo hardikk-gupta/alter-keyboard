@@ -159,7 +159,7 @@ class DictationController internal constructor(private val context: Context, pri
                                 total += accepted
                                 val audio = FloatArray(accepted) { buffer[it] / 32768f }
                                 val rms = kotlin.math.sqrt(audio.sumOf { (it * it).toDouble() } / accepted).toFloat()
-                                if (generation == epoch) mutableLevel.value = microphoneLevel(rms)
+                                if (generation == epoch) mutableLevel.value = microphoneDisplayLevel(audio)
                                 if (rms > .003f) { spoken = true; quiet = 0 } else quiet += accepted
                                 chunks.send(audio)
                                 if ((endAfterSilence && spoken && quiet > 16000 * 1.6) || (!spoken && total - draft.samples >= 10 * 16000)) break
@@ -269,7 +269,23 @@ class DictationController internal constructor(private val context: Context, pri
 }
 
 /** A decibel meter makes quieter real input visible; zero PCM remains a flat wave. */
-internal fun microphoneLevel(rms: Float): Float = ((20f * kotlin.math.log10(rms.coerceAtLeast(.000001f)) + 60f) / 60f).coerceIn(0f, 1f)
+// Keep brief syllables visible within a capture buffer. 160 samples = 10 ms at 16 kHz.
+internal fun microphoneDisplayLevel(audio: FloatArray): Float {
+    var peakMeanSquare = 0f
+    for (start in audio.indices step 160) {
+        val end = minOf(start + 160, audio.size)
+        var sum = 0f
+        for (i in start until end) sum += audio[i] * audio[i]
+        peakMeanSquare = maxOf(peakMeanSquare, sum / (end - start))
+    }
+    return microphoneLevel(kotlin.math.sqrt(peakMeanSquare))
+}
+
+// Display-only dBFS scale. Keep a floor above single-count PCM noise.
+internal fun microphoneLevel(rms: Float): Float {
+    if (!rms.isFinite() || rms <= 0f) return 0f
+    return ((20f * kotlin.math.log10(rms) + 84f) / 84f).coerceIn(0f, 1f)
+}
 
 internal fun pcm16Samples(pcm: ByteArray): FloatArray {
     val shorts = java.nio.ByteBuffer.wrap(pcm).order(java.nio.ByteOrder.LITTLE_ENDIAN).asShortBuffer()

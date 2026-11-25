@@ -49,7 +49,7 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
 - Pill: 12 dp corners, SlateGrayCard body inside a thin (1 dp) AlterYellow boundary at 60% (25% when disabled), the
   ALTER mark of every voice surface. No glass, blur or gradients. Touch targets 48 dp.
 - Idle: the flat-eyes ALTER mark (`ic_alter_ai_doodle_closed`) tinted `#F5F5F5`, plus the Lucide mic.
-- Listening: stable OrbInk letters and symbols rise and brighten with microphone RMS. Silence shows one row.
+- Listening: Letters and symbols rise from a muted grey baseline through warm intermediate shades to an ALTER yellow crest. The gradient follows the visible height. Soft speech lifts the central columns, louder speech reveals more rows, and silence settles to one row.
 - Listening/paused/thinking: Pause/Play is outside the right-hand curve; the discard cross is outside the left.
   Both controls use 20dp icons to match the toolbar, with 2-unit strokes, 12dp ripple corners and keyboard-theme tint
   (light ink on the fixed black pill-mode bar). Like the discard cross, Pause is two single vertical strokes and Play
@@ -113,7 +113,7 @@ to measured decoder cost. Full windows and the final tail are always decoded; sl
 This reduces redundant work but does not guarantee real-time inference. Native CPU binaries and model
 weights are unchanged; on-phone speed and thermal behavior still require measurement.
 
-Voice startup shows a still white line while the microphone opens, then the microphone-driven ASCII wave; it does not
+Voice startup shows a still white line while the microphone opens, then the microphone-driven ASCII wave with a grey baseline and yellow crest; it does not
 show the processing animation. Processing is reserved for finished audio. Errors take precedence over saved-draft
 pause/processing state and hide the Play/Pause control. Ten seconds with no audible speech stops capture with the
 error icon, including while the model warms up; the draft remains private and saved. Tapping a no-speech error
