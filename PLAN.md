@@ -72,3 +72,7 @@ Port the pinned ASCII renderer to the listening pill. Check the published Parake
 The listening renderer and three streaming choices are implemented. Verified model bytes, both sherpa ABIs, the ARM64 Needle build, compiled host decoding and 64 voice tests. Physical-device performance and interaction checks remain open.
 
 Matched-clip host checks favor Akshar for Hindi speed and the existing 110M CTC model for English speed. Keep legacy choices ahead of Unified when auto-selecting an installed model. See docs/VOICE_MODELS.md for the timings and sample limitations.
+
+## November 25 — yellow listening wave
+Use the ALTER yellow accent for recording. Extend the displayed PCM range to quiet sounds, shorten the visual response and check that quiet, conversational and loud inputs occupy distinct heights.
+Implemented and verified the four-level response, including a short syllable within a longer buffer. The new sensitivity applies to the visual meter. Speech detection continues using its existing thresholds.
