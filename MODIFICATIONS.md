@@ -72,8 +72,7 @@ non-commercial use, shared only for free. The original AOSP code remains under A
   or shows a paused pill; playback/recording and insertion require explicit interaction. The draft is
   excluded from Android backup, bounded to fifteen minutes, and deleted after accepted insertion or explicit discard.
   Android's recognizer provides no recoverable raw audio, so only its recognized text can be retained and continued.
-- **Voice processing design:** the original AICSS S1 orb choreography fills the pill's rectangle with jumping
-  white/yellow ASCII symbols. Reduced motion uses a still frame. Pause/resume sits outside the right-hand curve, opposite
+- **Voice processing design:** three rows of ASCII characters fill the pill. Small clusters jump and glow yellow. Reduced motion uses a still frame. Pause/resume sits outside the right-hand curve, opposite
   the discard cross; both use matching 20dp icons, theme tint and 48dp-wide touch areas. Like the cross, Play/Pause
   uses simple 2-unit strokes with round caps/joins; Pause is two vertical lines. Paused status is a still white line.
 

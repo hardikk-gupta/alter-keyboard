@@ -57,11 +57,11 @@ Tokens, from `ui/theme/Color.kt` in the ALTER app (`AlterColors` in `alter-voice
   available bar height. Only the bounded status surface has vertical padding, so the controls align. Paused shows a
   still white horizontal line in the centre; tapping it processes saved dictation. Play continues capture, and Pause
   can also suspend processing.
-- Thinking: the original AICSS S1 orb choreography (1.7-second cycle, 700ms radial delay per cell, 180ms centre lead,
-  eased swelling and fading) is reused across a three-row rectangular lattice. ASCII symbols brighten from white to yellow and hop outward as they light. The column count adapts to fill the pill; the small orb on other screens keeps its original 3×3 shape.
+- Thinking: three rows of grey ASCII characters fill the pill. Small groups hop and light up yellow in staggered
+  bursts on a three-second loop. The small activity orbs on other screens use their original animation.
 - Error: the red Lucide triangle-alert; TalkBack reads the error and "Tap to try again". A short
   foreground Toast also shows the reason, without expanding the pill or adding model descriptions.
-- Animations off: the wave follows new levels immediately and the processing field shows static centre symbols lit against dim dots.
+- Animations off: the wave follows new levels immediately and the processing field shows a stationary grey ASCII grid.
 
 ## Keyboard UX
 

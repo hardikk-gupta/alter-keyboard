@@ -128,3 +128,5 @@ The listening pill follows quiet sounds in yellow. Keyboard compilation and the 
 PR #36 now includes the grey-to-yellow shading. Reviewed a host render at four input levels and ran all 66 voice tests. Phone appearance remains unverified.
 
 The ASCII processing follow-up reuses the three-row radial timing and renders jumping punctuation during transcription and cleanup. Voice tests and keyboard compilation passed. The host preview uses the animation's timing and simulated rendering. Phone rendering and signed installation remain open.
+
+PR #38 uses the selected 25-column ASCII animation. The PR workflow builds the ARM64 test APK.

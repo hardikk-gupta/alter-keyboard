@@ -656,3 +656,5 @@ The listening wave now grades from muted grey at its baseline into yellow across
 
 ## November 27 — ASCII processing bursts
 The processing pill uses the original radial timing to send bright ASCII bursts outward from the centre. Dim dots turn into punctuation as they jump and then settle. Reduced motion shows a stationary frame. Keyboard compilation and all 66 voice tests passed. Local APK signing requires the shared debug keystore.
+
+Updated the processing animation to match the selected preview. Three fixed rows of 25 ASCII characters jump and glow in small, staggered groups.
