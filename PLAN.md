@@ -79,3 +79,6 @@ Implemented and verified the four-level response, including a short syllable wit
 
 ## Gradient for the listening pill
 Blend the bottom glyph row from muted grey into ALTER yellow over the visible wave height. Check quiet and loud levels in the compact pill and run the voice tests.
+
+## November 27 — ASCII processing animation
+Use the processing pill's existing radial timing to light and move ASCII symbols. Check the animated preview, the static reduced-motion frame and the voice build.

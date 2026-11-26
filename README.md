@@ -41,7 +41,7 @@ emoji, text editing, number row, many languages and layouts, themes and resizing
   theme-colored icons with large touch areas. Pause uses two simple round-ended lines, matching the cross stroke.
   A still white line marks the paused pill; tap its centre to
   process what is already recorded, or tap Play to keep recording.
-- The original AICSS orb motion fills the rectangle with round white/yellow dots during transcription and cleanup;
+- Small clusters of grey ASCII characters jump and glow yellow during transcription and cleanup;
   tapping the pill or its external Pause button pauses processing.
   With animations off the cells show a still frame. Text is inserted at the cursor and is never sent.
 - Closing the keyboard during processing lets transcription and cleanup finish in the background while the keyboard

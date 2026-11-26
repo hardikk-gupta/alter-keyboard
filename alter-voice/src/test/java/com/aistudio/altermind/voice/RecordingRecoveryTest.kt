@@ -1,10 +1,7 @@
 package com.aistudio.altermind.voice
 
 import android.content.ContextWrapper
-import com.aistudio.altermind.voice.ui.processingFieldFrame
-import com.aistudio.altermind.voice.ui.latticeFrame
-import com.aistudio.altermind.voice.ui.latticeStillFrame
-import com.aistudio.altermind.voice.ui.latticeRest
+import com.aistudio.altermind.voice.ui.processingJump
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import org.junit.Assert.*
@@ -445,14 +442,13 @@ class RecordingRecoveryTest {
         assertEquals(1, calls)
     }
 
-    @Test fun thinkingFieldFillsWideRectanglesWithTheOriginalOrbChoreography() {
-        val wide = processingFieldFrame(24, 3, 600f)
-        assertEquals(72, wide.size)
-        assertEquals(0, wide.minOf { it.x }); assertEquals(23, wide.maxOf { it.x })
-        assertNotEquals(wide, processingFieldFrame(24, 3, 1200f))
-        assertEquals(latticeFrame(600f), processingFieldFrame(3, 3, 600f))
-        assertEquals(latticeStillFrame(), processingFieldFrame(3, 3, null))
-        assertTrue(processingFieldFrame(24, 3, null).all { it.alpha == latticeRest(true) || it.alpha == 1f })
-        assertTrue(processingFieldFrame(24, 3, null).any { it.alpha == 1f })
+    @Test fun processingSymbolsJumpLocallyAndSettle() {
+        assertTrue(processingJump(10, 1, 20f).height > 0f)
+        assertEquals(0f, processingJump(11, 1, 20f).height, 0f)
+        assertEquals(1f, processingJump(10, 1, 180f).height, .001f)
+        assertTrue(processingJump(11, 1, 180f).height in .01f..0.9f)
+        assertEquals(0f, processingJump(0, 0, 180f).height, 0f)
+        assertEquals(0f, processingJump(10, 1, null).height, 0f)
+        assertEquals(processingJump(10, 1, 0f), processingJump(10, 1, 3000f))
     }
 }

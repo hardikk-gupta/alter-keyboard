@@ -109,8 +109,8 @@ never depends on the ALTER app being installed. Read `HANDOFF.md`, `PLAN.md`, `A
   controller when reopening; never resume the mic or insert recovered text automatically. Password and no-personalized-learning fields disable voice and hide recovery.
 - Put pause/resume outside the pill's right edge, opposite the external discard cross. Both controls use the same
   simple 2-unit strokes with round caps/joins and theme tint, with full-size touch areas. Pause is two single
-  vertical strokes; paused status inside the pill is a still white line. Thinking reuses the original AICSS S1 orb motion
-  across the rectangle, with a static frame when animations are disabled.
+  vertical strokes; paused status inside the pill is a still white line. Thinking shows staggered yellow jumps across a grey ASCII grid,
+  with a static frame when animations are disabled.
 
 ## Pull requests
 
