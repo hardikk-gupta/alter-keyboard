@@ -662,3 +662,5 @@ Updated the processing animation to match the selected preview. Three fixed rows
 ## Keyboard accent redesign
 
 Restyled the default action key, setup buttons, dialogs and shared settings sections in neutral tones. Yellow marks progress and voice activity. Checked Markdown inventory coverage, relative links in changed guides and whitespace. Device appearance awaits review.
+
+[Draft PR #39](https://github.com/hardikk-gupta/alter-keyboard/pull/39). The arm64 debug build passed, all 66 voice tests passed, and apksigner verified the preview APK. The local preview uses a development key. No Android device was connected for visual acceptance.

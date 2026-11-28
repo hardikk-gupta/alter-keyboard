@@ -86,3 +86,5 @@ Use the processing pill's existing radial timing to light and move ASCII symbols
 ## Keyboard accent redesign
 
 Build on the merged ASCII pill. Restyle the default key palette, shared settings sections and setup controls. Use yellow for compact activity cues. Check the Android build, voice tests, documentation links and inventory. Verify appearance on a phone separately.
+
+[Draft PR #39](https://github.com/hardikk-gupta/alter-keyboard/pull/39). The arm64 debug build passed, all 66 voice tests passed, and apksigner verified the preview APK. The local preview uses a development key. No Android device was connected for visual acceptance.

@@ -134,3 +134,5 @@ PR #38 uses the selected 25-column ASCII animation. The PR workflow builds the A
 ## Keyboard accent redesign
 
 The default skin uses neutral primary controls and outlined graphite settings groups. Setup and voice download progress use a thin yellow line. The ASCII voice control retains its yellow highlights.
+
+[Draft PR #39](https://github.com/hardikk-gupta/alter-keyboard/pull/39). The arm64 debug build passed, all 66 voice tests passed, and apksigner verified the preview APK. The local preview uses a development key. No Android device was connected for visual acceptance.
