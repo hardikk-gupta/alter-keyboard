@@ -5,7 +5,7 @@
 ALTER Keyboard works exactly like FUTO Keyboard: FUTO's themes and theme picker, settings, toolbar actions (undo,
 redo, clipboard, emoji, text editing) and layouts stay. Since Oct 19, 2026 the default skin is the **ALTER** theme
 (`theme/presets/AlterTheme.kt`): PitchBlack background, SlateGrayCard keys, RaisedSurface pressed and function keys,
-LightText labels, MutedText hints and AlterYellow as the one accent (enter key, highlights). FUTO's other themes stay
+LightText labels, MutedText hints and AlterYellow as a small activity accent. The action key and primary controls use silver. FUTO's other themes stay
 selectable. ALTER's voice surfaces use ALTER's design below.
 
 ## Launcher icon
@@ -22,14 +22,14 @@ redesign, pass 1"), whatever keyboard theme is picked: `UixThemeAuto` always app
 `uix/settings/AlterStyle.kt` holds the shared pieces.
 
 - Page heading 26/34sp semibold, one Lucide arrow-left back icon immediately left of it.
-- Each menu's settings sit in one grouped section: an optional 12sp label above one borderless 20dp SlateGrayCard
+- Each menu's settings sit in one grouped section: an optional 12sp label above one outlined 16dp graphite
   surface with 16dp page gutters.
 - Rows: 16/24sp title, concise 12/18sp secondary line; navigation rows lead with a 36dp tile (6% foreground fill,
   10dp corners, 20dp icon) and end with a Lucide chevron-right.
 - Rows without icons use 16dp inner leading padding and reserve no icon column. Model rows show
   name, size/selection and one download/delete action; supporting text appears only for progress/errors.
 - Tips: a neutral RaisedSurface note with 16dp corners and 14sp muted text; warnings keep the error colours.
-- Yellow means selection, activity and the brand; download/use controls are neutral outlined buttons.
+- Yellow marks setup and download progress, voice activity and the brand; download/use controls are neutral outlined buttons.
 - FUTO's payment page keeps all its content and actions; only the shared styling applies to it.
 
 ## ALTER voice surfaces

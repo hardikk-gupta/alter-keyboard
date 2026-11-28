@@ -11,7 +11,7 @@ import org.futo.inputmethod.latin.uix.theme.selector.ThemePreview
 // ALTER Keyboard: ALTER's design tokens (ui/theme/Color.kt in the ALTER app). PitchBlack background, SlateGrayCard
 // keys, RaisedSurface for pressed and function keys, LightText labels, MutedText hints, AlterYellow as the one accent.
 private val alterScheme = extendedDarkColorScheme(
-    primary = Color(0xFFFFBD00),
+    primary = Color(0xFFBFC0C3),
     onPrimary = Color(0xFF000000),
     primaryContainer = Color(0xFF262626),
     onPrimaryContainer = Color(0xFFECECEC),
@@ -42,10 +42,25 @@ private val alterScheme = extendedDarkColorScheme(
     keyboardPress = Color(0xFF262626),
     keyboardFade0 = Color(0xFF000000),
     keyboardFade1 = Color(0xFF000000),
-    primaryTransparent = Color(0xFFFFBD00).copy(alpha = 0.3f),
+    primaryTransparent = Color(0xFFBFC0C3).copy(alpha = 0.2f),
     onSurfaceTransparent = Color(0xFFECECEC).copy(alpha = 0.1f),
     hintColor = Color(0xFFA1A1AA),
-)
+).let { scheme ->
+    // Material supplies tinted defaults for dialogs, menus and elevated surfaces.
+    scheme.copy(base = scheme.base.copy(
+        surfaceTint = Color.Transparent,
+        inversePrimary = Color(0xFF474749),
+        inverseSurface = Color(0xFFECECEC),
+        inverseOnSurface = Color(0xFF18181B),
+        surfaceBright = Color(0xFF323235),
+        surfaceDim = Color.Black,
+        surfaceVariant = Color(0xFF262628),
+        surfaceContainerLowest = Color.Black,
+        surfaceContainerLow = Color(0xFF131315),
+        surfaceContainer = Color(0xFF18181B),
+        surfaceContainerHigh = Color(0xFF202023),
+    ))
+}
 
 val AlterTheme = ThemeOption(
     dynamic = false,

@@ -658,3 +658,9 @@ The listening wave now grades from muted grey at its baseline into yellow across
 The processing pill uses the original radial timing to send bright ASCII bursts outward from the centre. Dim dots turn into punctuation as they jump and then settle. Reduced motion shows a stationary frame. Keyboard compilation and all 66 voice tests passed. Local APK signing requires the shared debug keystore.
 
 Updated the processing animation to match the selected preview. Three fixed rows of 25 ASCII characters jump and glow in small, staggered groups.
+
+## Keyboard accent redesign
+
+Restyled the default action key, setup buttons, dialogs and shared settings sections in neutral tones. Yellow marks progress and voice activity. Checked Markdown inventory coverage, relative links in changed guides and whitespace. Device appearance awaits review.
+
+[Draft PR #39](https://github.com/hardikk-gupta/alter-keyboard/pull/39). The arm64 debug build passed, all 66 voice tests passed, and apksigner verified the preview APK. The local preview uses a development key. No Android device was connected for visual acceptance.
