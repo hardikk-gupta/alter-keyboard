@@ -67,7 +67,7 @@ the start mode in Settings → ALTER voice (Full keyboard by default), or tap **
 action bar) at any time. Password and no-personalized-learning fields always open the full keyboard with voice and
 recovery disabled. Switching keyboard surfaces pauses recording; finished audio keeps processing to the clipboard.
 
-**ALTER design:** the default keyboard skin is the ALTER theme (black, dark grey keys, yellow accent; the other themes
+**ALTER design:** the default keyboard skin is the ALTER theme (black, graphite keys, silver actions and small yellow activity cues; the other themes
 stay in the picker), the app's own screens follow the ALTER app's settings design, and the launcher icon is a light
 keyboard with a yellow spacebar on ALTER's dark background. Details: [docs/DESIGN.md](docs/DESIGN.md).
 

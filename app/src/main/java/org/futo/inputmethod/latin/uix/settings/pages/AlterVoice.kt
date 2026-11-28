@@ -95,6 +95,7 @@ private fun ModelRow(
         }
         when (download) {
             is DownloadState.Running -> LinearProgressIndicator(
+                color = MaterialTheme.colorScheme.tertiary,
                 progress = { if (download.total > 0) download.bytes.toFloat() / download.total else 0f },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp))
             is DownloadState.Failed -> Text(download.message, color = MaterialTheme.colorScheme.error,

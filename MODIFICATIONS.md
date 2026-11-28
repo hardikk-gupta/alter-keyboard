@@ -177,3 +177,7 @@ Streaming diagnostics: Moonshine uses checked native calls with one fresh stream
 foreground failures show a short error message as well as the pill icon. Nemotron retains native
 English/Hindi/Automatic choices and reports the native failure stage and reason. Both modes worked in
 host checks; device-specific failures and phone accuracy remain unverified. See [recognizer checks](docs/STREAMING_RECOGNIZER_CHECKS.md).
+
+## Keyboard accent redesign
+
+The default skin uses neutral primary controls and outlined graphite settings groups. Setup and voice download progress use a thin yellow line. The ASCII voice control retains its yellow highlights.

@@ -130,3 +130,7 @@ PR #36 now includes the grey-to-yellow shading. Reviewed a host render at four i
 The ASCII processing follow-up reuses the three-row radial timing and renders jumping punctuation during transcription and cleanup. Voice tests and keyboard compilation passed. The host preview uses the animation's timing and simulated rendering. Phone rendering and signed installation remain open.
 
 PR #38 uses the selected 25-column ASCII animation. The PR workflow builds the ARM64 test APK.
+
+## Keyboard accent redesign
+
+The default skin uses neutral primary controls and outlined graphite settings groups. Setup and voice download progress use a thin yellow line. The ASCII voice control retains its yellow highlights.

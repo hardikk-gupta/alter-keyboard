@@ -82,3 +82,7 @@ Blend the bottom glyph row from muted grey into ALTER yellow over the visible wa
 
 ## November 27 — ASCII processing animation
 Use the processing pill's existing radial timing to light and move ASCII symbols. Check the animated preview, the static reduced-motion frame and the voice build.
+
+## Keyboard accent redesign
+
+Build on the merged ASCII pill. Restyle the default key palette, shared settings sections and setup controls. Use yellow for compact activity cues. Check the Android build, voice tests, documentation links and inventory. Verify appearance on a phone separately.
